@@ -29,19 +29,24 @@ public class MediaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MediaDto> getOne(@PathVariable int id) throws Exception {
-        return mediaService.getOne(id);
+    public ResponseEntity<MediaDto> getOne(@PathVariable String id) {
+
+        int num = Integer.parseInt(id);
+        return mediaService.getOne(num);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable int id)  {
-        return mediaService.deleteById(id);
+    public ResponseEntity<?> delete(@PathVariable String id)  {
+
+        int num = Integer.parseInt(id);
+        return mediaService.deleteById(num);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<MediaDto> update(@PathVariable int id,
-                                       @Valid @RequestBody MediaDto mediaDto) throws Exception {
-        return mediaService.update(id, mediaDto);
+    public ResponseEntity<MediaDto> update(@PathVariable String id,
+                                           @Valid @RequestBody MediaDto mediaDto) {
+        int num = Integer.parseInt(id);
+        return mediaService.update(num, mediaDto);
     }
 
 }

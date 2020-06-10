@@ -14,7 +14,6 @@ public class Media {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
-    @Column(precision=5, scale=2)
     private BigDecimal price;
 
 }
