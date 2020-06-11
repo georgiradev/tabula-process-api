@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,9 +27,13 @@ public class MediaService {
         mapper = new MapperImpl();
     }
 
-    public ResponseEntity<List<Media>> getAll(){
-        Pageable pageable = PageRequest.of(0, 10);
+    public ResponseEntity<List<Media>> getAll(int num){
+        Pageable pageable = PageRequest.of(num, 10);
         Page<Media> page = mediaRepository.findAll(pageable);
+        List<MediaDto> mediaDtoList = new ArrayList<>();
+        for(Media media:page.toList()){
+            mediaDtoList.add(mapper.convertToMediaDTO(media));
+        }
         return new ResponseEntity<>(page.toList(), HttpStatus.OK);
     }
 

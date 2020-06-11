@@ -22,6 +22,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
 
@@ -40,7 +41,7 @@ class MediaServiceTest {
         Page<Media> page = new PageImpl<>(media);
 
         when(mediaRepository.findAll(any(Pageable.class))).thenReturn(page);
-        assertEquals(media, mediaService.getAll().getBody());
+        assertEquals(media, mediaService.getAll(anyInt()).getBody());
     }
 
     @Test

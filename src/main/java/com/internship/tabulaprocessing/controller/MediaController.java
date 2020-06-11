@@ -19,8 +19,8 @@ public class MediaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Media>> getAll() {
-        return  mediaService.getAll();
+    public ResponseEntity<List<Media>> getAll(@RequestParam int page) {
+        return  mediaService.getAll(page);
     }
 
     @PostMapping
