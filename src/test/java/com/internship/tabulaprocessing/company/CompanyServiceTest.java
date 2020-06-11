@@ -91,7 +91,7 @@ public class CompanyServiceTest {
   }
 
   @Test
-  void testFindAllActivities() {
+  void testFindAllCompanies() {
     List<Company> companies = CompanyProvider.getCompaniesInstance();
     Page<Company> paging = new PageImpl<>(companies);
 
@@ -101,7 +101,7 @@ public class CompanyServiceTest {
   }
 
   @Test
-  void testFindAllActivitiesButNoContentFound() {
+  void testFindAllCompaniesButNoContentFound() {
     List<Company> companies = Collections.emptyList();
     Page<Company> paging = new PageImpl<>(companies);
 
