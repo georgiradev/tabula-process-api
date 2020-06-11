@@ -48,5 +48,4 @@ public class MediaController {
         int num = Integer.parseInt(id);
         return mediaService.update(num, mediaDto);
     }
-
 }

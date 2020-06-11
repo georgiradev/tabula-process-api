@@ -24,9 +24,6 @@ public class MediaService {
 
     public MediaService(MediaRepository mediaRepository) {
         this.mediaRepository = mediaRepository;
-        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     public ResponseEntity<List<Media>> getAll(){
@@ -37,19 +34,19 @@ public class MediaService {
 
     public ResponseEntity<MediaDto> getOne(int id) {
         Optional<Media> media = mediaRepository.findById(id);
+
         if(!media.isPresent()){
             throw new EntityNotFoundException("Media not found.");
         }
+
         MediaDto mediaDto = mapper.convertValue(media.get(), MediaDto.class);
         return  ResponseEntity.ok(mediaDto);
     }
 
     public ResponseEntity<MediaDto> create(MediaDto mediaDto) {
-
         Media media = mapper.convertValue(mediaDto, Media.class);
         mediaRepository.save(media);
         mediaDto.setId(media.getId());
-
         return  new ResponseEntity<>(mediaDto, HttpStatus.CREATED);
     }
 
@@ -75,7 +72,7 @@ public class MediaService {
         Media media = mapper.convertValue(mediaDto, Media.class);
         media.setId(id);
         mediaRepository.save(media);
-
+        mediaDto = mapper.convertValue(media, MediaDto.class);
         return ResponseEntity.ok(mediaDto);
     }
 }
