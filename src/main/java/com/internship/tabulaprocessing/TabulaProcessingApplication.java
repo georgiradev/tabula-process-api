@@ -11,9 +11,7 @@ import org.springframework.context.annotation.Bean;
 @SpringBootApplication
 public class TabulaProcessingApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(TabulaProcessingApplication.class, args);
-	}
-
-
+  public static void main(String[] args) {
+    SpringApplication.run(TabulaProcessingApplication.class, args);
+  }
 }
