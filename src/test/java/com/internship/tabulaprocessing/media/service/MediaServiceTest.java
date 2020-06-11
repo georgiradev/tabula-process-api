@@ -1,9 +1,10 @@
 package com.internship.tabulaprocessing.media.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.internship.tabulaprocessing.media.dto.MediaDto;
-import com.internship.tabulaprocessing.media.model.Media;
-import com.internship.tabulaprocessing.media.repository.MediaRepository;
+import com.internship.tabulaprocessing.dto.MediaDto;
+import com.internship.tabulaprocessing.entity.Media;
+import com.internship.tabulaprocessing.repository.MediaRepository;
+import com.internship.tabulaprocessing.service.MediaService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

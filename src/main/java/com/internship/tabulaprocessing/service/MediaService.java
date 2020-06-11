@@ -1,11 +1,10 @@
-package com.internship.tabulaprocessing.media.service;
+package com.internship.tabulaprocessing.service;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.internship.tabulaprocessing.media.dto.MediaDto;
-import com.internship.tabulaprocessing.media.model.Media;
-import com.internship.tabulaprocessing.media.repository.MediaRepository;
+import com.internship.tabulaprocessing.dto.MediaDto;
+import com.internship.tabulaprocessing.entity.Media;
+import com.internship.tabulaprocessing.mapper.Mapper;
+import com.internship.tabulaprocessing.mapper.MapperImpl;
+import com.internship.tabulaprocessing.repository.MediaRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,10 +19,11 @@ import java.util.Optional;
 @Service
 public class MediaService {
     private MediaRepository mediaRepository;
-    ObjectMapper mapper = new ObjectMapper();
+    private Mapper mapper;
 
     public MediaService(MediaRepository mediaRepository) {
         this.mediaRepository = mediaRepository;
+        mapper = new MapperImpl();
     }
 
     public ResponseEntity<List<Media>> getAll(){
@@ -39,12 +39,12 @@ public class MediaService {
             throw new EntityNotFoundException("Media not found.");
         }
 
-        MediaDto mediaDto = mapper.convertValue(media.get(), MediaDto.class);
+        MediaDto mediaDto = mapper.convertToMediaDTO(media.get());
         return  ResponseEntity.ok(mediaDto);
     }
 
     public ResponseEntity<MediaDto> create(MediaDto mediaDto) {
-        Media media = mapper.convertValue(mediaDto, Media.class);
+        Media media = mapper.convertToMediaEntity(mediaDto);
         mediaRepository.save(media);
         mediaDto.setId(media.getId());
         return  new ResponseEntity<>(mediaDto, HttpStatus.CREATED);
@@ -69,10 +69,10 @@ public class MediaService {
             throw new EntityNotFoundException(String.format("Media with id of %s was not found!", id));
         }
 
-        Media media = mapper.convertValue(mediaDto, Media.class);
+        Media media = mapper.convertToMediaEntity(mediaDto);
         media.setId(id);
         mediaRepository.save(media);
-        mediaDto = mapper.convertValue(media, MediaDto.class);
+        mediaDto = mapper.convertToMediaDTO(media);
         return ResponseEntity.ok(mediaDto);
     }
 }

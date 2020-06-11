@@ -1,8 +1,8 @@
-package com.internship.tabulaprocessing.media.controller;
+package com.internship.tabulaprocessing.controller;
 
-import com.internship.tabulaprocessing.media.dto.MediaDto;
-import com.internship.tabulaprocessing.media.model.Media;
-import com.internship.tabulaprocessing.media.service.MediaService;
+import com.internship.tabulaprocessing.dto.MediaDto;
+import com.internship.tabulaprocessing.entity.Media;
+import com.internship.tabulaprocessing.service.MediaService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

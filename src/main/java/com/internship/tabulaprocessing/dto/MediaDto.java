@@ -1,4 +1,4 @@
-package com.internship.tabulaprocessing.media.dto;
+package com.internship.tabulaprocessing.dto;
 
 import lombok.Data;
 

@@ -1,4 +1,4 @@
-package com.internship.tabulaprocessing.media.model;
+package com.internship.tabulaprocessing.entity;
 
 import lombok.Data;
 
