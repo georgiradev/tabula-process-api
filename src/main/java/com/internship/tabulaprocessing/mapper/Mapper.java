@@ -1,5 +1,7 @@
 package com.internship.tabulaprocessing.mapper;
 
+import com.internship.tabulaprocessing.dto.DepartmentDTO;
+import com.internship.tabulaprocessing.entity.Department;
 import com.internship.tabulaprocessing.dto.CompanyRequestDto;
 import com.internship.tabulaprocessing.dto.CompanyRequestPatchDto;
 import com.internship.tabulaprocessing.dto.CompanyResponseDto;
@@ -18,4 +20,8 @@ public interface Mapper {
   CompanyResponseDto companyToCompanyResponseDto(Company company);
 
   Company companyRequestDtoToCompany(CompanyRequestPatchDto companyRequestDto);
+
+  DepartmentDTO coventToDepartmentDTO(Department department);
+
+  Department convertToDepartmentEntity(DepartmentDTO departmentDTO);
 }
