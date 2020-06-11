@@ -5,7 +5,9 @@ import com.internship.tabulaprocessing.entity.Department;
 import com.internship.tabulaprocessing.dto.CompanyRequestDto;
 import com.internship.tabulaprocessing.dto.CompanyRequestPatchDto;
 import com.internship.tabulaprocessing.dto.CompanyResponseDto;
+import com.internship.tabulaprocessing.dto.MediaDto;
 import com.internship.tabulaprocessing.entity.Company;
+import com.internship.tabulaprocessing.entity.Media;
 import org.mapstruct.factory.Mappers;
 
 @org.mapstruct.Mapper(
@@ -24,4 +26,9 @@ public interface Mapper {
   DepartmentDTO coventToDepartmentDTO(Department department);
 
   Department convertToDepartmentEntity(DepartmentDTO departmentDTO);
+
+  MediaDto convertToMediaDTO(Media media);
+
+  Media convertToMediaEntity(MediaDto mediaDTO);
+
 }
