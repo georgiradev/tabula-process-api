@@ -25,8 +25,8 @@ public class DepartmentServiceImpl implements DepartmentService {
     public Department findById(int id) {
 
         Optional<Department> optional = departmentRepository.findById(id);
-        if(!optional.isPresent()){
-            throw new EntityNotFoundException(String.format("Departmant with id %s, not found.",id));
+        if (!optional.isPresent()) {
+            throw new EntityNotFoundException(String.format("Departmant with id %s, not found.", id));
         }
 
         return optional.get();
@@ -37,7 +37,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
         Optional<Department> optional = departmentRepository.findByName(name);
         if (!optional.isPresent()) {
-            throw new RuntimeException(String.format("Department with name %s, not found!",name));
+            throw new RuntimeException(String.format("Department with name %s, not found!", name));
         }
         return optional.get();
     }
@@ -48,13 +48,13 @@ public class DepartmentServiceImpl implements DepartmentService {
         department.setId(0);
         Optional<Department> optional = departmentRepository.findByName(department.getName());
         if (optional.isPresent()) {
-            throw new RuntimeException(String.format("Departmant with name %s, already exists",department.getName()));
+            throw new RuntimeException(String.format("Departmant with name %s, already exists", department.getName()));
         }
         return departmentRepository.save(department);
     }
 
     @Override
-    public Department update(Department department,int id) {
+    public Department update(Department department, int id) {
 
         findById(id);
         department.setId(id);

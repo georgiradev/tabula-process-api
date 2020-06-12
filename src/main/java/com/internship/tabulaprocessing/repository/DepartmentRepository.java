@@ -11,7 +11,7 @@ import java.util.Optional;
 @Repository
 public interface DepartmentRepository extends JpaRepository<Department, Integer> {
 
-  Page<Department> findAll(Pageable pageable);
+    Page<Department> findAll(Pageable pageable);
 
-  Optional<Department> findByName(String name);
+    Optional<Department> findByName(String name);
 }

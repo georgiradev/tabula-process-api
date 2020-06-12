@@ -27,11 +27,11 @@ public class MediaService {
         mapper = new MapperImpl();
     }
 
-    public ResponseEntity<List<Media>> getAll(int num){
+    public ResponseEntity<List<Media>> getAll(int num) {
         Pageable pageable = PageRequest.of(num, 10);
         Page<Media> page = mediaRepository.findAll(pageable);
         List<MediaDto> mediaDtoList = new ArrayList<>();
-        for(Media media:page.toList()){
+        for (Media media : page.toList()) {
             mediaDtoList.add(mapper.convertToMediaDTO(media));
         }
         return new ResponseEntity<>(page.toList(), HttpStatus.OK);
@@ -40,26 +40,26 @@ public class MediaService {
     public ResponseEntity<MediaDto> getOne(int id) {
         Optional<Media> media = mediaRepository.findById(id);
 
-        if(!media.isPresent()){
+        if (!media.isPresent()) {
             throw new EntityNotFoundException("Media not found.");
         }
 
         MediaDto mediaDto = mapper.convertToMediaDTO(media.get());
-        return  ResponseEntity.ok(mediaDto);
+        return ResponseEntity.ok(mediaDto);
     }
 
     public ResponseEntity<MediaDto> create(MediaDto mediaDto) {
         Media media = mapper.convertToMediaEntity(mediaDto);
         mediaRepository.save(media);
         mediaDto.setId(media.getId());
-        return  new ResponseEntity<>(mediaDto, HttpStatus.CREATED);
+        return new ResponseEntity<>(mediaDto, HttpStatus.CREATED);
     }
 
     public ResponseEntity<?> deleteById(int id) {
 
         Optional<Media> optional = mediaRepository.findById(id);
 
-        if(!optional.isPresent()){
+        if (!optional.isPresent()) {
             throw new EntityNotFoundException(String.format("Media with id of %s was not found!", id));
         }
 
@@ -67,10 +67,10 @@ public class MediaService {
         return ResponseEntity.ok(String.format("Media with id of %s was deleted successfully!", id));
     }
 
-    public ResponseEntity<MediaDto> update(int id, MediaDto mediaDto)  {
+    public ResponseEntity<MediaDto> update(int id, MediaDto mediaDto) {
         Optional<Media> optional = mediaRepository.findById(id);
 
-        if(!optional.isPresent()){
+        if (!optional.isPresent()) {
             throw new EntityNotFoundException(String.format("Media with id of %s was not found!", id));
         }
 

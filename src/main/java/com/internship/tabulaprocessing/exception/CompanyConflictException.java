@@ -4,7 +4,7 @@ import javax.persistence.EntityExistsException;
 
 public class CompanyConflictException extends EntityExistsException {
 
-  public CompanyConflictException(String message) {
-    super(message);
-  }
+    public CompanyConflictException(String message) {
+        super(message);
+    }
 }

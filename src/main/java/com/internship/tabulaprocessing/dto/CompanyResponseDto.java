@@ -7,19 +7,19 @@ import lombok.Setter;
 @Setter
 public class CompanyResponseDto {
 
-  private int id;
+    private int id;
 
-  private String name;
+    private String name;
 
-  private String discountRate;
+    private String discountRate;
 
-  private String address;
+    private String address;
 
-  private String country;
+    private String country;
 
-  private String city;
+    private String city;
 
-  private String vatNumber;
+    private String vatNumber;
 
-  // private List<Customer> customers;
+    // private List<Customer> customers;
 }

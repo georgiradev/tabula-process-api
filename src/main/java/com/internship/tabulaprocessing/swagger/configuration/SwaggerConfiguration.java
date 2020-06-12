@@ -20,32 +20,32 @@ import java.util.List;
 @EnableSwagger2WebMvc
 public class SwaggerConfiguration {
 
-  private static final String NAME = "Bearer";
-  private static final String KEY_NAME = "Authorization";
-  private static final String PASS = "header";
-  private static final String PATH_REGEX = "/.*";
-  private static final String REFERENCE = "Bearer";
+    private static final String NAME = "Bearer";
+    private static final String KEY_NAME = "Authorization";
+    private static final String PASS = "header";
+    private static final String PATH_REGEX = "/.*";
+    private static final String REFERENCE = "Bearer";
 
-  @Bean
-  public Docket api() {
-    return new Docket(DocumentationType.SWAGGER_2)
-        .select()
-        .apis(
-            RequestHandlerSelectors.basePackage(TabulaProcessingApplication.class.getPackageName()))
-        .paths(PathSelectors.any())
-        .build()
-        .securitySchemes(Collections.singletonList(new ApiKey(NAME, KEY_NAME, PASS)))
-        .securityContexts(Collections.singletonList(securityContext()));
-  }
+    @Bean
+    public Docket api() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .select()
+                .apis(
+                        RequestHandlerSelectors.basePackage(TabulaProcessingApplication.class.getPackageName()))
+                .paths(PathSelectors.any())
+                .build()
+                .securitySchemes(Collections.singletonList(new ApiKey(NAME, KEY_NAME, PASS)))
+                .securityContexts(Collections.singletonList(securityContext()));
+    }
 
-  private SecurityContext securityContext() {
-    return SecurityContext.builder()
-        .securityReferences(defaultAuth())
-        .forPaths(PathSelectors.regex(PATH_REGEX))
-        .build();
-  }
+    private SecurityContext securityContext() {
+        return SecurityContext.builder()
+                .securityReferences(defaultAuth())
+                .forPaths(PathSelectors.regex(PATH_REGEX))
+                .build();
+    }
 
-  private List<SecurityReference> defaultAuth() {
-    return Collections.singletonList(new SecurityReference(REFERENCE, new AuthorizationScope[0]));
-  }
+    private List<SecurityReference> defaultAuth() {
+        return Collections.singletonList(new SecurityReference(REFERENCE, new AuthorizationScope[0]));
+    }
 }

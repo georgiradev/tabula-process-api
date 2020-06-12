@@ -9,11 +9,11 @@ import java.util.Optional;
 
 public interface CompanyRepository extends JpaRepository<Company, Integer> {
 
-  Optional<Company> findById(int id);
+    Optional<Company> findById(int id);
 
-  Optional<Company> findByName(String name);
+    Optional<Company> findByName(String name);
 
-  @Query(value = "SELECT DISTINCT * FROM company AS c WHERE c.name = :name AND c.address = :address", nativeQuery = true)
-  Optional<Company> findByNameAndAddress(
-      @Param("name") String name, @Param("address") String address);
+    @Query(value = "SELECT DISTINCT * FROM company AS c WHERE c.name = :name AND c.address = :address", nativeQuery = true)
+    Optional<Company> findByNameAndAddress(
+            @Param("name") String name, @Param("address") String address);
 }
