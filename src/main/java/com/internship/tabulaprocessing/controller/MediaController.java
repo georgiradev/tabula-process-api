@@ -20,7 +20,7 @@ public class MediaController {
 
     @GetMapping
     public ResponseEntity<List<Media>> getAll(@RequestParam int page) {
-        return  mediaService.getAll(page);
+        return mediaService.getAll(page);
     }
 
     @PostMapping
@@ -36,7 +36,7 @@ public class MediaController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable String id)  {
+    public ResponseEntity<?> delete(@PathVariable String id) {
 
         int num = Integer.parseInt(id);
         return mediaService.deleteById(num);

@@ -52,7 +52,7 @@ class MediaServiceTest {
 
     @Test
     void create() {
-        Media media= new Media();
+        Media media = new Media();
         when(mediaRepository.save(any(Media.class))).thenReturn(media);
         ObjectMapper mapper = new ObjectMapper();
         MediaDto mediaDto = mapper.convertValue(media, MediaDto.class);

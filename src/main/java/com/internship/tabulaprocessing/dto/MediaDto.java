@@ -16,7 +16,7 @@ public class MediaDto {
     @Size(min = 2, max = 40)
     private String name;
     @DecimalMin(value = "0.0", inclusive = false)
-    @Digits(integer=5, fraction=2)
+    @Digits(integer = 5, fraction = 2)
     private BigDecimal price;
 
 }
