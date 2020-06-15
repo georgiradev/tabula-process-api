@@ -12,6 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/media")
 public class MediaController {
+
     private MediaService mediaService;
 
     public MediaController(MediaService mediaService) {
@@ -19,8 +20,8 @@ public class MediaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Media>> getAll(@RequestParam int page) {
-        return mediaService.getAll(page);
+    public ResponseEntity<List<Media>> getAll(@RequestParam(defaultValue = "0") int page) {
+        return  mediaService.getAll(page);
     }
 
     @PostMapping
@@ -36,7 +37,7 @@ public class MediaController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable String id) {
+    public ResponseEntity<?> delete(@PathVariable String id)  {
 
         int num = Integer.parseInt(id);
         return mediaService.deleteById(num);

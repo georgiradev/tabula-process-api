@@ -13,8 +13,8 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "media")
-public class Media {
+@Table(name = "media_extra")
+public class MediaExtra {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,15 +22,11 @@ public class Media {
     private String name;
     private BigDecimal price;
 
-    @ManyToMany(cascade = {
+    @ManyToMany (mappedBy = "mediaExtras", cascade = {
             CascadeType.DETACH,
             CascadeType.MERGE,
             CascadeType.REFRESH,
             CascadeType.PERSIST
     })
-    @JoinTable(
-            name = "media_extra_media",
-            joinColumns = @JoinColumn(name = "media_id"),
-            inverseJoinColumns = @JoinColumn(name = "media_extra_id"))
-    private Set<MediaExtra> mediaExtras = new HashSet<>();
+    private Set<Media> medias = new HashSet<>();
 }
