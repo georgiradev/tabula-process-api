@@ -4,7 +4,7 @@ import com.internship.tabulaprocessing.dto.MediaExtraDto;
 import com.internship.tabulaprocessing.entity.MediaExtra;
 import com.internship.tabulaprocessing.mapper.Mapper;
 import com.internship.tabulaprocessing.repository.MediaExtraRepository;
-import com.internship.tabulaprocessing.repository.MediaRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -22,14 +22,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class MediaExtraService {
-    private MediaExtraRepository mediaExtraRepository;
-    @Autowired
-    private Mapper mapper;
-
-    public MediaExtraService(MediaExtraRepository mediaExtraRepository) {
-        this.mediaExtraRepository = mediaExtraRepository;
-    }
+    private final MediaExtraRepository mediaExtraRepository;
+    private final Mapper mapper;
 
     @Cacheable(value="MediaExtras")
     public ResponseEntity<List<MediaExtraDto>> getAll(int num){

@@ -13,6 +13,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @Getter
 @Setter
+@Table(name="processes", catalog = "tabula")
 public class Process {
 
     @Id

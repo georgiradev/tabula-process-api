@@ -13,7 +13,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "media")
+@Table(name = "media", catalog = "tabula")
 public class Media {
 
     @Id
