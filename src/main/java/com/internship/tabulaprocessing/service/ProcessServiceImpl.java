@@ -3,7 +3,7 @@ package com.internship.tabulaprocessing.service;
 import com.internship.tabulaprocessing.entity.Process;
 import com.internship.tabulaprocessing.exception.EntityAlreadyPresentException;
 import com.internship.tabulaprocessing.repository.ProcessRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,15 +14,15 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class ProcessServiceImpl {
 
-    @Autowired
-    private ProcessRepository processRepository;
+    private final ProcessRepository processRepository;
 
     public Process getOneById(int id) {
         Optional<Process> processOptional = processRepository.findById(id);
 
-        if (processOptional.isEmpty()) {
+        if (!processOptional.isPresent()) {
             throw new EntityNotFoundException("Invalid process id : " + id);
         }
 
@@ -32,7 +32,7 @@ public class ProcessServiceImpl {
     public Process create(Process process) {
         Optional<Process> processOptional = getByName(process.getName());
 
-        if (processOptional.isEmpty()) {
+        if (!processOptional.isPresent()) {
             return processRepository.save(process);
         }
         throw new EntityAlreadyPresentException("A process with this name already exists");
@@ -42,7 +42,7 @@ public class ProcessServiceImpl {
 
         Optional<Process> processOptional = processRepository.findById(id);
 
-        if (processOptional.isEmpty()) {
+        if (!processOptional.isPresent()) {
             throw new EntityNotFoundException("A process with this id does not exist");
         }
         String name = process.getName();
@@ -59,7 +59,7 @@ public class ProcessServiceImpl {
 
     public void delete(int id) {
         Optional<Process> processOptional = processRepository.findById(id);
-        if (processOptional.isEmpty()) {
+        if (!processOptional.isPresent()) {
             throw new EntityNotFoundException("A process with this id does not exist");
         }
 

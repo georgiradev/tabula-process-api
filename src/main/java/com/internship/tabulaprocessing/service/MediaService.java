@@ -6,7 +6,7 @@ import com.internship.tabulaprocessing.entity.MediaExtra;
 import com.internship.tabulaprocessing.mapper.Mapper;
 import com.internship.tabulaprocessing.repository.MediaExtraRepository;
 import com.internship.tabulaprocessing.repository.MediaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,17 +18,12 @@ import javax.persistence.EntityNotFoundException;
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class MediaService {
 
-    private MediaRepository mediaRepository;
-    private MediaExtraRepository mediaExtraRepository;
-    @Autowired
-    private Mapper mapper;
-
-    public MediaService(MediaRepository mediaRepository, MediaExtraRepository mediaExtraRepository) {
-        this.mediaRepository = mediaRepository;
-        this.mediaExtraRepository = mediaExtraRepository;
-    }
+    private final MediaRepository mediaRepository;
+    private final MediaExtraRepository mediaExtraRepository;
+    private final Mapper mapper;
 
     public ResponseEntity<List<Media>> getAll(int num){
         Pageable pageable = PageRequest.of(num, 10);

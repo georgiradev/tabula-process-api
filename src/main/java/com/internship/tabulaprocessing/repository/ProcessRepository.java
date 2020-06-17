@@ -8,7 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface ProcessRepository extends JpaRepository<Process, Integer> {
-
     Optional<Process> findByName(String name);
-
 }
