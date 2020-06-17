@@ -1,6 +1,6 @@
 package com.internship.tabulaprocessing.entity;
 
-import com.internship.tabulaprocessing.todelete.Account;
+import com.internship.tabulacore.entity.Account;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,7 +21,7 @@ public class Employee {
     private BigDecimal ratePerHour;
 
     @OneToOne
-    @JoinColumn(name = "account_id", referencedColumnName = "id")
+    @JoinColumn(name = "account_id", referencedColumnName = "account_id")
     private Account account;
 
     @ManyToOne

@@ -1,13 +1,13 @@
 package com.internship.tabulaprocessing.service;
 
+import com.internship.tabulacore.entity.Account;
+import com.internship.tabulacore.repository.AccountRepository;
 import com.internship.tabulaprocessing.dto.EmployeeDto;
 import com.internship.tabulaprocessing.entity.Department;
 import com.internship.tabulaprocessing.entity.Employee;
 import com.internship.tabulaprocessing.mapper.Mapper;
 import com.internship.tabulaprocessing.repository.DepartmentRepository;
 import com.internship.tabulaprocessing.repository.EmployeeRepository;
-import com.internship.tabulaprocessing.todelete.Account;
-import com.internship.tabulaprocessing.todelete.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -55,7 +55,7 @@ public class EmployeeService {
 
         EmployeeDto employeeDto = mapper.convertToEmployeeDTO(employee.get());
         employeeDto.setDepartmentDTO(mapper.coventToDepartmentDTO(employee.get().getDepartment()));
-        employeeDto.setAccountDTOView(mapper.convertToAccountDTOView(employee.get().getAccount()));
+        employeeDto.setAccountDto(mapper.convertToAccountDTOView(employee.get().getAccount()));
         employeeDto.setAccountId(String.valueOf(employee.get().getAccount().getId()));
         employeeDto.setDepartmentId(String.valueOf(employee.get().getDepartment().getId()));
         return  ResponseEntity.ok(employeeDto);
@@ -78,7 +78,7 @@ public class EmployeeService {
         employeeRepository.save(employee);
         employeeDto = mapper.convertToEmployeeDTO(employee);
         employeeDto.setDepartmentDTO(mapper.coventToDepartmentDTO(department.get()));
-        employeeDto.setAccountDTOView(mapper.convertToAccountDTOView(account.get()));
+        employeeDto.setAccountDto(mapper.convertToAccountDTOView(account.get()));
         employeeDto.setAccountId(String.valueOf(account.get().getId()));
         employeeDto.setDepartmentId(String.valueOf(department.get().getId()));
         return new ResponseEntity<>(employeeDto, HttpStatus.CREATED);

@@ -1,10 +1,8 @@
 package com.internship.tabulaprocessing.mapper;
 
+import com.internship.tabulacore.entity.Account;
 import com.internship.tabulaprocessing.dto.*;
-import com.internship.tabulaprocessing.entity.Department;
-import com.internship.tabulaprocessing.entity.Company;
-import com.internship.tabulaprocessing.entity.Media;
-import com.internship.tabulaprocessing.entity.MediaExtra;
+import com.internship.tabulaprocessing.entity.*;
 import com.internship.tabulaprocessing.entity.Process;
 import org.mapstruct.factory.Mappers;
 
@@ -40,5 +38,12 @@ public interface Mapper {
   MediaExtraDto convertToMediaExtraDTO(MediaExtra mediaExtra);
 
   MediaExtra convertToMediaExtraEntity(MediaExtraDto mediaExtraDto);
+
+  EmployeeDto convertToEmployeeDTO(Employee employee);
+
+  Employee convertToEmployeeEntity(EmployeeDto employeeDto);
+
+  AccountDto convertToAccountDTOView(Account account);
+
 
 }

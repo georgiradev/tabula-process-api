@@ -1,7 +1,9 @@
 package com.internship.tabulaprocessing.entity;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -13,6 +15,9 @@ public class Department {
     private int id;
 
     private String name;
+
+    @OneToMany( mappedBy = "department")
+    private List<Employee> employees = new ArrayList<Employee>();
 
     public int getId() {
         return id;

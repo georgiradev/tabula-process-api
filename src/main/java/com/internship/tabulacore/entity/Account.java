@@ -1,5 +1,6 @@
 package com.internship.tabulacore.entity;
 
+import com.internship.tabulaprocessing.entity.Employee;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -49,5 +50,8 @@ public class Account {
             joinColumns = @JoinColumn(name = "account_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
+
+    @OneToOne(mappedBy = "account")
+    private Employee employee;
 }
 

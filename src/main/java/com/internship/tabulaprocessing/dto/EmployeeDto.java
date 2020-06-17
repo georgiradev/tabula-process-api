@@ -1,6 +1,5 @@
 package com.internship.tabulaprocessing.dto;
 
-import com.internship.tabulaprocessing.todelete.AccountDTOView;
 import lombok.Data;
 
 import javax.validation.constraints.DecimalMin;
@@ -20,6 +19,6 @@ public class EmployeeDto {
     private String accountId;
     private String departmentId;
 
-    AccountDTOView accountDTOView;
+    AccountDto accountDto;
     DepartmentDTO departmentDTO;
 }
