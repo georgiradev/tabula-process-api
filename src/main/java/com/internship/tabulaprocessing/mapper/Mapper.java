@@ -5,6 +5,7 @@ import com.internship.tabulaprocessing.entity.Department;
 import com.internship.tabulaprocessing.entity.Company;
 import com.internship.tabulaprocessing.entity.Media;
 import com.internship.tabulaprocessing.entity.MediaExtra;
+import com.internship.tabulaprocessing.entity.Process;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
