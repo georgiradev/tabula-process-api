@@ -25,6 +25,12 @@ public interface Mapper {
   DepartmentDTO coventToDepartmentDTO(Department department);
 
   Department convertToDepartmentEntity(DepartmentDTO departmentDTO);
+  
+  ProcessResponseDto processToProcessGetDTO(Process process);
+  
+  Process processPostDTOtoProcess(ProcessRequestDto processPostDTO);
+  
+  Process processPutDTOtoProcess(ProcessRequestDto processRequestDto);
 
   MediaDto convertToMediaDTO(Media media);
 
