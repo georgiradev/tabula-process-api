@@ -43,7 +43,7 @@ public class EmployeeService {
             EmployeeDto employeeDto = mapper.convertToEmployeeDTO(employee);
             Optional<Account> account = accountRepository.findById(employee.getAccountId());
             employeeDto.setAccountDto(mapper.convertToAccountDto(account.get()));
-            employeeDto.setDepartmentDto(mapper.coventToDepartmentDTO(employee.getDepartment()));
+            employeeDto.setDepartmentDto(mapper.convertToDepartmentDTO(employee.getDepartment()));
             employeeDto.setDepartmentId(String.valueOf(employee.getDepartment().getId()));
             employeeDtoList.add(employeeDto);
         }
@@ -59,7 +59,7 @@ public class EmployeeService {
 
         Account account =accountRepository.findById(employee.get().getAccountId()).get();
         EmployeeDto employeeDto = mapper.convertToEmployeeDTO(employee.get());
-        employeeDto.setDepartmentDto(mapper.coventToDepartmentDTO(employee.get().getDepartment()));
+        employeeDto.setDepartmentDto(mapper.convertToDepartmentDTO(employee.get().getDepartment()));
         employeeDto.setAccountDto(mapper.convertToAccountDto(account));
         employeeDto.setDepartmentId(String.valueOf(employee.get().getDepartment().getId()));
         return  ResponseEntity.ok(employeeDto);
@@ -81,7 +81,7 @@ public class EmployeeService {
         employeeRepository.save(employee);
 
         employeeDto = mapper.convertToEmployeeDTO(employee);
-        employeeDto.setDepartmentDto(mapper.coventToDepartmentDTO(department.get()));
+        employeeDto.setDepartmentDto(mapper.convertToDepartmentDTO(department.get()));
         employeeDto.setDepartmentId(String.valueOf(department.get().getId()));
         employeeDto.setAccountDto(mapper.convertToAccountDto(account.get()));
         return new ResponseEntity<>(employeeDto, HttpStatus.CREATED);
@@ -123,7 +123,7 @@ public class EmployeeService {
 
         employeeDto = mapper.convertToEmployeeDTO(employee);
         employeeDto.setDepartmentId(String.valueOf(department.get().getId()));
-        employeeDto.setDepartmentDto(mapper.coventToDepartmentDTO(department.get()));
+        employeeDto.setDepartmentDto(mapper.convertToDepartmentDTO(department.get()));
         employeeDto.setAccountDto(mapper.convertToAccountDto(account.get()));
         return ResponseEntity.ok(employeeDto);
     }

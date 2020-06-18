@@ -3,6 +3,8 @@ package com.internship.tabulaprocessing.controller;
 
 import com.internship.tabulaprocessing.dto.EmployeeDto;
 import com.internship.tabulaprocessing.service.EmployeeService;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,8 +22,8 @@ public class EmployeeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<EmployeeDto>> getAll(@RequestParam(defaultValue = "0") int page) {
-        return employeeService.getAll(page);
+    public ResponseEntity<List<EmployeeDto>> getAll(@RequestParam int num) {
+        return employeeService.getAll(num);
     }
 
     @PostMapping
