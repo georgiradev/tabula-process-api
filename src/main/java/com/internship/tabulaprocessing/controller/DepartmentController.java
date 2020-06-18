@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,7 +27,7 @@ public class DepartmentController {
 
         return ResponseEntity.ok(
                 departmentService.findAll(queryParameter.getPageable()).stream()
-                        .map(department -> mapper.coventToDepartmentDTO(department))
+                        .map(department -> mapper.convertToDepartmentDTO(department))
                         .collect(Collectors.toList()));
     }
 
@@ -37,27 +38,27 @@ public class DepartmentController {
         Department departmentEntity = mapper.convertToDepartmentEntity(departmentDTO);
         departmentService.persist(departmentEntity);
 
-        return ResponseEntity.ok(mapper.coventToDepartmentDTO(departmentEntity));
+        return ResponseEntity.ok(mapper.convertToDepartmentDTO(departmentEntity));
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<DepartmentDTO> getSingleDepartment(@PathVariable int id) {
+    public ResponseEntity<DepartmentDTO> getSingleDepartment(@PathVariable @Min(1) int id) {
 
-        return ResponseEntity.ok(mapper.coventToDepartmentDTO(departmentService.findById(id)));
+        return ResponseEntity.ok(mapper.convertToDepartmentDTO(departmentService.findById(id)));
     }
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<DepartmentDTO> updateDepartment(
-            @PathVariable int id, @Valid @RequestBody DepartmentDTO departmentDTO) {
+            @PathVariable @Min(1) int id, @Valid @RequestBody DepartmentDTO departmentDTO) {
 
         Department updatedDepartment = mapper.convertToDepartmentEntity(departmentDTO);
         departmentService.update(updatedDepartment, id);
 
-        return ResponseEntity.ok(mapper.coventToDepartmentDTO(updatedDepartment));
+        return ResponseEntity.ok(mapper.convertToDepartmentDTO(updatedDepartment));
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<String> deleteDepartment(@PathVariable int id) {
+    public ResponseEntity<String> deleteDepartment(@PathVariable  @Min(1) int id) {
 
         departmentService.delete(id);
         return ResponseEntity.ok(String.format("Department with id of %s, sucessfully deleted!", id));
