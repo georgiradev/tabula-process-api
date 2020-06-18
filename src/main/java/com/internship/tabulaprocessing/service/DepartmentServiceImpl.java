@@ -1,6 +1,7 @@
 package com.internship.tabulaprocessing.service;
 
 import com.internship.tabulaprocessing.entity.Department;
+import com.internship.tabulaprocessing.exception.EntityAlreadyPresentException;
 import com.internship.tabulaprocessing.repository.DepartmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -37,7 +38,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
         Optional<Department> optional = departmentRepository.findByName(name);
         if (!optional.isPresent()) {
-            throw new RuntimeException(String.format("Department with name %s, not found!", name));
+            throw new EntityNotFoundException(String.format("Department with name %s, not found!", name));
         }
         return optional.get();
     }
@@ -48,7 +49,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         department.setId(0);
         Optional<Department> optional = departmentRepository.findByName(department.getName());
         if (optional.isPresent()) {
-            throw new RuntimeException(String.format("Departmant with name %s, already exists", department.getName()));
+            throw new EntityAlreadyPresentException(String.format("Departmant with name %s, already exists", department.getName()));
         }
         return departmentRepository.save(department);
     }
