@@ -33,4 +33,9 @@ public class Media {
             joinColumns = @JoinColumn(name = "media_id"),
             inverseJoinColumns = @JoinColumn(name = "media_extra_id"))
     private Set<MediaExtra> mediaExtras = new HashSet<>();
+
+    public void calculatePrice(){
+        for(MediaExtra mediaExtra: this.mediaExtras)
+            price=price.add(mediaExtra.getPrice());
+    }
 }

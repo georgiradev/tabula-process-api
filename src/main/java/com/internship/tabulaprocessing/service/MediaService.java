@@ -59,6 +59,7 @@ public class MediaService {
 
         Media media = mapper.convertToMediaEntity(mediaDto);
         media.setMediaExtras(mediaExtraSet);
+        media.calculatePrice();
         mediaRepository.save(media);
         mediaDto = mapper.convertToMediaDTO(media);
         mediaDto.setMediaExtraIds(ids);
@@ -98,6 +99,7 @@ public class MediaService {
         Media media = mapper.convertToMediaEntity(mediaDto);
         media.setId(id);
         media.setMediaExtras(mediaExtraSet);
+        media.calculatePrice();
         mediaRepository.save(media);
         mediaDto = mapper.convertToMediaDTO(media);
         mediaDto.setMediaExtraIds(ids);
