@@ -20,15 +20,9 @@ public interface Mapper {
 
   Company companyRequestDtoToCompany(CompanyRequestPatchDto companyRequestDto);
 
-  DepartmentDTO coventToDepartmentDTO(Department department);
+  DepartmentDTO convertToDepartmentDTO(Department department);
 
   Department convertToDepartmentEntity(DepartmentDTO departmentDTO);
-  
-  ProcessResponseDto processToProcessGetDTO(Process process);
-  
-  Process processPostDTOtoProcess(ProcessRequestDto processPostDTO);
-  
-  Process processPutDTOtoProcess(ProcessRequestDto processRequestDto);
 
   MediaDto convertToMediaDTO(Media media);
 
@@ -38,11 +32,15 @@ public interface Mapper {
 
   MediaExtra convertToMediaExtraEntity(MediaExtraDto mediaExtraDto);
 
-  EmployeeDto convertToEmployeeDTO(Employee employee);
+    ProcessStageResponseDTO convertToProcessStageDTO(ProcessStage processStage);
 
-  Employee convertToEmployeeEntity(EmployeeDto employeeDto);
+    ProcessStage convertToProcessStageEntity(ProcessStagePersistDTO processStagePersistDTO);
 
-  AccountDto convertToAccountDto(Account account);
+    ProcessStage convertToProcessStageEntity(ProcessStageResponseDTO processStageResponseDTO);
 
+    ProcessResponseDto processToProcessGetDTO(Process process);
 
+    Process processPostDTOtoProcess(ProcessRequestDto processRequestDto);
+
+    Process processPutDTOtoProcess(ProcessRequestDto processRequestDto);
 }
