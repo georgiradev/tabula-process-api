@@ -30,8 +30,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class MediaExtraServiceTest {
 
-    private Mapper mapper;
-
     @Mock
     private MediaExtraRepository mediaExtraRepository;
 

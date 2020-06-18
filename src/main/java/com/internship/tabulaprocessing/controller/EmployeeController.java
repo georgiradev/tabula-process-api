@@ -5,10 +5,12 @@ import com.internship.tabulaprocessing.dto.EmployeeDto;
 import com.internship.tabulaprocessing.service.EmployeeService;
 import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @RestController
@@ -22,7 +24,7 @@ public class EmployeeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<EmployeeDto>> getAll(@RequestParam int num) {
+    public ResponseEntity<List<EmployeeDto>> getAll(int num) {
         return employeeService.getAll(num);
     }
 

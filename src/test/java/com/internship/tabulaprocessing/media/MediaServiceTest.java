@@ -22,6 +22,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityNotFoundException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -38,6 +39,8 @@ class MediaServiceTest {
 
     @Mock
     private MediaRepository mediaRepository;
+    @Mock
+    private MediaExtraRepository mediaExtraRepository;
 
     @InjectMocks
     private MediaService mediaService;
@@ -55,6 +58,19 @@ class MediaServiceTest {
     void getOne() {
         when(mediaRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
         assertThrows(EntityNotFoundException.class, () -> mediaService.getOne(Mockito.anyInt()));
+    }
+
+    @Test
+    void create (){
+
+        MediaDto mediaDto = new MediaDto();
+        mediaDto.setId(1);
+        String[] extraIds=  new String[2];
+        extraIds[0]="3";
+        extraIds[1]="2";
+        mediaDto.setMediaExtraIds(extraIds);
+        when(mediaExtraRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> mediaService.create(mediaDto));
     }
 
     @Test

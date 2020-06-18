@@ -47,7 +47,6 @@ public class ProcessStageController {
     return ResponseEntity.ok(mapper.convertToProcessStageDTO(processStage));
   }
 
-
   @GetMapping
   public ResponseEntity<List<ProcessStageResponseDTO>> getAllProcessStages(
      @Valid QueryParameter queryParameter) {
@@ -73,6 +72,5 @@ public class ProcessStageController {
 
     return ResponseEntity.ok(String.format("ProcessStage with id %s,successfully deleted", id));
   }
-
 
 }

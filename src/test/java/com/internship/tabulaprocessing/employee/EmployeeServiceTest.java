@@ -51,7 +51,6 @@ class EmployeeServiceTest {
     void getAll() {
         List<Employee> employees = new ArrayList<>();
         Page<Employee> page = new PageImpl<>(employees);
-
         when(employeeRepository.findAll(any(Pageable.class))).thenReturn(page);
         assertEquals(employees, employeeService.getAll(anyInt()).getBody());
     }
