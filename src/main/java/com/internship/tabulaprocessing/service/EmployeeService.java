@@ -36,12 +36,18 @@ public class EmployeeService {
         this.departmentRepository = departmentRepository;
     }
 
+
     public ResponseEntity<List<EmployeeDto>> getAll(int num){
         Pageable pageable = PageRequest.of(num, 10);
         Page<Employee> page = employeeRepository.findAll(pageable);
+
         List<EmployeeDto> employeeDtoList = new ArrayList<>();
-        for(Employee employee:page.toList()){
-            employeeDtoList.add(mapper.convertToEmployeeDTO(employee));
+
+        for(Employee employee: page.toList()){
+            EmployeeDto employeeDto = mapper.convertToEmployeeDTO(employee);
+            Optional<Account> account = accountRepository.findById(employee.getAccountId());
+            employeeDto.setAccountDto(mapper.convertToAccountDto(account.get()));
+            employeeDtoList.add(employeeDto);
         }
         return new ResponseEntity<>(employeeDtoList, HttpStatus.OK);
     }
@@ -53,10 +59,10 @@ public class EmployeeService {
             throw new EntityNotFoundException("The employee was not found.");
         }
 
+        Account account =accountRepository.findById(employee.get().getAccountId()).get();
         EmployeeDto employeeDto = mapper.convertToEmployeeDTO(employee.get());
         employeeDto.setDepartmentDTO(mapper.coventToDepartmentDTO(employee.get().getDepartment()));
-        employeeDto.setAccountDto(mapper.convertToAccountDTOView(employee.get().getAccount()));
-        employeeDto.setAccountId(String.valueOf(employee.get().getAccount().getId()));
+        employeeDto.setAccountDto(mapper.convertToAccountDto(account));
         employeeDto.setDepartmentId(String.valueOf(employee.get().getDepartment().getId()));
         return  ResponseEntity.ok(employeeDto);
     }
@@ -68,19 +74,18 @@ public class EmployeeService {
             throw new EntityNotFoundException("Account was not found.");
         }
         Optional<Department> department = departmentRepository.findById(Integer.parseInt(employeeDto.getDepartmentId()));
-        if(!account.isPresent()){
+        if(!department.isPresent()){
             throw new EntityNotFoundException("Department was not found.");
         }
 
         Employee employee = mapper.convertToEmployeeEntity(employeeDto);
-        employee.setAccount(account.get());
         employee.setDepartment(department.get());
         employeeRepository.save(employee);
+
         employeeDto = mapper.convertToEmployeeDTO(employee);
         employeeDto.setDepartmentDTO(mapper.coventToDepartmentDTO(department.get()));
-        employeeDto.setAccountDto(mapper.convertToAccountDTOView(account.get()));
-        employeeDto.setAccountId(String.valueOf(account.get().getId()));
         employeeDto.setDepartmentId(String.valueOf(department.get().getId()));
+        employeeDto.setAccountDto(mapper.convertToAccountDto(account.get()));
         return new ResponseEntity<>(employeeDto, HttpStatus.CREATED);
     }
 
@@ -115,9 +120,13 @@ public class EmployeeService {
 
         Employee employee = mapper.convertToEmployeeEntity(employeeDto);
         employee.setDepartment(department.get());
-        employee.setAccount(account.get());
         employee.setId(id);
         employeeRepository.save(employee);
-        return ResponseEntity.ok(mapper.convertToEmployeeDTO(employee));
+
+        employeeDto = mapper.convertToEmployeeDTO(employee);
+        employeeDto.setDepartmentId(String.valueOf(department.get().getId()));
+        employeeDto.setDepartmentDTO(mapper.coventToDepartmentDTO(department.get()));
+        employeeDto.setAccountDto(mapper.convertToAccountDto(account.get()));
+        return ResponseEntity.ok(employeeDto);
     }
 }

@@ -1,8 +1,12 @@
 package com.internship.tabulaprocessing.employee;
 
 
+import com.internship.tabulacore.entity.Account;
+import com.internship.tabulacore.repository.AccountRepository;
 import com.internship.tabulaprocessing.dto.EmployeeDto;
+import com.internship.tabulaprocessing.entity.Department;
 import com.internship.tabulaprocessing.entity.Employee;
+import com.internship.tabulaprocessing.repository.DepartmentRepository;
 import com.internship.tabulaprocessing.repository.EmployeeRepository;
 import com.internship.tabulaprocessing.service.EmployeeService;
 import org.junit.jupiter.api.Test;
@@ -14,8 +18,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import javax.persistence.EntityNotFoundException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +39,10 @@ class EmployeeServiceTest {
 
     @Mock
     private EmployeeRepository employeeRepository;
+    @Mock
+    private AccountRepository accountRepository;
+    @Mock
+    private DepartmentRepository departmentRepository;
 
     @InjectMocks
     private EmployeeService employeeService;
@@ -43,6 +54,36 @@ class EmployeeServiceTest {
 
         when(employeeRepository.findAll(any(Pageable.class))).thenReturn(page);
         assertEquals(employees, employeeService.getAll(anyInt()).getBody());
+    }
+
+    @Test
+    void CreateIfAccountNotFound(){
+
+        EmployeeDto employeeDto = new EmployeeDto();
+        employeeDto.setId(7);
+        employeeDto.setRatePerHour(BigDecimal.valueOf(23.45));
+        employeeDto.setAccountId("2");
+        employeeDto.setDepartmentId("2");
+        when(accountRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> employeeService.create(employeeDto));
+
+    }
+
+    @Test
+    void CreateIfDepartmentNotFound(){
+
+        EmployeeDto employeeDto = new EmployeeDto();
+        employeeDto.setId(7);
+        employeeDto.setRatePerHour(BigDecimal.valueOf(23.45));
+        employeeDto.setAccountId("2");
+        employeeDto.setDepartmentId("2");
+
+        Account account = new Account();
+        when(accountRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(account));
+
+        when(departmentRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> employeeService.create(employeeDto));
+
     }
 
     @Test

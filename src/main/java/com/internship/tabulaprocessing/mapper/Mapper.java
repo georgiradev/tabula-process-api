@@ -43,7 +43,7 @@ public interface Mapper {
 
   Employee convertToEmployeeEntity(EmployeeDto employeeDto);
 
-  AccountDto convertToAccountDTOView(Account account);
+  AccountDto convertToAccountDto(Account account);
 
 
 }

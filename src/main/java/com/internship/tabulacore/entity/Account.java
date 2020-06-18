@@ -15,12 +15,10 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-
 @Data
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name="accounts", catalog = "tabulacore")
-@NoArgsConstructor
 public class Account {
 
     @Id
@@ -51,7 +49,5 @@ public class Account {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
-    @OneToOne(mappedBy = "account")
-    private Employee employee;
 }
 

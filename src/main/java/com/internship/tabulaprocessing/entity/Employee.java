@@ -1,6 +1,5 @@
 package com.internship.tabulaprocessing.entity;
 
-import com.internship.tabulacore.entity.Account;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,11 +18,10 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private BigDecimal ratePerHour;
-
-    @OneToOne
-    @JoinColumn(name = "account_id", referencedColumnName = "account_id")
-    private Account account;
+    @Column(name = "account_id")
+    private int accountId;
 
     @ManyToOne
     private Department department;
+
 }

@@ -17,7 +17,7 @@ public class Department {
     private String name;
 
     @OneToMany( mappedBy = "department")
-    private List<Employee> employees = new ArrayList<Employee>();
+    private List<Employee> employees;
 
     public int getId() {
         return id;
