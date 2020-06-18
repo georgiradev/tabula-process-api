@@ -26,7 +26,8 @@ public class EmployeeController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<EmployeeDto>> getAll(Pageable pageable) {
+    public ResponseEntity<Page<EmployeeDto>> getAll(@RequestParam("page") int page,
+                                                      @RequestParam("size") int size,Pageable pageable) {
         return employeeService.getAll(pageable);
     }
 
