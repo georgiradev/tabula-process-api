@@ -2,6 +2,7 @@ package com.internship.tabulaprocessing.service;
 
 import com.internship.tabulacore.entity.Account;
 import com.internship.tabulacore.repository.AccountRepository;
+import com.internship.tabulaprocessing.controller.PaginationUtil;
 import com.internship.tabulaprocessing.dto.EmployeeDto;
 import com.internship.tabulaprocessing.entity.Department;
 import com.internship.tabulaprocessing.entity.Employee;
@@ -9,7 +10,6 @@ import com.internship.tabulaprocessing.mapper.Mapper;
 import com.internship.tabulaprocessing.repository.DepartmentRepository;
 import com.internship.tabulaprocessing.repository.EmployeeRepository;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.*;
+import java.util.function.Function;
 
 @Service
 public class EmployeeService {
@@ -33,21 +34,25 @@ public class EmployeeService {
         this.mapper = mapper;
     }
 
-    public ResponseEntity<List<EmployeeDto>> getAll(int num){
-        Pageable pageable = PageRequest.of(num, 10);
+    public ResponseEntity<Page<EmployeeDto>> getAll(Pageable pageable){
+
         Page<Employee> page = employeeRepository.findAll(pageable);
 
-        List<EmployeeDto> employeeDtoList = new ArrayList<>();
+        Page<EmployeeDto> dtoPage = page.map(new Function<Employee, EmployeeDto>() {
+            @Override
+            public EmployeeDto apply(Employee entity) {
+                EmployeeDto employeeDto = mapper.convertToEmployeeDTO(entity);
+                Optional<Account> account = accountRepository.findById(entity.getAccountId());
+                employeeDto.setAccountDto(mapper.convertToAccountDto(account.get()));
+                employeeDto.setDepartmentDto(mapper.convertToDepartmentDTO(entity.getDepartment()));
+                employeeDto.setDepartmentId(String.valueOf(entity.getDepartment().getId()));
+                return employeeDto;
+            }
+        });
 
-        for(Employee employee: page.toList()){
-            EmployeeDto employeeDto = mapper.convertToEmployeeDTO(employee);
-            Optional<Account> account = accountRepository.findById(employee.getAccountId());
-            employeeDto.setAccountDto(mapper.convertToAccountDto(account.get()));
-            employeeDto.setDepartmentDto(mapper.convertToDepartmentDTO(employee.getDepartment()));
-            employeeDto.setDepartmentId(String.valueOf(employee.getDepartment().getId()));
-            employeeDtoList.add(employeeDto);
-        }
-        return new ResponseEntity<>(employeeDtoList, HttpStatus.OK);
+        return ResponseEntity.ok()
+                .headers(PaginationUtil.generatePaginationHttpHeaders(page,"http://localhost:8080/employees"))
+                .body(dtoPage);
     }
 
     public ResponseEntity<EmployeeDto> getOne(int id) {

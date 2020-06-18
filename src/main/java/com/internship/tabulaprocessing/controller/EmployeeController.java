@@ -4,6 +4,8 @@ package com.internship.tabulaprocessing.controller;
 import com.internship.tabulaprocessing.dto.EmployeeDto;
 import com.internship.tabulaprocessing.service.EmployeeService;
 import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
+import org.springframework.boot.context.properties.bind.DefaultValue;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +26,8 @@ public class EmployeeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<EmployeeDto>> getAll(int num) {
-        return employeeService.getAll(num);
+    public ResponseEntity<Page<EmployeeDto>> getAll(Pageable pageable) {
+        return employeeService.getAll(pageable);
     }
 
     @PostMapping
