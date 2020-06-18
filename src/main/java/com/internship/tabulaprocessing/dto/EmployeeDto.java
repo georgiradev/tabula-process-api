@@ -1,5 +1,6 @@
 package com.internship.tabulaprocessing.dto;
 
+import com.internship.tabulacore.dto.AccountDto;
 import lombok.Data;
 
 import javax.validation.constraints.DecimalMin;
@@ -20,5 +21,5 @@ public class EmployeeDto {
     private String departmentId;
 
     AccountDto accountDto;
-    DepartmentDTO departmentDTO;
+    DepartmentDTO departmentDto;
 }

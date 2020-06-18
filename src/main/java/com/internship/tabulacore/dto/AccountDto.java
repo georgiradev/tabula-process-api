@@ -1,4 +1,4 @@
-package com.internship.tabulaprocessing.dto;
+package com.internship.tabulacore.dto;
 
 import lombok.Data;
 

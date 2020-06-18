@@ -1,12 +1,11 @@
 package com.internship.tabulaprocessing.mapper;
 
+import com.internship.tabulacore.dto.AccountDto;
 import com.internship.tabulacore.entity.Account;
 import com.internship.tabulaprocessing.dto.*;
 import com.internship.tabulaprocessing.entity.*;
 import com.internship.tabulaprocessing.entity.Process;
 import org.mapstruct.factory.Mappers;
-
-import java.util.List;
 
 @org.mapstruct.Mapper(
     unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE,

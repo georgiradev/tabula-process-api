@@ -8,7 +8,6 @@ import com.internship.tabulaprocessing.entity.Employee;
 import com.internship.tabulaprocessing.mapper.Mapper;
 import com.internship.tabulaprocessing.repository.DepartmentRepository;
 import com.internship.tabulaprocessing.repository.EmployeeRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,17 +24,14 @@ public class EmployeeService {
     private EmployeeRepository employeeRepository;
     private AccountRepository accountRepository;
     private DepartmentRepository departmentRepository;
-    @Autowired
     private Mapper mapper;
 
-    public EmployeeService(EmployeeRepository employeeRepository, AccountRepository accountRepository,
-                           DepartmentRepository departmentRepository) {
-
+    public EmployeeService(EmployeeRepository employeeRepository, AccountRepository accountRepository, DepartmentRepository departmentRepository, Mapper mapper) {
         this.employeeRepository = employeeRepository;
         this.accountRepository = accountRepository;
         this.departmentRepository = departmentRepository;
+        this.mapper = mapper;
     }
-
 
     public ResponseEntity<List<EmployeeDto>> getAll(int num){
         Pageable pageable = PageRequest.of(num, 10);
@@ -47,6 +43,8 @@ public class EmployeeService {
             EmployeeDto employeeDto = mapper.convertToEmployeeDTO(employee);
             Optional<Account> account = accountRepository.findById(employee.getAccountId());
             employeeDto.setAccountDto(mapper.convertToAccountDto(account.get()));
+            employeeDto.setDepartmentDto(mapper.coventToDepartmentDTO(employee.getDepartment()));
+            employeeDto.setDepartmentId(String.valueOf(employee.getDepartment().getId()));
             employeeDtoList.add(employeeDto);
         }
         return new ResponseEntity<>(employeeDtoList, HttpStatus.OK);
@@ -61,7 +59,7 @@ public class EmployeeService {
 
         Account account =accountRepository.findById(employee.get().getAccountId()).get();
         EmployeeDto employeeDto = mapper.convertToEmployeeDTO(employee.get());
-        employeeDto.setDepartmentDTO(mapper.coventToDepartmentDTO(employee.get().getDepartment()));
+        employeeDto.setDepartmentDto(mapper.coventToDepartmentDTO(employee.get().getDepartment()));
         employeeDto.setAccountDto(mapper.convertToAccountDto(account));
         employeeDto.setDepartmentId(String.valueOf(employee.get().getDepartment().getId()));
         return  ResponseEntity.ok(employeeDto);
@@ -83,7 +81,7 @@ public class EmployeeService {
         employeeRepository.save(employee);
 
         employeeDto = mapper.convertToEmployeeDTO(employee);
-        employeeDto.setDepartmentDTO(mapper.coventToDepartmentDTO(department.get()));
+        employeeDto.setDepartmentDto(mapper.coventToDepartmentDTO(department.get()));
         employeeDto.setDepartmentId(String.valueOf(department.get().getId()));
         employeeDto.setAccountDto(mapper.convertToAccountDto(account.get()));
         return new ResponseEntity<>(employeeDto, HttpStatus.CREATED);
@@ -125,7 +123,7 @@ public class EmployeeService {
 
         employeeDto = mapper.convertToEmployeeDTO(employee);
         employeeDto.setDepartmentId(String.valueOf(department.get().getId()));
-        employeeDto.setDepartmentDTO(mapper.coventToDepartmentDTO(department.get()));
+        employeeDto.setDepartmentDto(mapper.coventToDepartmentDTO(department.get()));
         employeeDto.setAccountDto(mapper.convertToAccountDto(account.get()));
         return ResponseEntity.ok(employeeDto);
     }
