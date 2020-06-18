@@ -1,8 +1,8 @@
 package com.internship.tabulaprocessing.media.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.internship.tabulaprocessing.dto.MediaDto;
 import com.internship.tabulaprocessing.entity.Media;
+import com.internship.tabulaprocessing.repository.MediaExtraRepository;
 import com.internship.tabulaprocessing.repository.MediaRepository;
 import com.internship.tabulaprocessing.service.MediaService;
 import org.junit.jupiter.api.Test;
@@ -20,7 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
@@ -31,6 +32,8 @@ class MediaServiceTest {
 
     @Mock
     private MediaRepository mediaRepository;
+    @Mock
+    private MediaExtraRepository mediaExtraRepository;
 
     @InjectMocks
     private MediaService mediaService;
@@ -43,20 +46,24 @@ class MediaServiceTest {
         when(mediaRepository.findAll(any(Pageable.class))).thenReturn(page);
         assertEquals(media, mediaService.getAll(anyInt()).getBody());
     }
+    
+    @Test
+    void create (){
+
+        MediaDto mediaDto = new MediaDto();
+        mediaDto.setId(1);
+        String[] extraIds=  new String[2];
+        extraIds[0]="3";
+        extraIds[1]="2";
+        mediaDto.setMediaExtraIds(extraIds);
+        when(mediaExtraRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> mediaService.create(mediaDto));
+    }
 
     @Test
     void getOne() {
         when(mediaRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
         assertThrows(EntityNotFoundException.class, () -> mediaService.getOne(Mockito.anyInt()));
-    }
-
-    @Test
-    void create() {
-        Media media = new Media();
-        when(mediaRepository.save(any(Media.class))).thenReturn(media);
-        ObjectMapper mapper = new ObjectMapper();
-        MediaDto mediaDto = mapper.convertValue(media, MediaDto.class);
-        assertEquals(mediaDto, mediaService.create(mediaDto).getBody());
     }
 
     @Test
