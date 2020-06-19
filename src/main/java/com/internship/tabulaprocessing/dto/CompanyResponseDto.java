@@ -11,7 +11,7 @@ public class CompanyResponseDto {
 
     private String name;
 
-    private String discountRate;
+    private double discountRate;
 
     private String address;
 
