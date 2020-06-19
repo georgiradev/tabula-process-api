@@ -1,10 +1,11 @@
 package com.internship.tabulaprocessing.repository;
 
-import com.internship.tabulaprocessing.entity.Media;
+import com.internship.tabulaprocessing.entity.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface MediaRepository extends JpaRepository<Media, Integer> {
+public interface OrderRepository extends JpaRepository<Order, Integer> {
+
 
 }

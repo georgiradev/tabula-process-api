@@ -3,29 +3,26 @@ package com.internship.tabulaprocessing.dto;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import javax.validation.constraints.*;
 
 @Getter
 @Setter
 public class CompanyRequestDto {
 
-    @NotBlank(message = "Name is required")
+    @NotBlank
     private String name;
 
-    @Pattern(
-            regexp = "^(?:\\d{0,5}\\.\\d{1,2})$|^\\d{0,5}$",
-            message = "Not a valid discount rate. Max rate must be below or equal to 99999.99")
-    private String discountRate;
+    @DecimalMin(value = "0.0", inclusive = false)
+    @Digits(integer = 5, fraction = 2)
+    private double discountRate;
 
-    @NotBlank(message = "Address is required")
+    @NotBlank
     private String address;
 
-    @NotBlank(message = "Country is required")
+    @NotBlank
     private String country;
 
-    @NotBlank(message = "City is required")
+    @NotBlank
     private String city;
 
     @Pattern(
