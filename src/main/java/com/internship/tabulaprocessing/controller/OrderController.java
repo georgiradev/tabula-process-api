@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.NotSupportedException;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +51,7 @@ public class OrderController {
     }
 
     @PostMapping
-    public HttpEntity create(@RequestBody @Valid OrderRequestDto orderRequestDto) {
+    public HttpEntity create(@RequestBody @Valid OrderRequestDto orderRequestDto) throws NotSupportedException {
 
         Order order = mapper.orderRequestDtoToOrder(orderRequestDto);
         Order createdOrder = orderService.create(order, order.getCustomer().getId());

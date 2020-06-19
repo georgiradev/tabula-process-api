@@ -17,6 +17,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityNotFoundException;
+import javax.transaction.NotSupportedException;
 import java.util.List;
 import java.util.Optional;
 
@@ -61,7 +62,7 @@ class OrderServiceTest {
     }
 
     @Test
-    void testCreateOrder() {
+    void testCreateOrder() throws NotSupportedException {
         Order order = OrderProvider.getOrderInstance();
         Customer customer = order.getCustomer();
 
