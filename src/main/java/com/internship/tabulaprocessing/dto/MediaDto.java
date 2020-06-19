@@ -7,6 +7,7 @@ import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 public class MediaDto {
@@ -19,5 +20,5 @@ public class MediaDto {
     @Digits(integer=5, fraction=2)
     private BigDecimal price;
     //Media Extra IDs
-    private String[] mediaExtraIds;
+    private List<String> mediaExtraIds;
 }

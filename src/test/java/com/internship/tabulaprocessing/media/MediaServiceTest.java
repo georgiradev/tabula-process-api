@@ -65,9 +65,8 @@ class MediaServiceTest {
 
         MediaDto mediaDto = new MediaDto();
         mediaDto.setId(1);
-        String[] extraIds=  new String[2];
-        extraIds[0]="3";
-        extraIds[1]="2";
+        List<String> extraIds=  new ArrayList<>();
+        extraIds.add("2");
         mediaDto.setMediaExtraIds(extraIds);
         when(mediaExtraRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
         assertThrows(EntityNotFoundException.class, () -> mediaService.create(mediaDto));

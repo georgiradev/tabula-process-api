@@ -1,5 +1,6 @@
 package com.internship.tabulaprocessing.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,6 +23,7 @@ public class MediaExtra {
     private String name;
     private BigDecimal price;
 
+    @JsonIgnoreProperties("mediaExtras")
     @ManyToMany (mappedBy = "mediaExtras", cascade = {
             CascadeType.DETACH,
             CascadeType.MERGE,

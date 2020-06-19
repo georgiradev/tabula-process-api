@@ -43,12 +43,17 @@ public class MediaService {
         }
 
         MediaDto mediaDto = mapper.convertToMediaDTO(media.get());
+        List<String> extras = new ArrayList<>();
+        for (MediaExtra mediaExtra : media.get().getMediaExtras()){
+            extras.add(String.valueOf(mediaExtra.getId()));
+        }
+        mediaDto.setMediaExtraIds(extras);
         return  ResponseEntity.ok(mediaDto);
     }
 
     public ResponseEntity<MediaDto> create(MediaDto mediaDto) {
         Set<MediaExtra> mediaExtraSet = new HashSet<>();
-        String[] ids = mediaDto.getMediaExtraIds();
+        List<String> ids = mediaDto.getMediaExtraIds();
         for(String mediaExtraId: mediaDto.getMediaExtraIds()){
             Optional<MediaExtra> mediaExtra = mediaExtraRepository.findById(Integer.parseInt(mediaExtraId));
             if(!mediaExtra.isPresent()){
@@ -84,7 +89,7 @@ public class MediaService {
         if(!optional.isPresent()){
             throw new EntityNotFoundException(String.format("Media with id of %s was not found!", id));
         }
-        String[] ids = mediaDto.getMediaExtraIds();
+        List<String> ids = mediaDto.getMediaExtraIds();
         //Find the MediaExtras
         Set<MediaExtra> mediaExtraSet = new HashSet<>();
 
