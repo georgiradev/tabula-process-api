@@ -55,7 +55,7 @@ public class ApiExceptionHandler {
   @ExceptionHandler(NotSupportedException.class)
   public ResponseEntity<ApiExceptionResponse> handleException(NotSupportedException ex) {
     ApiExceptionResponse exception =
-            new ApiExceptionResponse(ex.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
+            new ApiExceptionResponse(ex.getMessage(), HttpStatus.NOT_IMPLEMENTED, LocalDateTime.now());
     return new ResponseEntity<>(exception, HttpStatus.NOT_IMPLEMENTED);
   }
 }

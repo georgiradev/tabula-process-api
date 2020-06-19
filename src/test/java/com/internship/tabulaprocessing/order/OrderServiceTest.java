@@ -1,8 +1,6 @@
 package com.internship.tabulaprocessing.order;
 
-import com.internship.tabulaprocessing.entity.Customer;
 import com.internship.tabulaprocessing.entity.Order;
-import com.internship.tabulaprocessing.exception.EntityAlreadyPresentException;
 import com.internship.tabulaprocessing.provider.OrderProvider;
 import com.internship.tabulaprocessing.repository.OrderRepository;
 import com.internship.tabulaprocessing.service.OrderService;
@@ -17,7 +15,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityNotFoundException;
-import javax.transaction.NotSupportedException;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,11 +32,6 @@ class OrderServiceTest {
 
     @InjectMocks
     private OrderService orderService;
-
-    /*
-        @Mock
-    private CustomerService customerService;
-     */
 
     @Test
     public void testGetById() {
@@ -59,26 +51,6 @@ class OrderServiceTest {
         when(orderRepository.findById(order.getId())).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> orderService.getOneById(order.getId()));
-    }
-
-    @Test
-    void testCreateOrder() throws NotSupportedException {
-        Order order = OrderProvider.getOrderInstance();
-        Customer customer = order.getCustomer();
-
-        // doReturn(Optional.of(customer)).when(customerService).get(order.getCustomer().getId());
-        when(orderRepository.save(any(Order.class))).thenReturn(order);
-
-        assertEquals(order, orderService.create(order, order.getCustomer().getId()));
-    }
-
-    @Test
-    void testCreateOrderShouldFail() {
-        Order order = OrderProvider.getOrderInstance();
-
-        // doReturn(Optional.empty()).when(customerService).get(order.getCustomer().getId());
-
-        assertThrows(EntityAlreadyPresentException.class, () -> orderService.create(order, 1));
     }
 
     @Test
@@ -102,7 +74,6 @@ class OrderServiceTest {
         Order order = OrderProvider.getOrderInstance();
 
         when(orderRepository.findById(order.getId())).thenReturn(Optional.of(order));
-        // doReturn(Optional.of(customer)).when(customerService).get(order.getCustomer().getId());
         given(orderRepository.save(order)).willReturn(order);
         Optional<Order> updatedOrder = Optional.ofNullable(orderService.update(order, 1));
 
@@ -117,16 +88,6 @@ class OrderServiceTest {
         when(orderRepository.findById(order.getId())).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> orderService.update(order, 1));
-    }
-
-    @Test
-    void testUpdateOrderShouldFailBecauseOfNonExistingCustomerId() {
-        Order order = OrderProvider.getOrderInstance();
-
-        when(orderRepository.findById(order.getId())).thenReturn(Optional.of(order));
-        // doReturn(Optional.empty())).when(customerService).get(order.getCustomer().getId());
-
-        assertThrows(EntityAlreadyPresentException.class, () -> orderService.update(order, 1));
     }
 
 
