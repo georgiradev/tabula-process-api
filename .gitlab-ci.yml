@@ -1,0 +1,48 @@
+stages:
+  - test
+  - verify
+  - deploy
+
+test_packaging:
+  stage: test
+  tags:
+    - tabula_process
+  only:
+    - merge_requests
+  script:
+    - cp /opt/tabula/process/development/application.properties ./src/main/resources
+    - cp /opt/tabula/process/data.sql ./src/main/resources
+    - chmod +x ./mvnw
+    - ./mvnw clean package
+    
+verifying_development:
+  stage: verify
+  tags:
+    - tabula_process
+  only:
+    refs:
+      - develop
+  script:
+    - sudo systemctl stop tabula-process.service
+    - cp /opt/tabula/process/development/application.properties ./src/main/resources
+    - cp /opt/tabula/process/data.sql ./src/main/resources
+    - chmod +x ./mvnw
+    - ./mvnw clean package
+    - sudo cp ./target/tabula-processing-0.0.1-SNAPSHOT.jar /opt/tabula/process/development/
+    - sudo systemctl start tabula-process.service
+
+deploying_stable_version:
+  stage: deploy
+  tags:
+    - tabula_process
+  only:
+    refs:
+      - stable
+  script:
+    - sudo systemctl stop tabula-process-stable.service
+    - cp /opt/tabula/process/stable/application.properties ./src/main/resources/
+    - cp /opt/tabula/process/data.sql ./src/main/resources/
+    - chmod +x mvnw
+    - ./mvnw -Dmaven.test.skip=true clean package
+    - sudo cp ./target/tabula-processing-0.0.1-SNAPSHOT.jar /opt/tabula/process/stable/
+    - sudo systemctl start tabula-process-stable.service
