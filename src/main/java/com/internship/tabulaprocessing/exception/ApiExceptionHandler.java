@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import javax.persistence.EntityNotFoundException;
+import javax.transaction.NotSupportedException;
 import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
 
@@ -49,5 +50,12 @@ public class ApiExceptionHandler {
     ApiExceptionResponse exception =
         new ApiExceptionResponse(ex.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
     return new ResponseEntity<>(exception, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(NotSupportedException.class)
+  public ResponseEntity<ApiExceptionResponse> handleException(NotSupportedException ex) {
+    ApiExceptionResponse exception =
+            new ApiExceptionResponse(ex.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
+    return new ResponseEntity<>(exception, HttpStatus.NOT_IMPLEMENTED);
   }
 }
