@@ -7,7 +7,7 @@ import com.internship.tabulaprocessing.exception.EntityAlreadyPresentException;
 import com.internship.tabulaprocessing.repository.DepartmentRepository;
 import com.internship.tabulaprocessing.repository.ProcessRepository;
 import com.internship.tabulaprocessing.repository.ProcessStageRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -17,21 +17,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ProcessStageServiceImpl implements ProcessStageService {
 
-  private ProcessStageRepository repository;
-  private DepartmentRepository departmentRepository;
-  private ProcessRepository processRepository;
-
-  @Autowired
-  public ProcessStageServiceImpl(
-      ProcessStageRepository repository,
-      DepartmentRepository departmentRepository,
-      ProcessRepository processRepository) {
-    this.repository = repository;
-    this.departmentRepository = departmentRepository;
-    this.processRepository = processRepository;
-  }
+  private final ProcessStageRepository repository;
+  private final DepartmentRepository departmentRepository;
+  private final ProcessRepository processRepository;
 
   @Override
   public ProcessStage persist(ProcessStage processStage) {

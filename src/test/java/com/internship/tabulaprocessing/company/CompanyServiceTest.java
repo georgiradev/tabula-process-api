@@ -1,8 +1,7 @@
 package com.internship.tabulaprocessing.company;
 
 import com.internship.tabulaprocessing.entity.Company;
-import com.internship.tabulaprocessing.exception.CompanyConflictException;
-import com.internship.tabulaprocessing.exception.CompanyNotFoundException;
+import com.internship.tabulaprocessing.exception.EntityAlreadyPresentException;
 import com.internship.tabulaprocessing.provider.CompanyProvider;
 import com.internship.tabulaprocessing.repository.CompanyRepository;
 import com.internship.tabulaprocessing.service.CompanyService;
@@ -15,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -27,107 +27,105 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class CompanyServiceTest {
 
-    @InjectMocks
-    private CompanyService companyService;
+  @InjectMocks private CompanyService companyService;
 
-    @Mock
-    private CompanyRepository companyRepository;
+  @Mock private CompanyRepository companyRepository;
 
-    @Test
-    void testCompanySave() {
-        Company company = CompanyProvider.getCompanyInstance();
+  @Test
+  void testCompanySave() {
+    Company company = CompanyProvider.getCompanyInstance();
 
-        when(companyRepository.findByNameAndAddress(any(String.class), any(String.class)))
-                .thenReturn(Optional.empty());
-        when(companyRepository.save(any(Company.class))).thenReturn(company);
+    when(companyRepository.findByNameAndAddress(any(String.class), any(String.class)))
+        .thenReturn(Optional.empty());
+    when(companyRepository.save(any(Company.class))).thenReturn(company);
 
-        assertEquals(Optional.of(company), companyService.save(company));
-    }
+    assertEquals(Optional.of(company), companyService.save(company));
+  }
 
-    @Test
-    void testCompanyDuplicateSaveMustFail() {
-        Company company = CompanyProvider.getCompanyInstance();
+  @Test
+  void testCompanyDuplicateSaveMustFail() {
+    Company company = CompanyProvider.getCompanyInstance();
 
-        when(companyRepository.findByNameAndAddress(any(String.class), any(String.class)))
-                .thenReturn(Optional.of(company));
+    when(companyRepository.findByNameAndAddress(any(String.class), any(String.class)))
+        .thenReturn(Optional.of(company));
 
-        assertThrows(CompanyConflictException.class, () -> companyService.save(company));
-    }
+    assertThrows(EntityAlreadyPresentException.class, () -> companyService.save(company));
+  }
 
-    @Test
-    void testFindCompany() {
-        Company company = CompanyProvider.getCompanyInstance();
+  @Test
+  void testFindCompany() {
+    Company company = CompanyProvider.getCompanyInstance();
 
-        when(companyRepository.findById(company.getId())).thenReturn(Optional.of(company));
+    when(companyRepository.findById(company.getId())).thenReturn(Optional.of(company));
 
-        assertEquals(Optional.of(company), companyService.find(company.getId()));
-    }
+    assertEquals(Optional.of(company), companyService.find(company.getId()));
+  }
 
-    @Test
-    void testFindCompanyThatNotExistShouldFail() {
-        Company company = CompanyProvider.getCompanyInstance();
+  @Test
+  void testFindCompanyThatNotExistShouldFail() {
+    Company company = CompanyProvider.getCompanyInstance();
 
-        when(companyRepository.findById(company.getId())).thenReturn(Optional.empty());
+    when(companyRepository.findById(company.getId())).thenReturn(Optional.empty());
 
-        assertThrows(CompanyNotFoundException.class, () -> companyService.find(company.getId()));
-    }
+    assertThrows(EntityNotFoundException.class,() -> companyService.find(company.getId()));
+  }
 
-    @Test
-    void deleteCompany() {
-        Company company = CompanyProvider.getCompanyInstance();
+  @Test
+  void deleteCompany() {
+    Company company = CompanyProvider.getCompanyInstance();
 
-        when(companyRepository.findById(company.getId())).thenReturn(Optional.of(company));
-        companyService.delete(company.getId());
-        when(companyRepository.findById(company.getId())).thenReturn(Optional.empty());
+    when(companyRepository.findById(company.getId())).thenReturn(Optional.of(company));
+    companyService.delete(company.getId());
+    when(companyRepository.findById(company.getId())).thenReturn(Optional.empty());
 
-        assertThrows(CompanyNotFoundException.class, () -> companyService.delete(company.getId()));
-    }
+    assertThrows(EntityNotFoundException.class, () -> companyService.delete(company.getId()));
+  }
 
-    @Test
-    void deleteCompanyByNonExistingIdShouldFail() {
-        Company company = CompanyProvider.getCompanyInstance();
+  @Test
+  void deleteCompanyByNonExistingIdShouldFail() {
+    Company company = CompanyProvider.getCompanyInstance();
 
-        when(companyRepository.findById(company.getId())).thenReturn(Optional.empty());
+    when(companyRepository.findById(company.getId())).thenReturn(Optional.empty());
 
-        assertThrows(CompanyNotFoundException.class, () -> companyService.delete(company.getId()));
-    }
+    assertThrows(EntityNotFoundException.class, () -> companyService.delete(company.getId()));
+  }
 
-    @Test
-    void testFindAllCompanies() {
-        List<Company> companies = CompanyProvider.getCompaniesInstance();
-        Page<Company> paging = new PageImpl<>(companies);
+  @Test
+  void testFindAllCompanies() {
+    List<Company> companies = CompanyProvider.getCompaniesInstance();
+    Page<Company> paging = new PageImpl<>(companies);
 
-        when(companyRepository.findAll(any(Pageable.class))).thenReturn(paging);
+    when(companyRepository.findAll(any(Pageable.class))).thenReturn(paging);
 
-        assertEquals(companies, companyService.findAll(1));
-    }
+    assertEquals(companies, companyService.findAll(1));
+  }
 
-    @Test
-    void testFindAllCompaniesButNoContentFound() {
-        List<Company> companies = Collections.emptyList();
-        Page<Company> paging = new PageImpl<>(companies);
+  @Test
+  void testFindAllCompaniesButNoContentFound() {
+    List<Company> companies = Collections.emptyList();
+    Page<Company> paging = new PageImpl<>(companies);
 
-        when(companyRepository.findAll(any(Pageable.class))).thenReturn(paging);
+    when(companyRepository.findAll(any(Pageable.class))).thenReturn(paging);
 
-        assertEquals(companies, companyService.findAll(1));
-    }
+    assertEquals(companies, companyService.findAll(1));
+  }
 
-    @Test
-    void testUpdateCompany() {
-        Company company = CompanyProvider.getCompanyInstance();
+  @Test
+  void testUpdateCompany() {
+    Company company = CompanyProvider.getCompanyInstance();
 
-        when(companyRepository.findById(company.getId())).thenReturn(Optional.of(company));
-        when(companyRepository.saveAndFlush(any(Company.class))).thenReturn(company);
+    when(companyRepository.findById(company.getId())).thenReturn(Optional.of(company));
+    when(companyRepository.saveAndFlush(any(Company.class))).thenReturn(company);
 
-        assertEquals(Optional.of(company), companyService.update(1, company));
-    }
+    assertEquals(Optional.of(company), companyService.update(1, company));
+  }
 
-    @Test
-    void testUpdateCompanyByNonExistingIdShouldFail() {
-        Company company = CompanyProvider.getCompanyInstance();
+  @Test
+  void testUpdateCompanyByNonExistingIdShouldFail() {
+    Company company = CompanyProvider.getCompanyInstance();
 
-        when(companyRepository.findById(company.getId())).thenReturn(Optional.empty());
+    when(companyRepository.findById(company.getId())).thenReturn(Optional.empty());
 
-        assertThrows(CompanyNotFoundException.class, () -> companyService.update(company.getId(), company));
-    }
+    assertThrows(EntityNotFoundException.class, () -> companyService.update(company.getId(), company));
+  }
 }

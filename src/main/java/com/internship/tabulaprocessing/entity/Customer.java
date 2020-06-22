@@ -1,14 +1,11 @@
 package com.internship.tabulaprocessing.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -16,18 +13,23 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-public class Process {
+public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     protected int id;
 
-    @NotNull
-    private String name;
+    private int accountId;
 
-    @OneToMany(mappedBy = "processEntity",fetch = FetchType.EAGER,cascade = {CascadeType.REMOVE})
-    private List<ProcessStage> processStageList = new ArrayList<>();
+    private int companyId;
 
+    private String phoneNumber;
+
+    @OneToMany(mappedBy = "customer",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<Order> orders;
 
 }
+

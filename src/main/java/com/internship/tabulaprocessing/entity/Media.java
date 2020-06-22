@@ -8,13 +8,14 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "media", catalog = "tabula")
+@Table(name = "media")
 public class Media {
 
     @Id
@@ -36,8 +37,13 @@ public class Media {
             inverseJoinColumns = @JoinColumn(name = "media_extra_id"))
     private Set<MediaExtra> mediaExtras = new HashSet<>();
 
+<<<<<<< HEAD
     public void calculatePrice(){
         for(MediaExtra mediaExtra: this.mediaExtras)
             price=price.add(mediaExtra.getPrice());
     }
+=======
+    @OneToMany(mappedBy = "media", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItem> orderItems;
+>>>>>>> develop
 }

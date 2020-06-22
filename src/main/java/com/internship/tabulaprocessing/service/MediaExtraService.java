@@ -7,7 +7,6 @@ import com.internship.tabulaprocessing.entity.PagedResult;
 import com.internship.tabulaprocessing.mapper.Mapper;
 import com.internship.tabulaprocessing.repository.MediaExtraRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -27,7 +26,9 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class MediaExtraService {
+
     private final MediaExtraRepository mediaExtraRepository;
+
     private final Mapper mapper;
 
     public PagedResult<MediaExtraDto> getAll(QueryParameter queryParameter){
