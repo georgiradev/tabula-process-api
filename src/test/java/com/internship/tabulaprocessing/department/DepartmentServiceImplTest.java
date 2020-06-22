@@ -1,4 +1,4 @@
-package com.internship.tabulaprocessing.database.service;
+package com.internship.tabulaprocessing.department;
 
 import com.internship.tabulaprocessing.controller.QueryParameter;
 import com.internship.tabulaprocessing.entity.Department;

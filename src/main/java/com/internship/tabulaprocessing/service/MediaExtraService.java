@@ -1,13 +1,17 @@
 package com.internship.tabulaprocessing.service;
 
+import com.internship.tabulaprocessing.controller.QueryParameter;
+import com.internship.tabulaprocessing.dto.EmployeeResponseDto;
 import com.internship.tabulaprocessing.dto.MediaExtraDto;
 import com.internship.tabulaprocessing.entity.MediaExtra;
+import com.internship.tabulaprocessing.entity.PagedResult;
 import com.internship.tabulaprocessing.mapper.Mapper;
 import com.internship.tabulaprocessing.repository.MediaExtraRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -28,18 +33,18 @@ public class MediaExtraService {
 
     private final Mapper mapper;
 
-    @Cacheable(value="MediaExtras")
-    public ResponseEntity<List<MediaExtraDto>> getAll(int num){
-        Pageable pageable = PageRequest.of(num, 10);
-        Page<MediaExtra> page = mediaExtraRepository.findAll(pageable);
-        List<MediaExtraDto> mediaExtraDtoList = new ArrayList<>();
-        for(MediaExtra mediaExtra:page.toList()){
-            mediaExtraDtoList.add(mapper.convertToMediaExtraDTO(mediaExtra));
-        }
-        return new ResponseEntity<>(mediaExtraDtoList, HttpStatus.OK);
+    public PagedResult<MediaExtraDto> getAll(QueryParameter queryParameter){
+
+        Page<MediaExtra> page = mediaExtraRepository.findAll(queryParameter.getPageable());
+        Page<MediaExtraDto> dtoPage = page.map(entity -> {
+              return mapper.convertToMediaExtraDTO(entity);
+        });
+        return new PagedResult<MediaExtraDto>(
+                dtoPage.toList(),
+                page.getNumber(),
+                page.getTotalPages());
     }
 
-    @Cacheable(value="MediaExtras",key="#id")
     public ResponseEntity<MediaExtraDto> getOne(int id) {
         Optional<MediaExtra> mediaExtra = mediaExtraRepository.findById(id);
 
@@ -58,20 +63,17 @@ public class MediaExtraService {
         return new ResponseEntity<>(mediaExtraDto, HttpStatus.CREATED);
     }
 
-    @CacheEvict(value="MediaExtras",key="#id")
     public ResponseEntity<?> deleteById(int id) {
-
-        Optional<MediaExtra> optional = mediaExtraRepository.findById(id);
-
-        if(!optional.isPresent()){
+        try {
+            mediaExtraRepository.deleteById(id);
+        }catch (EmptyResultDataAccessException e){
             throw new EntityNotFoundException(String.format("Media Extra with id of %s was not found!", id));
         }
 
-        mediaExtraRepository.deleteById(id);
         return ResponseEntity.ok(String.format("Media Extra with id of %s was deleted successfully!", id));
     }
 
-    @CachePut(value="MediaExtras",key="#id")
+
     public ResponseEntity<MediaExtraDto> update(int id, MediaExtraDto mediaExtraDto)  {
         Optional<MediaExtra> optional = mediaExtraRepository.findById(id);
 

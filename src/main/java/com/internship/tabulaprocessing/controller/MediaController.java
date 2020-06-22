@@ -2,6 +2,7 @@ package com.internship.tabulaprocessing.controller;
 
 import com.internship.tabulaprocessing.dto.MediaDto;
 import com.internship.tabulaprocessing.entity.Media;
+import com.internship.tabulaprocessing.entity.PagedResult;
 import com.internship.tabulaprocessing.service.MediaService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,8 +21,8 @@ public class MediaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Media>> getAll(@RequestParam(defaultValue = "0") int page) {
-        return  mediaService.getAll(page);
+    public PagedResult<MediaDto> getAll(QueryParameter queryParameter) {
+        return  mediaService.getAll(queryParameter);
     }
 
     @PostMapping

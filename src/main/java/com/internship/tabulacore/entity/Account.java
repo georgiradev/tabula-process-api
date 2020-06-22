@@ -1,5 +1,6 @@
 package com.internship.tabulacore.entity;
 
+import com.internship.tabulaprocessing.entity.Employee;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -14,12 +15,10 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-
 @Data
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name="accounts", catalog = "tabulacore")
-@NoArgsConstructor
 public class Account {
 
     @Id
@@ -49,5 +48,6 @@ public class Account {
             joinColumns = @JoinColumn(name = "account_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
+
 }
 

@@ -1,5 +1,6 @@
 package com.internship.tabulaprocessing.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,6 +24,7 @@ public class Media {
     private String name;
     private BigDecimal price;
 
+    @JsonIgnoreProperties("medias")
     @ManyToMany(cascade = {
             CascadeType.DETACH,
             CascadeType.MERGE,
@@ -34,6 +36,11 @@ public class Media {
             joinColumns = @JoinColumn(name = "media_id"),
             inverseJoinColumns = @JoinColumn(name = "media_extra_id"))
     private Set<MediaExtra> mediaExtras = new HashSet<>();
+
+    public void calculatePrice(){
+        for(MediaExtra mediaExtra: this.mediaExtras)
+            price=price.add(mediaExtra.getPrice());
+    }
 
     @OneToMany(mappedBy = "media", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems;
