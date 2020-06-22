@@ -1,6 +1,5 @@
 package com.internship.tabulaprocessing.service;
 
-import com.internship.tabulaprocessing.controller.PageResponse;
 import com.internship.tabulaprocessing.entity.Department;
 import com.internship.tabulaprocessing.entity.Process;
 import com.internship.tabulaprocessing.entity.ProcessStage;
@@ -14,9 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
