@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.internship.tabulaprocessing.dto.MediaDto;
 import com.internship.tabulaprocessing.entity.Media;
 import com.internship.tabulaprocessing.mapper.Mapper;
+import com.internship.tabulaprocessing.repository.MediaExtraRepository;
 import com.internship.tabulaprocessing.repository.MediaRepository;
 import com.internship.tabulaprocessing.service.MediaService;
 import org.junit.jupiter.api.Test;
@@ -34,6 +35,10 @@ class MediaServiceTest {
     @Mock
     private MediaRepository mediaRepository;
 
+    @Mock
+    private MediaExtraRepository mediaExtraRepository;
+
+
     @InjectMocks
     private MediaService mediaService;
 
@@ -41,13 +46,18 @@ class MediaServiceTest {
     private Mapper mapper;
 
     @Test
-    void getAll() {
-        List<Media> media = new ArrayList<>();
-        Page<Media> page = new PageImpl<>(media);
+    void create (){
 
-        when(mediaRepository.findAll(any(Pageable.class))).thenReturn(page);
-        assertEquals(media, mediaService.getAll(anyInt()).getBody());
+        MediaDto mediaDto = new MediaDto();
+        mediaDto.setId(1);
+        List<String> extraIds=  new ArrayList<>();
+        extraIds.add("2");
+        mediaDto.setMediaExtraIds(extraIds);
+        when(mediaExtraRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> mediaService.create(mediaDto));
     }
+
+
 
     @Test
     void getOne() {
