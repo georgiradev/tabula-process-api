@@ -1,6 +1,8 @@
 package com.internship.tabulaprocessing.service;
 
+import com.internship.tabulaprocessing.controller.PageResponse;
 import com.internship.tabulaprocessing.entity.ProcessStage;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -14,7 +16,7 @@ public interface ProcessStageService {
 
     ProcessStage findById(int id);
 
-    List<ProcessStage> findAll(Pageable pageable);
+    Page<ProcessStage> findAll(Pageable pageable);
 
     ProcessStage findByName(String name);
 
