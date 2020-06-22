@@ -11,6 +11,7 @@ import com.internship.tabulaprocessing.entity.PagedResult;
 import com.internship.tabulaprocessing.mapper.Mapper;
 import com.internship.tabulaprocessing.repository.DepartmentRepository;
 import com.internship.tabulaprocessing.repository.EmployeeRepository;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,15 +40,12 @@ public class EmployeeService {
 
         Page<Employee> page = employeeRepository.findAll(queryParameter.getPageable());
 
-        Page<EmployeeResponseDto> dtoPage = page.map(new Function<Employee, EmployeeResponseDto>() {
-            @Override
-            public EmployeeResponseDto apply(Employee entity) {
-                EmployeeResponseDto employeeResponseDto = mapper.convertToEmployeeResponseDto(entity);
-                Optional<Account> account = accountRepository.findById(entity.getAccountId());
-                employeeResponseDto.setAccountDto(mapper.convertToAccountDto(account.get()));
-                employeeResponseDto.setDepartmentDto(mapper.convertToDepartmentDTO(entity.getDepartment()));
-                return employeeResponseDto;
-            }
+        Page<EmployeeResponseDto> dtoPage = page.map(entity -> {
+            EmployeeResponseDto employeeResponseDto = mapper.convertToEmployeeResponseDto(entity);
+            Optional<Account> account = accountRepository.findById(entity.getAccountId());
+            employeeResponseDto.setAccountDto(mapper.convertToAccountDto(account.get()));
+            employeeResponseDto.setDepartmentDto(mapper.convertToDepartmentDTO(entity.getDepartment()));
+            return employeeResponseDto;
         });
 
         return new PagedResult<>(
@@ -94,13 +92,11 @@ public class EmployeeService {
 
     public ResponseEntity<?> deleteById(int id) {
 
-        Optional<Employee> optional = employeeRepository.findById(id);
-
-        if(!optional.isPresent()){
+        try {
+            employeeRepository.deleteById(id);
+        }catch (EmptyResultDataAccessException e){
             throw new EntityNotFoundException(String.format("Employee with id of %s was not found!", id));
         }
-
-        employeeRepository.deleteById(id);
         return ResponseEntity.ok(String.format("Employee with id of %s was deleted successfully!", id));
     }
 
@@ -122,6 +118,8 @@ public class EmployeeService {
         }
 
         Employee employee = mapper.convertToEmployeeEntity(employeeRequestDto);
+        employee.setAccount(account.get());
+        employee.setDepartment(department.get());
         employee.setId(id);
         employeeRepository.save(employee);
 

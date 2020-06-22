@@ -9,6 +9,7 @@ import com.internship.tabulaprocessing.mapper.Mapper;
 import com.internship.tabulaprocessing.repository.MediaExtraRepository;
 import com.internship.tabulaprocessing.repository.MediaRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,20 +32,18 @@ public class MediaService {
     public PagedResult<MediaDto> getAll(QueryParameter queryParameter){
 
         Page<Media> page = mediaRepository.findAll(queryParameter.getPageable());
-        Page<MediaDto> dtoPage = page.map(new Function<Media, MediaDto>() {
-            @Override
-            public MediaDto apply(Media entity) {
-                MediaDto mediaDto = mapper.convertToMediaDTO(entity);
+        Page<MediaDto> dtoPage = page.map(entity -> {
+            MediaDto mediaDto = mapper.convertToMediaDTO(entity);
 
-                if (entity.getMediaExtras() != null) {
-                    List<String> extras = new ArrayList<>();
-                    for (MediaExtra mediaExtra : entity.getMediaExtras()) {
-                        extras.add(String.valueOf(mediaExtra.getId()));
-                    }
-                    mediaDto.setMediaExtraIds(extras);
+            if (entity.getMediaExtras() != null) {
+                List<String> extras = new ArrayList<>();
+                for (MediaExtra mediaExtra : entity.getMediaExtras()) {
+                    extras.add(String.valueOf(mediaExtra.getId()));
                 }
-                return mediaDto;
-            }});
+                mediaDto.setMediaExtraIds(extras);
+            }
+            return mediaDto;
+        });
         return new PagedResult<>(
                 dtoPage.toList(),
                 page.getNumber(),
@@ -89,13 +88,12 @@ public class MediaService {
 
     public ResponseEntity<?> deleteById(int id) {
 
-        Optional<Media> optional = mediaRepository.findById(id);
-
-        if(!optional.isPresent()){
-            throw new EntityNotFoundException(String.format("Media with id of %s was not found!", id));
+        try {
+            mediaRepository.deleteById(id);
+        }catch (EmptyResultDataAccessException e){
+            throw new EntityNotFoundException(String.format("Media  with id of %s was not found!", id));
         }
 
-        mediaRepository.deleteById(id);
         return ResponseEntity.ok(String.format("Media with id of %s was deleted successfully!", id));
     }
 

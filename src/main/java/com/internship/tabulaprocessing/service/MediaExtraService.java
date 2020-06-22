@@ -1,6 +1,7 @@
 package com.internship.tabulaprocessing.service;
 
 import com.internship.tabulaprocessing.controller.QueryParameter;
+import com.internship.tabulaprocessing.dto.EmployeeResponseDto;
 import com.internship.tabulaprocessing.dto.MediaExtraDto;
 import com.internship.tabulaprocessing.entity.MediaExtra;
 import com.internship.tabulaprocessing.entity.PagedResult;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,12 +36,11 @@ public class MediaExtraService {
     public PagedResult<MediaExtraDto> getAll(QueryParameter queryParameter){
 
         Page<MediaExtra> page = mediaExtraRepository.findAll(queryParameter.getPageable());
-        List<MediaExtraDto> mediaExtraDtoList = new ArrayList<>();
-        for(MediaExtra mediaExtra:page.toList()){
-            mediaExtraDtoList.add(mapper.convertToMediaExtraDTO(mediaExtra));
-        }
-        return new PagedResult<>(
-                mediaExtraDtoList,
+        Page<MediaExtraDto> dtoPage = page.map(entity -> {
+              return mapper.convertToMediaExtraDTO(entity);
+        });
+        return new PagedResult<MediaExtraDto>(
+                dtoPage.toList(),
                 page.getNumber(),
                 page.getTotalPages());
     }
@@ -63,14 +64,12 @@ public class MediaExtraService {
     }
 
     public ResponseEntity<?> deleteById(int id) {
-
-        Optional<MediaExtra> optional = mediaExtraRepository.findById(id);
-
-        if(!optional.isPresent()){
+        try {
+            mediaExtraRepository.deleteById(id);
+        }catch (EmptyResultDataAccessException e){
             throw new EntityNotFoundException(String.format("Media Extra with id of %s was not found!", id));
         }
 
-        mediaExtraRepository.deleteById(id);
         return ResponseEntity.ok(String.format("Media Extra with id of %s was deleted successfully!", id));
     }
 
