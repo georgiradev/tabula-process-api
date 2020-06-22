@@ -1,15 +1,10 @@
-package com.internship.tabulaprocessing.service;
+package com.internship.tabulaprocessing.mediaextra;
 
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.internship.tabulaprocessing.dto.MediaDto;
 import com.internship.tabulaprocessing.dto.MediaExtraDto;
-import com.internship.tabulaprocessing.entity.Media;
 import com.internship.tabulaprocessing.entity.MediaExtra;
 import com.internship.tabulaprocessing.mapper.Mapper;
 import com.internship.tabulaprocessing.repository.MediaExtraRepository;
-import com.internship.tabulaprocessing.repository.MediaRepository;
-import com.internship.tabulaprocessing.service.MediaService;
+import com.internship.tabulaprocessing.service.MediaExtraService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,7 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
@@ -40,14 +36,6 @@ class MediaExtraServiceTest {
     @InjectMocks
     private MediaExtraService mediaExtraService;
 
-//    @Test
-//    void getAll() {
-//        List<MediaExtra> mediaExtra = new ArrayList<>();
-//        Page<MediaExtra> page = new PageImpl<>(mediaExtra);
-//
-//        when(mediaExtraRepository.findAll(any(Pageable.class))).thenReturn(page);
-//        assertEquals(mediaExtra, mediaExtraService.getAll(any()).getBody());
-//    }
 
     @Test
     void getOne() {

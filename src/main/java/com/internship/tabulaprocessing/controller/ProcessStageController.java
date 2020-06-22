@@ -48,6 +48,7 @@ public class ProcessStageController {
         return ResponseEntity.ok(mapper.convertToProcessStageDTO(processStage));
     }
 
+<<<<<<< HEAD
     @GetMapping
     public ResponseEntity<PageResponse<ProcessStageResponseDTO>> getAllProcessStages(
             @Valid QueryParameter queryParameter) {
@@ -56,6 +57,11 @@ public class ProcessStageController {
         List<ProcessStageResponseDTO> responseList = page.stream()
                 .map(stage -> mapper.convertToProcessStageDTO(stage)).
                         collect(Collectors.toList());
+=======
+  @GetMapping
+  public ResponseEntity<List<ProcessStageResponseDTO>> getAllProcessStages(
+     @Valid QueryParameter queryParameter) {
+>>>>>>> develop
 
         return ResponseEntity.ok(new PageResponse<>(
                 responseList, page.getTotalPages(), queryParameter.getPage()));
@@ -76,6 +82,5 @@ public class ProcessStageController {
 
         return ResponseEntity.ok(String.format("ProcessStage with id %s,successfully deleted", id));
     }
-
 
 }

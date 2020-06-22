@@ -29,7 +29,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
         Optional<Department> optional = departmentRepository.findById(id);
         if (optional.isEmpty()) {
-            throw new EntityNotFoundException(String.format("Departmant with id %s, not found.", id));
+            throw new EntityNotFoundException(String.format("Departmеnt with id %s, not found.", id));
         }
 
         return optional.get();
@@ -51,7 +51,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         department.setId(0);
         Optional<Department> optional = departmentRepository.findByName(department.getName());
         if (optional.isPresent()) {
-            throw new EntityAlreadyPresentException(String.format("Departmant with name %s, already exists", department.getName()));
+            throw new EntityAlreadyPresentException(String.format("Departmеnt with name %s, already exists", department.getName()));
         }
         return departmentRepository.save(department);
     }
