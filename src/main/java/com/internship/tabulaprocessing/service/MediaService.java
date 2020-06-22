@@ -1,5 +1,6 @@
 package com.internship.tabulaprocessing.service;
 
+import com.internship.tabulaprocessing.controller.QueryParameter;
 import com.internship.tabulaprocessing.dto.MediaDto;
 import com.internship.tabulaprocessing.entity.Media;
 import com.internship.tabulaprocessing.entity.MediaExtra;
@@ -26,9 +27,9 @@ public class MediaService {
     private final MediaExtraRepository mediaExtraRepository;
     private final Mapper mapper;
 
-    public PagedResult<MediaDto> getAll(int num){
-        Pageable pageable = PageRequest.of(num, 10);
-        Page<Media> page = mediaRepository.findAll(pageable);
+    public PagedResult<MediaDto> getAll(QueryParameter queryParameter){
+
+        Page<Media> page = mediaRepository.findAll(queryParameter.getPageable());
         List<MediaDto> mediaDtoList = new ArrayList<>();
         for(Media media:page.toList()){
             mediaDtoList.add(mapper.convertToMediaDTO(media));

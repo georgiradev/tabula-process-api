@@ -1,5 +1,6 @@
 package com.internship.tabulaprocessing.service;
 
+import com.internship.tabulaprocessing.controller.QueryParameter;
 import com.internship.tabulaprocessing.dto.MediaExtraDto;
 import com.internship.tabulaprocessing.entity.MediaExtra;
 import com.internship.tabulaprocessing.entity.PagedResult;
@@ -18,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -28,9 +30,9 @@ public class MediaExtraService {
     private final MediaExtraRepository mediaExtraRepository;
     private final Mapper mapper;
 
-    public PagedResult<MediaExtraDto> getAll(int num){
-        Pageable pageable = PageRequest.of(num, 10);
-        Page<MediaExtra> page = mediaExtraRepository.findAll(pageable);
+    public PagedResult<MediaExtraDto> getAll(QueryParameter queryParameter){
+
+        Page<MediaExtra> page = mediaExtraRepository.findAll(queryParameter.getPageable());
         List<MediaExtraDto> mediaExtraDtoList = new ArrayList<>();
         for(MediaExtra mediaExtra:page.toList()){
             mediaExtraDtoList.add(mapper.convertToMediaExtraDTO(mediaExtra));

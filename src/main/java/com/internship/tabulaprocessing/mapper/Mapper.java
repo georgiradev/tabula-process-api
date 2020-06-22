@@ -44,9 +44,9 @@ public interface Mapper {
 
     Process processPutDTOtoProcess(ProcessRequestDto processRequestDto);
     
-    EmployeeDto convertToEmployeeDTO(Employee employee);
+    Employee convertToEmployeeEntity(EmployeeRequestDto employeeRequestDto);
 
-    Employee convertToEmployeeEntity(EmployeeDto employeeDto);
+    EmployeeResponseDto convertToEmployeeResponseDto(Employee employee);
 
     AccountDto convertToAccountDto(Account account);
 }

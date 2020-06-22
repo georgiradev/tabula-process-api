@@ -3,8 +3,8 @@ package com.internship.tabulaprocessing.employee;
 
 import com.internship.tabulacore.entity.Account;
 import com.internship.tabulacore.repository.AccountRepository;
-import com.internship.tabulaprocessing.dto.EmployeeDto;
-import com.internship.tabulaprocessing.entity.Department;
+import com.internship.tabulaprocessing.dto.EmployeeRequestDto;
+import com.internship.tabulaprocessing.dto.EmployeeResponseDto;
 import com.internship.tabulaprocessing.entity.Employee;
 import com.internship.tabulaprocessing.repository.DepartmentRepository;
 import com.internship.tabulaprocessing.repository.EmployeeRepository;
@@ -15,22 +15,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import javax.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
 
@@ -58,30 +50,29 @@ class EmployeeServiceTest {
     @Test
     void CreateIfAccountNotFound(){
 
-        EmployeeDto employeeDto = new EmployeeDto();
-        employeeDto.setId(7);
-        employeeDto.setRatePerHour(BigDecimal.valueOf(23.45));
-        employeeDto.setAccountId("2");
-        employeeDto.setDepartmentId("2");
+        EmployeeRequestDto employeeRequestDto = new EmployeeRequestDto();
+
+        employeeRequestDto.setRatePerHour(BigDecimal.valueOf(23.45));
+        employeeRequestDto.setAccountId(2);
+        employeeRequestDto.setDepartmentId(2);
         when(accountRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class, () -> employeeService.create(employeeDto));
+        assertThrows(EntityNotFoundException.class, () -> employeeService.create(employeeRequestDto));
 
     }
 
     @Test
     void CreateIfDepartmentNotFound(){
 
-        EmployeeDto employeeDto = new EmployeeDto();
-        employeeDto.setId(7);
-        employeeDto.setRatePerHour(BigDecimal.valueOf(23.45));
-        employeeDto.setAccountId("2");
-        employeeDto.setDepartmentId("2");
+        EmployeeRequestDto employeeRequestDto = new EmployeeRequestDto();
+        employeeRequestDto.setRatePerHour(BigDecimal.valueOf(23.45));
+        employeeRequestDto.setAccountId(2);
+        employeeRequestDto.setDepartmentId(2);
 
         Account account = new Account();
         when(accountRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(account));
 
         when(departmentRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class, () -> employeeService.create(employeeDto));
+        assertThrows(EntityNotFoundException.class, () -> employeeService.create(employeeRequestDto));
 
     }
 
@@ -101,9 +92,8 @@ class EmployeeServiceTest {
 
     @Test
     void update() {
-        EmployeeDto employeeDto = new EmployeeDto();
-        employeeDto.setId(5);
+        EmployeeRequestDto employeeRequestDto = new EmployeeRequestDto();
         when(employeeRepository.findById(5)).thenReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class, () -> employeeService.update(5, employeeDto));
+        assertThrows(EntityNotFoundException.class, () -> employeeService.update(5, employeeRequestDto));
     }
 }

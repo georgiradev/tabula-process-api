@@ -1,8 +1,11 @@
 package com.internship.tabulaprocessing.service;
 
+import com.internship.tabulacore.dto.AccountDto;
 import com.internship.tabulacore.entity.Account;
 import com.internship.tabulacore.repository.AccountRepository;
-import com.internship.tabulaprocessing.dto.EmployeeDto;
+import com.internship.tabulaprocessing.controller.QueryParameter;
+import com.internship.tabulaprocessing.dto.EmployeeRequestDto;
+import com.internship.tabulaprocessing.dto.EmployeeResponseDto;
 import com.internship.tabulaprocessing.entity.Department;
 import com.internship.tabulaprocessing.entity.Employee;
 import com.internship.tabulaprocessing.entity.PagedResult;
@@ -10,7 +13,6 @@ import com.internship.tabulaprocessing.mapper.Mapper;
 import com.internship.tabulaprocessing.repository.DepartmentRepository;
 import com.internship.tabulaprocessing.repository.EmployeeRepository;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -34,19 +36,17 @@ public class EmployeeService {
         this.mapper = mapper;
     }
 
-    public PagedResult<EmployeeDto> getAll(Pageable pageable){
+    public PagedResult<EmployeeResponseDto> getAll(QueryParameter queryParameter){
 
-        Page<Employee> page = employeeRepository.findAll(pageable);
+        Page<Employee> page = employeeRepository.findAll(queryParameter.getPageable());
 
-        Page<EmployeeDto> dtoPage = page.map(new Function<Employee, EmployeeDto>() {
+        Page<EmployeeResponseDto> dtoPage = page.map(new Function<Employee, EmployeeResponseDto>() {
             @Override
-            public EmployeeDto apply(Employee entity) {
-                EmployeeDto employeeDto = mapper.convertToEmployeeDTO(entity);
-                Optional<Account> account = accountRepository.findById(entity.getAccountId());
-                employeeDto.setAccountDto(mapper.convertToAccountDto(account.get()));
-                employeeDto.setDepartmentDto(mapper.convertToDepartmentDTO(entity.getDepartment()));
-                employeeDto.setDepartmentId(String.valueOf(entity.getDepartment().getId()));
-                return employeeDto;
+            public EmployeeResponseDto apply(Employee entity) {
+                EmployeeResponseDto employeeResponseDto = mapper.convertToEmployeeResponseDto(entity);
+                employeeResponseDto.setAccountDto(mapper.convertToAccountDto(entity.getAccount()));
+                employeeResponseDto.setDepartmentDto(mapper.convertToDepartmentDTO(entity.getDepartment()));
+                return employeeResponseDto;
             }
         });
 
@@ -57,41 +57,40 @@ public class EmployeeService {
 
     }
 
-    public ResponseEntity<EmployeeDto> getOne(int id) {
+    public ResponseEntity<EmployeeResponseDto> getOne(int id) {
         Optional<Employee> employee = employeeRepository.findById(id);
 
         if(!employee.isPresent()){
             throw new EntityNotFoundException("The employee was not found.");
         }
 
-        Account account =accountRepository.findById(employee.get().getAccountId()).get();
-        EmployeeDto employeeDto = mapper.convertToEmployeeDTO(employee.get());
-        employeeDto.setDepartmentDto(mapper.convertToDepartmentDTO(employee.get().getDepartment()));
-        employeeDto.setAccountDto(mapper.convertToAccountDto(account));
-        employeeDto.setDepartmentId(String.valueOf(employee.get().getDepartment().getId()));
-        return  ResponseEntity.ok(employeeDto);
+        EmployeeResponseDto employeeResponseDto = mapper.convertToEmployeeResponseDto(employee.get());
+        employeeResponseDto.setDepartmentDto(mapper.convertToDepartmentDTO(employee.get().getDepartment()));
+        Optional<Account> account = accountRepository.findById(employee.get().getAccountId());
+        employeeResponseDto.setAccountDto(mapper.convertToAccountDto(account.get()));
+        return  ResponseEntity.ok(employeeResponseDto);
     }
 
-    public ResponseEntity<EmployeeDto> create(EmployeeDto employeeDto) {
+    public ResponseEntity<EmployeeResponseDto> create(EmployeeRequestDto employeeRequestDto) {
 
-        Optional<Account> account = accountRepository.findById(Integer.parseInt(employeeDto.getAccountId()));
+        Optional<Account> account = accountRepository.findById(employeeRequestDto.getAccountId());
         if(!account.isPresent()){
             throw new EntityNotFoundException("Account was not found.");
         }
-        Optional<Department> department = departmentRepository.findById(Integer.parseInt(employeeDto.getDepartmentId()));
+        Optional<Department> department = departmentRepository.findById(employeeRequestDto.getDepartmentId());
         if(!department.isPresent()){
             throw new EntityNotFoundException("Department was not found.");
         }
 
-        Employee employee = mapper.convertToEmployeeEntity(employeeDto);
+        Employee employee = mapper.convertToEmployeeEntity(employeeRequestDto);
         employee.setDepartment(department.get());
+        employee.setAccount(account.get());
         employeeRepository.save(employee);
 
-        employeeDto = mapper.convertToEmployeeDTO(employee);
-        employeeDto.setDepartmentDto(mapper.convertToDepartmentDTO(department.get()));
-        employeeDto.setDepartmentId(String.valueOf(department.get().getId()));
-        employeeDto.setAccountDto(mapper.convertToAccountDto(account.get()));
-        return new ResponseEntity<>(employeeDto, HttpStatus.CREATED);
+        EmployeeResponseDto employeeResponseDto = mapper.convertToEmployeeResponseDto(employee);
+        employeeResponseDto.setDepartmentDto(mapper.convertToDepartmentDTO(department.get()));
+        employeeResponseDto.setAccountDto(mapper.convertToAccountDto(account.get()));
+        return new ResponseEntity<>(employeeResponseDto, HttpStatus.CREATED);
     }
 
     public ResponseEntity<?> deleteById(int id) {
@@ -106,32 +105,30 @@ public class EmployeeService {
         return ResponseEntity.ok(String.format("Employee with id of %s was deleted successfully!", id));
     }
 
-    public ResponseEntity<EmployeeDto> update(int id, EmployeeDto employeeDto)  {
+    public ResponseEntity<EmployeeResponseDto> update(int id, EmployeeRequestDto employeeRequestDto)  {
 
         Optional<Employee> optional = employeeRepository.findById(id);
         if(!optional.isPresent()){
             throw new EntityNotFoundException(String.format("Employee with id of %s was not found!", id));
         }
 
-        Optional<Department> department = departmentRepository.findById(Integer.parseInt(employeeDto.getDepartmentId()));
+        Optional<Department> department = departmentRepository.findById(employeeRequestDto.getDepartmentId());
         if(!department.isPresent()){
             throw new EntityNotFoundException("Department not found.");
         }
 
-        Optional<Account> account = accountRepository.findById(Integer.parseInt(employeeDto.getAccountId()));
+        Optional<Account> account = accountRepository.findById(employeeRequestDto.getAccountId());
         if(!account.isPresent()){
             throw new EntityNotFoundException("Account not found.");
         }
 
-        Employee employee = mapper.convertToEmployeeEntity(employeeDto);
-        employee.setDepartment(department.get());
+        Employee employee = mapper.convertToEmployeeEntity(employeeRequestDto);
         employee.setId(id);
         employeeRepository.save(employee);
 
-        employeeDto = mapper.convertToEmployeeDTO(employee);
-        employeeDto.setDepartmentId(String.valueOf(department.get().getId()));
-        employeeDto.setDepartmentDto(mapper.convertToDepartmentDTO(department.get()));
-        employeeDto.setAccountDto(mapper.convertToAccountDto(account.get()));
-        return ResponseEntity.ok(employeeDto);
+        EmployeeResponseDto employeeResponseDto = mapper.convertToEmployeeResponseDto(employee);
+        employeeResponseDto.setDepartmentDto(mapper.convertToDepartmentDTO(department.get()));
+        employeeResponseDto.setAccountDto(mapper.convertToAccountDto(account.get()));
+        return ResponseEntity.ok(employeeResponseDto);
     }
 }

@@ -1,19 +1,14 @@
 package com.internship.tabulaprocessing.controller;
 
 
-import com.internship.tabulaprocessing.dto.EmployeeDto;
+import com.internship.tabulaprocessing.dto.EmployeeRequestDto;
+import com.internship.tabulaprocessing.dto.EmployeeResponseDto;
+import com.internship.tabulaprocessing.entity.PagedResult;
 import com.internship.tabulaprocessing.service.EmployeeService;
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
-import org.springframework.boot.context.properties.bind.DefaultValue;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.util.List;
 
 @RestController
 @RequestMapping("/employees")
@@ -26,18 +21,17 @@ public class EmployeeController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<EmployeeDto>> getAll(@RequestParam("page") int page,
-                                                      @RequestParam("size") int size, Pageable pageable) {
-        return employeeService.getAll(pageable);
+    public PagedResult<EmployeeResponseDto> getAll(QueryParameter queryParameter) {
+        return employeeService.getAll(queryParameter);
     }
 
     @PostMapping
-    public ResponseEntity<EmployeeDto> create(@Valid @RequestBody EmployeeDto employeeDto) {
-        return employeeService.create(employeeDto);
+    public ResponseEntity<EmployeeResponseDto> create(@Valid @RequestBody EmployeeRequestDto employeeRequestDto) {
+        return employeeService.create(employeeRequestDto);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EmployeeDto> getOne(@PathVariable String id) {
+    public ResponseEntity<EmployeeResponseDto> getOne(@PathVariable String id) {
 
         int num = Integer.parseInt(id);
         return employeeService.getOne(num);
@@ -51,9 +45,9 @@ public class EmployeeController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EmployeeDto> update(@PathVariable String id,
-                                              @Valid @RequestBody EmployeeDto employeeDto) {
+    public ResponseEntity<EmployeeResponseDto> update(@PathVariable String id,
+                                                      @RequestBody EmployeeRequestDto employeeRequestDto) {
         int num = Integer.parseInt(id);
-        return employeeService.update(num, employeeDto);
+        return employeeService.update(num, employeeRequestDto);
     }
 }

@@ -36,14 +36,6 @@ class MediaExtraServiceTest {
     @InjectMocks
     private MediaExtraService mediaExtraService;
 
-    @Test
-    void getAll() {
-        List<MediaExtra> mediaExtra = new ArrayList<>();
-        Page<MediaExtra> page = new PageImpl<>(mediaExtra);
-
-        when(mediaExtraRepository.findAll(any(Pageable.class))).thenReturn(page);
-        assertEquals(mediaExtra, mediaExtraService.getAll(anyInt()).getBody());
-    }
 
     @Test
     void getOne() {
