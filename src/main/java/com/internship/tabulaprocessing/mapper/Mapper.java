@@ -63,17 +63,6 @@ public interface Mapper {
 
     AccountDto convertToAccountDto(Account account);
 
-
-
-
-
-
-
-
-
-
-
-
 }
 
 

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.*;
+import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
@@ -30,12 +31,22 @@ public class MediaService {
     public PagedResult<MediaDto> getAll(QueryParameter queryParameter){
 
         Page<Media> page = mediaRepository.findAll(queryParameter.getPageable());
-        List<MediaDto> mediaDtoList = new ArrayList<>();
-        for(Media media:page.toList()){
-            mediaDtoList.add(mapper.convertToMediaDTO(media));
-        }
+        Page<MediaDto> dtoPage = page.map(new Function<Media, MediaDto>() {
+            @Override
+            public MediaDto apply(Media entity) {
+                MediaDto mediaDto = mapper.convertToMediaDTO(entity);
+
+                if (entity.getMediaExtras() != null) {
+                    List<String> extras = new ArrayList<>();
+                    for (MediaExtra mediaExtra : entity.getMediaExtras()) {
+                        extras.add(String.valueOf(mediaExtra.getId()));
+                    }
+                    mediaDto.setMediaExtraIds(extras);
+                }
+                return mediaDto;
+            }});
         return new PagedResult<>(
-                mediaDtoList,
+                dtoPage.toList(),
                 page.getNumber(),
                 page.getTotalPages());
     }

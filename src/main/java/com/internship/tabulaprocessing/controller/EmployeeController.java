@@ -31,10 +31,9 @@ public class EmployeeController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EmployeeResponseDto> getOne(@PathVariable String id) {
+    public ResponseEntity<EmployeeResponseDto> getOne(@PathVariable int id) {
 
-        int num = Integer.parseInt(id);
-        return employeeService.getOne(num);
+        return employeeService.getOne(id);
     }
 
     @DeleteMapping("/{id}")
@@ -45,9 +44,8 @@ public class EmployeeController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EmployeeResponseDto> update(@PathVariable String id,
+    public ResponseEntity<EmployeeResponseDto> update(@PathVariable int id,
                                                       @RequestBody EmployeeRequestDto employeeRequestDto) {
-        int num = Integer.parseInt(id);
-        return employeeService.update(num, employeeRequestDto);
+        return employeeService.update(id, employeeRequestDto);
     }
 }

@@ -1,6 +1,5 @@
 package com.internship.tabulaprocessing.service;
 
-import com.internship.tabulacore.dto.AccountDto;
 import com.internship.tabulacore.entity.Account;
 import com.internship.tabulacore.repository.AccountRepository;
 import com.internship.tabulaprocessing.controller.QueryParameter;
@@ -18,7 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.*;
+import java.util.Optional;
 import java.util.function.Function;
 
 @Service
@@ -44,7 +43,8 @@ public class EmployeeService {
             @Override
             public EmployeeResponseDto apply(Employee entity) {
                 EmployeeResponseDto employeeResponseDto = mapper.convertToEmployeeResponseDto(entity);
-                employeeResponseDto.setAccountDto(mapper.convertToAccountDto(entity.getAccount()));
+                Optional<Account> account = accountRepository.findById(entity.getAccountId());
+                employeeResponseDto.setAccountDto(mapper.convertToAccountDto(account.get()));
                 employeeResponseDto.setDepartmentDto(mapper.convertToDepartmentDTO(entity.getDepartment()));
                 return employeeResponseDto;
             }
@@ -54,7 +54,6 @@ public class EmployeeService {
                 dtoPage.toList(),
                 page.getNumber(),
                 page.getTotalPages());
-
     }
 
     public ResponseEntity<EmployeeResponseDto> getOne(int id) {
