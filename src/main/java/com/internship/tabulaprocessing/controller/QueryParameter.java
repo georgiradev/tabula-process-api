@@ -50,7 +50,7 @@ public class QueryParameter {
     }
 
     public Pageable getPageable() {
-        return desc ? PageRequest.of(page - 1, size, Sort.by(sortBy).ascending())
-                : PageRequest.of(page - 1, size, Sort.by(sortBy).descending());
+        return desc ? PageRequest.of(page - 1, size, Sort.by(sortBy).descending())
+                : PageRequest.of(page - 1, size, Sort.by(sortBy).ascending());
     }
 }

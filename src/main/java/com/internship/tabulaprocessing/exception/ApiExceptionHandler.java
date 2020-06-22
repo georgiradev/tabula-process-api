@@ -4,6 +4,7 @@ import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -67,6 +68,15 @@ public class ApiExceptionHandler {
                 new ApiExceptionResponse(ex.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
 
         return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
+
+    }
+    @ExceptionHandler(BindException.class)
+    public ResponseEntity<BindingExceptionResponse> handleException(BindException ex) {
+        BindingExceptionResponse error =
+                new BindingExceptionResponse(
+                        HttpStatus.BAD_REQUEST.value(), ex.getBindingResult(), LocalDateTime.now());
+
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 
     }
 

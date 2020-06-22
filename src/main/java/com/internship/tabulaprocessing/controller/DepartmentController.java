@@ -5,6 +5,7 @@ import com.internship.tabulaprocessing.entity.Department;
 import com.internship.tabulaprocessing.mapper.Mapper;
 import com.internship.tabulaprocessing.service.DepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,12 +24,15 @@ public class DepartmentController {
     private Mapper mapper;
 
     @GetMapping
-    public ResponseEntity<List<DepartmentDTO>> getAllDepartments(QueryParameter queryParameter) {
+    public ResponseEntity<PageResponse<DepartmentDTO>> getAllDepartments(QueryParameter queryParameter) {
 
-        return ResponseEntity.ok(
-                departmentService.findAll(queryParameter.getPageable()).stream()
-                        .map(department -> mapper.convertToDepartmentDTO(department))
-                        .collect(Collectors.toList()));
+        Page<Department> departmentPage = departmentService.findAll(queryParameter.getPageable());
+        List<DepartmentDTO> responseList = departmentPage.stream()
+                .map(department -> mapper.convertToDepartmentDTO(department))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(new PageResponse<>(
+                responseList, departmentPage.getTotalPages(), queryParameter.getPage()));
     }
 
     @PostMapping
@@ -58,7 +62,7 @@ public class DepartmentController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<String> deleteDepartment(@PathVariable  @Min(1) int id) {
+    public ResponseEntity<String> deleteDepartment(@PathVariable @Min(1) int id) {
 
         departmentService.delete(id);
         return ResponseEntity.ok(String.format("Department with id of %s, sucessfully deleted!", id));
