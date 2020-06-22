@@ -39,10 +39,13 @@ class EmployeeServiceTest {
     @InjectMocks
     private EmployeeService employeeService;
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 80218e8a9e6913c3c3e012dfb9fe8fdb64e0e66e
+    @Test
+    void getAll() {
+//        List<Employee> employees = new ArrayList<>();
+//        Page<Employee> page = new PageImpl<>(employees);
+//        when(employeeRepository.findAll(any(Pageable.class))).thenReturn(page);
+//        assertEquals(employees, employeeService.getAll(anyInt()).getBody());
+    }
 
     @Test
     void CreateIfAccountNotFound(){

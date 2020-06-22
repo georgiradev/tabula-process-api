@@ -39,10 +39,6 @@ class EmployeeServiceTest {
     @InjectMocks
     private EmployeeService employeeService;
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 80218e8a9e6913c3c3e012dfb9fe8fdb64e0e66e
 
     @Test
     void CreateIfAccountNotFound(){
