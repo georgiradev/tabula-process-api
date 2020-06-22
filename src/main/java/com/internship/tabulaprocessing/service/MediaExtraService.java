@@ -2,6 +2,7 @@ package com.internship.tabulaprocessing.service;
 
 import com.internship.tabulaprocessing.dto.MediaExtraDto;
 import com.internship.tabulaprocessing.entity.MediaExtra;
+import com.internship.tabulaprocessing.entity.PagedResult;
 import com.internship.tabulaprocessing.mapper.Mapper;
 import com.internship.tabulaprocessing.repository.MediaExtraRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,18 +28,19 @@ public class MediaExtraService {
     private final MediaExtraRepository mediaExtraRepository;
     private final Mapper mapper;
 
-    @Cacheable(value="MediaExtras")
-    public ResponseEntity<List<MediaExtraDto>> getAll(int num){
+    public PagedResult<MediaExtraDto> getAll(int num){
         Pageable pageable = PageRequest.of(num, 10);
         Page<MediaExtra> page = mediaExtraRepository.findAll(pageable);
         List<MediaExtraDto> mediaExtraDtoList = new ArrayList<>();
         for(MediaExtra mediaExtra:page.toList()){
             mediaExtraDtoList.add(mapper.convertToMediaExtraDTO(mediaExtra));
         }
-        return new ResponseEntity<>(mediaExtraDtoList, HttpStatus.OK);
+        return new PagedResult<>(
+                mediaExtraDtoList,
+                page.getNumber(),
+                page.getTotalPages());
     }
 
-    @Cacheable(value="MediaExtras",key="#id")
     public ResponseEntity<MediaExtraDto> getOne(int id) {
         Optional<MediaExtra> mediaExtra = mediaExtraRepository.findById(id);
 
@@ -57,7 +59,6 @@ public class MediaExtraService {
         return new ResponseEntity<>(mediaExtraDto, HttpStatus.CREATED);
     }
 
-    @CacheEvict(value="MediaExtras",key="#id")
     public ResponseEntity<?> deleteById(int id) {
 
         Optional<MediaExtra> optional = mediaExtraRepository.findById(id);
@@ -70,7 +71,7 @@ public class MediaExtraService {
         return ResponseEntity.ok(String.format("Media Extra with id of %s was deleted successfully!", id));
     }
 
-    @CachePut(value="MediaExtras",key="#id")
+
     public ResponseEntity<MediaExtraDto> update(int id, MediaExtraDto mediaExtraDto)  {
         Optional<MediaExtra> optional = mediaExtraRepository.findById(id);
 

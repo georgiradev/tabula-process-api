@@ -1,5 +1,6 @@
 package com.internship.tabulaprocessing.entity;
 
+import com.internship.tabulacore.entity.Account;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,11 +18,14 @@ public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
     private BigDecimal ratePerHour;
-    @Column(name = "account_id")
+
     private int accountId;
 
     @ManyToOne
     private Department department;
 
+    @Transient
+    Account account;
 }

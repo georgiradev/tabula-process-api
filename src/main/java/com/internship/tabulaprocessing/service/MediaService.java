@@ -3,6 +3,7 @@ package com.internship.tabulaprocessing.service;
 import com.internship.tabulaprocessing.dto.MediaDto;
 import com.internship.tabulaprocessing.entity.Media;
 import com.internship.tabulaprocessing.entity.MediaExtra;
+import com.internship.tabulaprocessing.entity.PagedResult;
 import com.internship.tabulaprocessing.mapper.Mapper;
 import com.internship.tabulaprocessing.repository.MediaExtraRepository;
 import com.internship.tabulaprocessing.repository.MediaRepository;
@@ -25,14 +26,17 @@ public class MediaService {
     private final MediaExtraRepository mediaExtraRepository;
     private final Mapper mapper;
 
-    public ResponseEntity<List<Media>> getAll(int num){
+    public PagedResult<MediaDto> getAll(int num){
         Pageable pageable = PageRequest.of(num, 10);
         Page<Media> page = mediaRepository.findAll(pageable);
         List<MediaDto> mediaDtoList = new ArrayList<>();
         for(Media media:page.toList()){
             mediaDtoList.add(mapper.convertToMediaDTO(media));
         }
-        return new ResponseEntity<>(page.toList(), HttpStatus.OK);
+        return new PagedResult<>(
+                mediaDtoList,
+                page.getNumber(),
+                page.getTotalPages());
     }
 
     public ResponseEntity<MediaDto> getOne(int id) {

@@ -2,10 +2,10 @@ package com.internship.tabulaprocessing.service;
 
 import com.internship.tabulacore.entity.Account;
 import com.internship.tabulacore.repository.AccountRepository;
-import com.internship.tabulaprocessing.controller.PaginationUtil;
 import com.internship.tabulaprocessing.dto.EmployeeDto;
 import com.internship.tabulaprocessing.entity.Department;
 import com.internship.tabulaprocessing.entity.Employee;
+import com.internship.tabulaprocessing.entity.PagedResult;
 import com.internship.tabulaprocessing.mapper.Mapper;
 import com.internship.tabulaprocessing.repository.DepartmentRepository;
 import com.internship.tabulaprocessing.repository.EmployeeRepository;
@@ -34,7 +34,7 @@ public class EmployeeService {
         this.mapper = mapper;
     }
 
-    public ResponseEntity<Page<EmployeeDto>> getAll(Pageable pageable){
+    public PagedResult<EmployeeDto> getAll(Pageable pageable){
 
         Page<Employee> page = employeeRepository.findAll(pageable);
 
@@ -50,9 +50,11 @@ public class EmployeeService {
             }
         });
 
-        return ResponseEntity.ok()
-                .headers(PaginationUtil.generatePaginationHttpHeaders(page,"http://localhost:8080/employees"))
-                .body(dtoPage);
+        return new PagedResult<>(
+                dtoPage.toList(),
+                page.getNumber(),
+                page.getTotalPages());
+
     }
 
     public ResponseEntity<EmployeeDto> getOne(int id) {
