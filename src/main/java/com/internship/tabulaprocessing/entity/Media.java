@@ -37,13 +37,11 @@ public class Media {
             inverseJoinColumns = @JoinColumn(name = "media_extra_id"))
     private Set<MediaExtra> mediaExtras = new HashSet<>();
 
-<<<<<<< HEAD
     public void calculatePrice(){
         for(MediaExtra mediaExtra: this.mediaExtras)
             price=price.add(mediaExtra.getPrice());
     }
-=======
+
     @OneToMany(mappedBy = "media", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems;
->>>>>>> develop
 }

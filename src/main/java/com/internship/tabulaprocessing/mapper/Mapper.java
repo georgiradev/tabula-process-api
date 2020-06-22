@@ -7,10 +7,6 @@ import com.internship.tabulaprocessing.dto.*;
 import com.internship.tabulaprocessing.entity.*;
 
 import com.internship.tabulaprocessing.entity.Process;
-<<<<<<< HEAD
-=======
-import com.internship.tabulaprocessing.entity.*;
->>>>>>> develop
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
@@ -40,7 +36,6 @@ public interface Mapper {
   ProcessStageResponseDTO convertToProcessStageDTO(ProcessStage processStage);
 
   ProcessStage convertToProcessStageEntity(ProcessStagePersistDTO processStagePersistDTO);
-<<<<<<< HEAD
 
   ProcessStage convertToProcessStageEntity(ProcessStageResponseDTO processStageResponseDTO);
 
@@ -67,28 +62,18 @@ public interface Mapper {
     EmployeeResponseDto convertToEmployeeResponseDto(Employee employee);
 
     AccountDto convertToAccountDto(Account account);
-=======
 
-  ProcessStage convertToProcessStageEntity(ProcessStageResponseDTO processStageResponseDTO);
 
-  ProcessResponseDto processToProcessGetDTO(Process process);
 
-  Process processPostDTOtoProcess(ProcessRequestDto processRequestDto);
 
-  Process processPutDTOtoProcess(ProcessRequestDto processRequestDto);
 
-  @Mapping(target = "media.id", source = "mediaId")
-  @Mapping(target = "order.id", source = "orderId")
-  OrderItem orderItemRequestDtoToEntity(OrderItemRequestDto orderItemRequestDto);
 
-  @Mapping(source = "media.id", target = "mediaId")
-  @Mapping(source = "order.id", target = "orderId")
-  OrderItemResponseDto orderItemDtoToEntity(OrderItem orderItem);
 
-  Order orderRequestDtoToOrder(OrderRequestDto orderRequestDto);
 
-  OrderResponseDto orderToOrderResponseDto(Order order);
->>>>>>> develop
+
+
+
+
 }
 
 
