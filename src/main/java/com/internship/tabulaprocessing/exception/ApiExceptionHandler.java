@@ -67,8 +67,8 @@ public class ApiExceptionHandler {
                 new ApiExceptionResponse(ex.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
 
         return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
-
     }
+
     @ExceptionHandler(BindException.class)
     public ResponseEntity<BindingExceptionResponse> handleException(BindException ex) {
         BindingExceptionResponse error =
