@@ -2,6 +2,7 @@ package com.internship.tabulaprocessing.controller;
 
 import com.internship.tabulaprocessing.dto.DepartmentDTO;
 import com.internship.tabulaprocessing.entity.Department;
+import com.internship.tabulaprocessing.entity.PagedResult;
 import com.internship.tabulaprocessing.mapper.Mapper;
 import com.internship.tabulaprocessing.service.DepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,15 +25,15 @@ public class DepartmentController {
     private Mapper mapper;
 
     @GetMapping
-    public ResponseEntity<PageResponse<DepartmentDTO>> getAllDepartments(QueryParameter queryParameter) {
+    public ResponseEntity<PagedResult<DepartmentDTO>> getAllDepartments(QueryParameter queryParameter) {
 
         Page<Department> departmentPage = departmentService.findAll(queryParameter.getPageable());
         List<DepartmentDTO> responseList = departmentPage.stream()
                 .map(department -> mapper.convertToDepartmentDTO(department))
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(new PageResponse<>(
-                responseList, departmentPage.getTotalPages(), queryParameter.getPage()));
+        return ResponseEntity.ok(new PagedResult<>(
+                responseList, queryParameter.getPage(), departmentPage.getTotalPages()));
     }
 
     @PostMapping

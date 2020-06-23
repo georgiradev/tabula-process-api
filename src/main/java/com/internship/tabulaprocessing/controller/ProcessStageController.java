@@ -2,6 +2,7 @@ package com.internship.tabulaprocessing.controller;
 
 import com.internship.tabulaprocessing.dto.ProcessStagePersistDTO;
 import com.internship.tabulaprocessing.dto.ProcessStageResponseDTO;
+import com.internship.tabulaprocessing.entity.PagedResult;
 import com.internship.tabulaprocessing.entity.ProcessStage;
 import com.internship.tabulaprocessing.mapper.Mapper;
 import com.internship.tabulaprocessing.service.ProcessStageService;
@@ -50,7 +51,7 @@ public class ProcessStageController {
 
 
     @GetMapping
-    public ResponseEntity<PageResponse<ProcessStageResponseDTO>> getAllProcessStages(
+    public ResponseEntity<PagedResult<ProcessStageResponseDTO>> getAllProcessStages(
             @Valid QueryParameter queryParameter) {
 
         Page<ProcessStage> page = service.findAll(queryParameter.getPageable());
@@ -58,8 +59,8 @@ public class ProcessStageController {
                 .map(stage -> mapper.convertToProcessStageDTO(stage)).
                         collect(Collectors.toList());
 
-        return ResponseEntity.ok(new PageResponse<>(
-                responseList, page.getTotalPages(), queryParameter.getPage()));
+        return ResponseEntity.ok(new PagedResult<>(
+                responseList, queryParameter.getPage(), page.getTotalPages()));
     }
 
     @GetMapping(value = "/{id}")
