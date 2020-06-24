@@ -1,10 +1,14 @@
 package com.internship.tabulaprocessing.media;
 
+import com.internship.tabulaprocessing.controller.QueryParameter;
+import com.internship.tabulaprocessing.dto.EmployeeResponseDto;
 import com.internship.tabulaprocessing.dto.MediaDto;
 import com.internship.tabulaprocessing.entity.Media;
 import com.internship.tabulaprocessing.entity.MediaExtra;
 import com.internship.tabulaprocessing.entity.PagedResult;
 import com.internship.tabulaprocessing.mapper.Mapper;
+import com.internship.tabulaprocessing.provider.MediaExtraProvider;
+import com.internship.tabulaprocessing.provider.MediaProvider;
 import com.internship.tabulaprocessing.repository.MediaExtraRepository;
 import com.internship.tabulaprocessing.repository.MediaRepository;
 import com.internship.tabulaprocessing.service.MediaService;
@@ -35,8 +39,6 @@ class MediaServiceTest {
 
     @Mock
     private MediaRepository mediaRepository;
-    @Mock
-    private MediaExtraRepository mediaExtraRepository;
 
     @InjectMocks
     private MediaService mediaService;
@@ -51,44 +53,20 @@ class MediaServiceTest {
     }
 
     @Test
-    void getAll() {
-        Media media = new Media();
-        media.setId(1);
-        media.setName("name1");
-        media.setPrice(BigDecimal.valueOf(1));
+    void getAllIfEmpty() {
+        QueryParameter queryParameter = new QueryParameter();
+        Mockito.when(mediaRepository.findAll(queryParameter.getPageable()))
+                .thenReturn(new PageImpl<>(new ArrayList<>(), queryParameter.getPageable(), 5));
 
-        Media media2 = new Media();
-        media2.setId(2);
-        media2.setName("name2");
-        media2.setPrice(BigDecimal.valueOf(2));
-
-        List<Media> expectedMedia = new ArrayList<>();
-        expectedMedia.add(media);
-        expectedMedia.add(media2);
-
-        Pageable pageable = PageRequest.of(1,2);
-        Page<Media> expectedPage = new PageImpl<>(expectedMedia, pageable, expectedMedia.size());
-
-        doReturn(expectedPage).when(mediaRepository).findAll(pageable);
-        PagedResult<MediaDto> actual = mediaService.getAll(pageable);
-
-        assertNotNull(actual);
-        assertEquals(mapper.convertToMediaDtoList(expectedPage.getContent()), actual.getElements());
-        assertEquals(expectedPage.getContent().get(0), expectedMedia.get(0));
-        assertEquals(expectedPage.getTotalPages(), actual.getNumOfTotalPages());
+        PagedResult<MediaDto> employeeDtoPagedResult= mediaService.getAll(queryParameter.getPageable());
+        assertTrue(employeeDtoPagedResult.getElements().isEmpty());
     }
 
     @Test
     void create (){
-        MediaExtra mediaExtra = new MediaExtra();
-        mediaExtra.setId(1);
-        mediaExtra.setName("name1");
-        mediaExtra.setPrice(BigDecimal.valueOf(15));
+        MediaExtra mediaExtra = MediaExtraProvider.getMediaExtraInstance();
 
-        Media media = new Media();
-        media.setId(1);
-        media.setName("name2");
-        media.setPrice(BigDecimal.valueOf(10));
+        Media media = MediaProvider.getMediaInstance();
         media.setMediaExtras(Collections.singleton(mediaExtra));
 
         MediaDto mediaDto = new MediaDto();
@@ -110,6 +88,7 @@ class MediaServiceTest {
 
         assertEquals(media.getId(), actualMedia.getId());
         assertEquals(media.getName(), actualMedia.getName());
+
     }
 
     @Test

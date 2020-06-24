@@ -17,8 +17,8 @@ public class EmployeeRequestDto {
     private BigDecimal ratePerHour;
 
     @Min(value = 0, message = "id cannot be less than zero")
-    protected int accountId;
+    private int accountId;
     @Min(value = 0, message = "id cannot be less than zero")
-    protected int departmentId;
+    private int departmentId;
 
 }
