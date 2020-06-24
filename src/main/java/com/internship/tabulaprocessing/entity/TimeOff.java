@@ -34,10 +34,10 @@ public class TimeOff {
     private String comment;
 
     @ManyToOne (fetch = FetchType.LAZY)
-    private Employee employeeId;
+    private Employee employee;
 
     @ManyToOne (fetch = FetchType.LAZY)
-    private Employee approverId;
+    private Employee approver;
 
 
 }

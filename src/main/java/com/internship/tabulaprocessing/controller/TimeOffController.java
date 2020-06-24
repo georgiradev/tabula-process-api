@@ -72,8 +72,8 @@ public class TimeOffController {
     EmployeeResponseDto approverResponseDto = employeeService.getOne(timeOffRequest.getApproverId()).getBody();
     Employee approver = mapper.convertToEmployeeEntity(approverResponseDto);
 
-    timeOff.setEmployeeId(employee);
-    timeOff.setApproverId(approver);
+    timeOff.setEmployee(employee);
+    timeOff.setApprover(approver);
 
     return timeOff;
   }
