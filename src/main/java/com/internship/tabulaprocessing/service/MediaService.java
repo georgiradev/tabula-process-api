@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityNotFoundException;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,10 +39,9 @@ public class MediaService {
             MediaDto mediaDto = mapper.convertToMediaDTO(entity);
 
             if(entity.getMediaExtras()!=null) {
-                List<String> extras = new ArrayList<>();
-                for (MediaExtra mediaExtra : entity.getMediaExtras()) {
-                    extras.add(String.valueOf(mediaExtra.getId()));
-                }
+                List<String> extras = entity.getMediaExtras()
+                        .stream().map(mediaExtra -> String.valueOf(mediaExtra.getId())).
+                                collect(Collectors.toList());
                 mediaDto.setMediaExtraIds(extras);
             }
             return mediaDto;
@@ -126,7 +126,9 @@ public class MediaService {
                 Optional<MediaExtra> mediaExtra = mediaExtraRepository.findById(Integer.parseInt(mediaExtraId));
                 if (!mediaExtra.isPresent()) {
                     throw new EntityNotFoundException("Media Extra not found.");
-                } else mediaExtraSet.add(mediaExtra.get());
+                } else {
+                    mediaExtraSet.add(mediaExtra.get());
+                }
             }
         }
         Media media = mapper.convertToMediaEntity(mediaDto);

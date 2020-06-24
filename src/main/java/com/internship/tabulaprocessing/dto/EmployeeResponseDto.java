@@ -18,8 +18,8 @@ public class EmployeeResponseDto {
 
     private BigDecimal ratePerHour;
 
-    AccountDto account;
+    private AccountDto account;
 
-    DepartmentDTO department;
+    private DepartmentDTO department;
 
 }
