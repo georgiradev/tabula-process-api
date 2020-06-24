@@ -31,7 +31,7 @@ public class SwaggerConfiguration {
     return new Docket(DocumentationType.SWAGGER_2)
         .select()
         .apis(
-            RequestHandlerSelectors.basePackage(TabulaProcessingApplication.class.getPackageName()))
+            RequestHandlerSelectors.basePackage(TabulaProcessingApplication.class.getPackage().getName()))
         .paths(PathSelectors.any())
         .build()
         .securitySchemes(Collections.singletonList(new ApiKey(NAME, KEY_NAME, PASS)))

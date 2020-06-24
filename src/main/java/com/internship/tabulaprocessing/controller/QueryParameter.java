@@ -1,5 +1,7 @@
 package com.internship.tabulaprocessing.controller;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -7,6 +9,8 @@ import org.springframework.data.domain.Sort;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
+@AllArgsConstructor
+@NoArgsConstructor
 public class QueryParameter {
 
     @Min(value = 1, message = "Page size cannot be less than 1")

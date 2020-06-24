@@ -22,7 +22,7 @@ public class ProcessServiceImpl {
     public Process getOneById(int id) {
         Optional<Process> processOptional = processRepository.findById(id);
 
-        if (processOptional.isEmpty()) {
+        if (!processOptional.isPresent()) {
             throw new EntityNotFoundException("Invalid process id : " + id);
         }
 
@@ -32,7 +32,7 @@ public class ProcessServiceImpl {
     public Process create(Process process) {
         Optional<Process> processOptional = getByName(process.getName());
 
-        if (processOptional.isEmpty()) {
+        if (!processOptional.isPresent()) {
             return processRepository.save(process);
         }
         throw new EntityAlreadyPresentException("A process with this name already exists");
@@ -42,7 +42,7 @@ public class ProcessServiceImpl {
 
         Optional<Process> processOptional = processRepository.findById(id);
 
-        if (processOptional.isEmpty()) {
+        if (!processOptional.isPresent()) {
             throw new EntityNotFoundException("A process with this id does not exist");
         }
         String name = process.getName();
@@ -59,7 +59,7 @@ public class ProcessServiceImpl {
 
     public void delete(int id) {
         Optional<Process> processOptional = processRepository.findById(id);
-        if (processOptional.isEmpty()) {
+        if (!processOptional.isPresent()) {
             throw new EntityNotFoundException("A process with this id does not exist");
         }
 

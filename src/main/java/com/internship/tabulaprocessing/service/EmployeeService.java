@@ -7,12 +7,14 @@ import com.internship.tabulaprocessing.dto.EmployeeRequestDto;
 import com.internship.tabulaprocessing.dto.EmployeeResponseDto;
 import com.internship.tabulaprocessing.entity.Department;
 import com.internship.tabulaprocessing.entity.Employee;
+import com.internship.tabulaprocessing.entity.Media;
 import com.internship.tabulaprocessing.entity.PagedResult;
 import com.internship.tabulaprocessing.mapper.Mapper;
 import com.internship.tabulaprocessing.repository.DepartmentRepository;
 import com.internship.tabulaprocessing.repository.EmployeeRepository;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -36,22 +38,10 @@ public class EmployeeService {
         this.mapper = mapper;
     }
 
-    public PagedResult<EmployeeResponseDto> getAll(QueryParameter queryParameter){
-
-        Page<Employee> page = employeeRepository.findAll(queryParameter.getPageable());
-
-        Page<EmployeeResponseDto> dtoPage = page.map(entity -> {
-            EmployeeResponseDto employeeResponseDto = mapper.convertToEmployeeResponseDto(entity);
-            Optional<Account> account = accountRepository.findById(entity.getAccountId());
-            employeeResponseDto.setAccountDto(mapper.convertToAccountDto(account.get()));
-            employeeResponseDto.setDepartmentDto(mapper.convertToDepartmentDTO(entity.getDepartment()));
-            return employeeResponseDto;
-        });
-
-        return new PagedResult<>(
-                dtoPage.toList(),
-                page.getNumber(),
-                page.getTotalPages());
+    public PagedResult<EmployeeResponseDto> getAll(Pageable pageable){
+        Page<Employee> employees = employeeRepository.findAll(pageable);
+        return new PagedResult<>(mapper.convertToEmployeeResponseDtoList(employees.toList()),
+                pageable.getPageNumber()+1, employees.getTotalPages());
     }
 
     public ResponseEntity<EmployeeResponseDto> getOne(int id) {

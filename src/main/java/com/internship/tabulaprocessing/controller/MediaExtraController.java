@@ -21,7 +21,7 @@ public class MediaExtraController {
 
     @GetMapping
     public PagedResult<MediaExtraDto> getAll(QueryParameter queryParameter) {
-        return  mediaExtraService.getAll(queryParameter);
+        return  mediaExtraService.getAll(queryParameter.getPageable());
     }
 
     @PostMapping
@@ -33,7 +33,7 @@ public class MediaExtraController {
     public ResponseEntity<MediaExtraDto> getOne(@PathVariable String id) {
 
         int num = Integer.parseInt(id);
-        return mediaExtraService.getOne(num);
+        return ResponseEntity.ok(mediaExtraService.getOne(num));
     }
 
     @DeleteMapping("/{id}")
