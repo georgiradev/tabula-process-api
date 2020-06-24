@@ -177,8 +177,8 @@ public class OrderItemServiceTest {
     MediaExtra mediaExtra = MediaExtraProvider.getMediaExtraInstance();
     Order order = OrderProvider.getOrderInstance();
 
-    mediaExtra.setMedias(Set.of(media));
-    media.setMediaExtras(Set.of(mediaExtra));
+    mediaExtra.setMedias(Collections.singleton(media));
+    media.setMediaExtras(Collections.singleton(mediaExtra));
     media.setOrderItems(Collections.singletonList(orderItem));
     //order.setOrderItems(Collections.singletonList(orderItem));
     orderItem.setMedia(media);

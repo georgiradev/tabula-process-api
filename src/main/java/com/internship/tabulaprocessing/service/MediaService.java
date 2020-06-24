@@ -11,7 +11,6 @@ import com.internship.tabulaprocessing.repository.MediaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.*;
-import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
@@ -29,61 +27,60 @@ public class MediaService {
     private final MediaExtraRepository mediaExtraRepository;
     private final Mapper mapper;
 
-    public PagedResult<MediaDto> getAll(QueryParameter queryParameter){
-
-        Page<Media> page = mediaRepository.findAll(queryParameter.getPageable());
-        Page<MediaDto> dtoPage = page.map(entity -> {
-            MediaDto mediaDto = mapper.convertToMediaDTO(entity);
-
-            if (entity.getMediaExtras() != null) {
-                List<String> extras = new ArrayList<>();
-                for (MediaExtra mediaExtra : entity.getMediaExtras()) {
-                    extras.add(String.valueOf(mediaExtra.getId()));
-                }
-                mediaDto.setMediaExtraIds(extras);
-            }
-            return mediaDto;
-        });
-        return new PagedResult<>(
-                dtoPage.toList(),
-                page.getNumber(),
-                page.getTotalPages());
+    public PagedResult<MediaDto> getAll(Pageable pageable){
+        Page<Media> medias = mediaRepository.findAll(pageable);
+        return new PagedResult<>(mapper.convertToMediaDtoList(medias.toList()),
+                pageable.getPageNumber()+1, medias.getTotalPages());
     }
 
-    public ResponseEntity<MediaDto> getOne(int id) {
+    public MediaDto getOne(int id) {
         Optional<Media> media = mediaRepository.findById(id);
 
         if(!media.isPresent()){
             throw new EntityNotFoundException("Media not found.");
         }
 
-        MediaDto mediaDto = mapper.convertToMediaDTO(media.get());
         List<String> extras = new ArrayList<>();
         for (MediaExtra mediaExtra : media.get().getMediaExtras()){
             extras.add(String.valueOf(mediaExtra.getId()));
         }
-        mediaDto.setMediaExtraIds(extras);
-        return  ResponseEntity.ok(mediaDto);
+
+        MediaDto resultMediaDto = mapper.convertToMediaDTO(media.get());
+        resultMediaDto.setMediaExtraIds(extras);
+        return resultMediaDto;
     }
 
-    public ResponseEntity<MediaDto> create(MediaDto mediaDto) {
-        Set<MediaExtra> mediaExtraSet = new HashSet<>();
-        List<String> ids = mediaDto.getMediaExtraIds();
-        for(String mediaExtraId: mediaDto.getMediaExtraIds()){
-            Optional<MediaExtra> mediaExtra = mediaExtraRepository.findById(Integer.parseInt(mediaExtraId));
-            if(!mediaExtra.isPresent()){
-                throw new EntityNotFoundException("Media Extra not found.");
+    public MediaDto create(MediaDto mediaDto) {
+        Media media = mapper.convertToMediaEntity(mediaDto);
+        List<String> existingIds = new ArrayList<>();
+
+        if(mediaDto.getMediaExtraIds()!=null) {
+            Set<MediaExtra> mediaExtraSet = new HashSet<>();
+            List<String> ids = mediaDto.getMediaExtraIds();
+
+            for (String mediaExtraId : ids) {
+                Optional<MediaExtra> mediaExtra = mediaExtraRepository
+                        .findById(Integer.parseInt(mediaExtraId));
+
+                if (!mediaExtra.isPresent()) {
+                    throw new EntityNotFoundException("Media Extra not found.");
+                } else {
+                    mediaExtraSet.add(mediaExtra.get());
+                    existingIds.add(mediaExtraId);
+                }
             }
-            else mediaExtraSet.add(mediaExtra.get());
+            media.setMediaExtras(mediaExtraSet);
+        }
+        else {
+            media.setMediaExtras(null);
         }
 
-        Media media = mapper.convertToMediaEntity(mediaDto);
-        media.setMediaExtras(mediaExtraSet);
         media.calculatePrice();
         mediaRepository.save(media);
-        mediaDto = mapper.convertToMediaDTO(media);
-        mediaDto.setMediaExtraIds(ids);
-        return new ResponseEntity<>(mediaDto, HttpStatus.CREATED);
+        MediaDto resultMediaDto = mapper.convertToMediaDTO(media);
+        resultMediaDto.setMediaExtraIds(existingIds);
+
+        return resultMediaDto;
     }
 
     public ResponseEntity<?> deleteById(int id) {

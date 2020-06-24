@@ -42,12 +42,11 @@ class MediaServiceTest {
     @InjectMocks
     private MediaService mediaService;
 
-    @Autowired
+    @Mock
     private Mapper mapper;
 
     @Test
     void create (){
-
         MediaDto mediaDto = new MediaDto();
         mediaDto.setId(1);
         List<String> extraIds=  new ArrayList<>();
@@ -57,20 +56,10 @@ class MediaServiceTest {
         assertThrows(EntityNotFoundException.class, () -> mediaService.create(mediaDto));
     }
 
-
-
     @Test
     void getOne() {
         when(mediaRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
         assertThrows(EntityNotFoundException.class, () -> mediaService.getOne(Mockito.anyInt()));
-    }
-
-    @Test
-    void deleteById() {
-        Media media = new Media();
-        media.setId(1);
-        when(mediaRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
-        assertThrows(RuntimeException.class, () -> mediaService.deleteById(media.getId()));
     }
 
     @Test
