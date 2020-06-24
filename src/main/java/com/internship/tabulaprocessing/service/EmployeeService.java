@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -40,8 +41,18 @@ public class EmployeeService {
 
     public PagedResult<EmployeeResponseDto> getAll(Pageable pageable){
         Page<Employee> employees = employeeRepository.findAll(pageable);
-        return new PagedResult<>(mapper.convertToEmployeeResponseDtoList(employees.toList()),
+        return new PagedResult<>(getEmployeeResponseDtoList(employees),
                 pageable.getPageNumber()+1, employees.getTotalPages());
+    }
+
+    private List<EmployeeResponseDto> getEmployeeResponseDtoList( Page<Employee> employees){
+        Page<EmployeeResponseDto> dtoPage = employees.map(entity -> {
+            EmployeeResponseDto employeeDto = mapper.convertToEmployeeResponseDto(entity);
+            Optional<Account> account = accountRepository.findById(entity.getAccountId());
+            employeeDto.setAccount(mapper.convertToAccountDto(account.get()));
+            return employeeDto;
+        });
+        return dtoPage.toList();
     }
 
     public ResponseEntity<EmployeeResponseDto> getOne(int id) {
@@ -52,9 +63,8 @@ public class EmployeeService {
         }
 
         EmployeeResponseDto employeeResponseDto = mapper.convertToEmployeeResponseDto(employee.get());
-        employeeResponseDto.setDepartmentDto(mapper.convertToDepartmentDTO(employee.get().getDepartment()));
         Optional<Account> account = accountRepository.findById(employee.get().getAccountId());
-        employeeResponseDto.setAccountDto(mapper.convertToAccountDto(account.get()));
+        employeeResponseDto.setAccount(mapper.convertToAccountDto(account.get()));
         return  ResponseEntity.ok(employeeResponseDto);
     }
 
@@ -75,8 +85,8 @@ public class EmployeeService {
         employeeRepository.save(employee);
 
         EmployeeResponseDto employeeResponseDto = mapper.convertToEmployeeResponseDto(employee);
-        employeeResponseDto.setDepartmentDto(mapper.convertToDepartmentDTO(department.get()));
-        employeeResponseDto.setAccountDto(mapper.convertToAccountDto(account.get()));
+        employeeResponseDto.setDepartment(mapper.convertToDepartmentDTO(department.get()));
+        employeeResponseDto.setAccount(mapper.convertToAccountDto(account.get()));
         return new ResponseEntity<>(employeeResponseDto, HttpStatus.CREATED);
     }
 
@@ -114,8 +124,7 @@ public class EmployeeService {
         employeeRepository.save(employee);
 
         EmployeeResponseDto employeeResponseDto = mapper.convertToEmployeeResponseDto(employee);
-        employeeResponseDto.setDepartmentDto(mapper.convertToDepartmentDTO(department.get()));
-        employeeResponseDto.setAccountDto(mapper.convertToAccountDto(account.get()));
+        employeeResponseDto.setAccount(mapper.convertToAccountDto(account.get()));
         return ResponseEntity.ok(employeeResponseDto);
     }
 }

@@ -38,8 +38,10 @@ public class Media {
     private Set<MediaExtra> mediaExtras = new HashSet<>();
 
     public void calculatePrice(){
-        for(MediaExtra mediaExtra: this.mediaExtras)
-            price=price.add(mediaExtra.getPrice());
+        if(mediaExtras!=null) {
+            for (MediaExtra mediaExtra : this.mediaExtras)
+                price = price.add(mediaExtra.getPrice());
+        }
     }
 
     @OneToMany(mappedBy = "media", cascade = CascadeType.ALL, orphanRemoval = true)

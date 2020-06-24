@@ -1,11 +1,10 @@
 package com.internship.tabulaprocessing.mediaextra;
 
-import com.internship.tabulaprocessing.dto.MediaDto;
 import com.internship.tabulaprocessing.dto.MediaExtraDto;
-import com.internship.tabulaprocessing.entity.Media;
 import com.internship.tabulaprocessing.entity.MediaExtra;
 import com.internship.tabulaprocessing.entity.PagedResult;
 import com.internship.tabulaprocessing.mapper.Mapper;
+import com.internship.tabulaprocessing.provider.MediaExtraProvider;
 import com.internship.tabulaprocessing.repository.MediaExtraRepository;
 import com.internship.tabulaprocessing.service.MediaExtraService;
 import org.junit.jupiter.api.Test;
@@ -30,7 +29,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-
 @ExtendWith(MockitoExtension.class)
 class MediaExtraServiceTest {
 
@@ -51,10 +49,7 @@ class MediaExtraServiceTest {
 
     @Test
     void getOne() {
-        MediaExtra mediaExtra = new MediaExtra();
-        mediaExtra.setId(1);
-        mediaExtra.setName("name1");
-        mediaExtra.setPrice(BigDecimal.valueOf(15));
+        MediaExtra mediaExtra = MediaExtraProvider.getMediaExtraInstance();
 
         when(mediaExtraRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(mediaExtra));
         MediaExtraDto actualMediaExtra = mediaExtraService.getOne(1);
@@ -71,8 +66,7 @@ class MediaExtraServiceTest {
 
     @Test
     void update() {
-        MediaExtraDto mediaExtraDto = new MediaExtraDto();
-        mediaExtraDto.setId(5);
+        MediaExtraDto mediaExtraDto = mapper.convertToMediaExtraDTO(MediaExtraProvider.getMediaExtraInstance());
         when(mediaExtraRepository.findById(5)).thenReturn(Optional.empty());
         assertThrows(EntityNotFoundException.class, () -> mediaExtraService.update(5, mediaExtraDto));
     }
@@ -97,6 +91,7 @@ class MediaExtraServiceTest {
 
         assertEquals(mediaExtra.getId(), actualMediaExtra.getId());
         assertEquals(mediaExtra.getName(), actualMediaExtra.getName());
+
     }
 
     @Test

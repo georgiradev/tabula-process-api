@@ -3,13 +3,17 @@ package com.internship.tabulaprocessing.employee;
 
 import com.internship.tabulacore.entity.Account;
 import com.internship.tabulacore.repository.AccountRepository;
+import com.internship.tabulaprocessing.controller.QueryParameter;
 import com.internship.tabulaprocessing.dto.EmployeeRequestDto;
 import com.internship.tabulaprocessing.dto.EmployeeResponseDto;
 import com.internship.tabulaprocessing.dto.MediaDto;
+import com.internship.tabulaprocessing.entity.Department;
 import com.internship.tabulaprocessing.entity.Employee;
 import com.internship.tabulaprocessing.entity.Media;
 import com.internship.tabulaprocessing.entity.PagedResult;
 import com.internship.tabulaprocessing.mapper.Mapper;
+import com.internship.tabulaprocessing.provider.AccountProvider;
+import com.internship.tabulaprocessing.provider.EmployeeProvider;
 import com.internship.tabulaprocessing.repository.DepartmentRepository;
 import com.internship.tabulaprocessing.repository.EmployeeRepository;
 import com.internship.tabulaprocessing.service.EmployeeService;
@@ -27,6 +31,7 @@ import org.springframework.data.domain.Pageable;
 import javax.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -65,31 +70,15 @@ class EmployeeServiceTest {
     }
 
     @Test
-    void getAll() {
-        Employee employee = new Employee();
-        employee.setId(1);
-        employee.setRatePerHour(BigDecimal.valueOf(5));
-        employee.setAccountId(1);
+    void getAllIfEmpty() {
 
-        Employee employee2 = new Employee();
-        employee2.setId(2);
-        employee2.setRatePerHour(BigDecimal.valueOf(55));
-        employee2.setAccountId(1);
+        QueryParameter queryParameter = new QueryParameter();
+        Mockito.when(employeeRepository.findAll(queryParameter.getPageable()))
+                .thenReturn(new PageImpl<>(new ArrayList<>(), queryParameter.getPageable(), 5));
 
-        List<Employee> expectedEmployee = new ArrayList<>();
-        expectedEmployee.add(employee);
-        expectedEmployee.add(employee2);
+        PagedResult<EmployeeResponseDto> employeeDtoPagedResult= employeeService.getAll(queryParameter.getPageable());
+        assertTrue(employeeDtoPagedResult.getElements().isEmpty());
 
-        Pageable pageable = PageRequest.of(1,2);
-        Page<Employee> expectedPage = new PageImpl<>(expectedEmployee, pageable, expectedEmployee.size());
-
-        doReturn(expectedPage).when(employeeRepository).findAll(pageable);
-        PagedResult<EmployeeResponseDto> actual = employeeService.getAll(pageable);
-
-        assertNotNull(actual);
-        assertEquals(mapper.convertToEmployeeResponseDtoList(expectedPage.getContent()), actual.getElements());
-        assertEquals(expectedPage.getContent().get(0), employee);
-        assertEquals(expectedPage.getTotalPages(), actual.getNumOfTotalPages());
     }
 
     @Test
@@ -119,12 +108,37 @@ class EmployeeServiceTest {
     void getOne() {
         when(employeeRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
         assertThrows(EntityNotFoundException.class, () -> employeeService.getOne(Mockito.anyInt()));
+
     }
 
     @Test
-    void update() {
+    void updateIfEmployeeNotFount() {
         EmployeeRequestDto employeeRequestDto = new EmployeeRequestDto();
         when(employeeRepository.findById(5)).thenReturn(Optional.empty());
         assertThrows(EntityNotFoundException.class, () -> employeeService.update(5, employeeRequestDto));
+    }
+    @Test
+    void updateIfDepartmentNotFount() {
+        EmployeeRequestDto employeeRequestDto = new EmployeeRequestDto();
+
+        Employee employee = new Employee();
+        when(employeeRepository.findById(anyInt())).thenReturn(Optional.of(employee));
+
+        when(departmentRepository.findById(anyInt())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> employeeService.update(5, employeeRequestDto));
+    }
+
+    @Test
+    void updateIfAccountNotFount() {
+        EmployeeRequestDto employeeRequestDto = new EmployeeRequestDto();
+
+        Employee employee = EmployeeProvider.getEmployeeInstance();
+        when(employeeRepository.findById(anyInt())).thenReturn(Optional.of(employee));
+
+        Department department  = new Department();
+        when(departmentRepository.findById(anyInt())).thenReturn(Optional.of(department));
+
+        when(accountRepository.findById(anyInt())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> employeeService.update(1, employeeRequestDto));
     }
 }
