@@ -13,6 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -22,6 +24,14 @@ public class TimeOffServiceImpl implements TimeOffService {
 
     @Override
     public TimeOff create(TimeOff timeOff) {
+        if(timeOff.getStartDateTime().isBefore(LocalDateTime.now())) {
+            throw new NotAllowedException("The startDateTime field is invalid!");
+        }
+
+        if(timeOff.getEndDateTime().isBefore(timeOff.getStartDateTime())) {
+            throw new NotAllowedException("The endDateTime field is invalid!");
+        }
+
         return timeOffRepository.save(timeOff);
     }
 

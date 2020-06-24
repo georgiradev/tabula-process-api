@@ -26,8 +26,14 @@ public class TimeOffRequest {
     @NotNull(message = "You should provide endDateTime of timeOff")
     private LocalDateTime endDateTime;
 
+    //ToDo: to be removed!
     private int employeeId;
+
+    //ToDo: to be removed!
     private int approverId;
+
+    //ToDo: to be removed!
     private String status;
+
     private String comment;
 }
