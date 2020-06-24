@@ -9,6 +9,7 @@ import com.internship.tabulaprocessing.entity.*;
 import com.internship.tabulaprocessing.entity.Process;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
+import java.util.List;
 
 @org.mapstruct.Mapper(
         unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE,
@@ -32,6 +33,10 @@ public interface Mapper {
   MediaExtraDto convertToMediaExtraDTO(MediaExtra mediaExtra);
 
   MediaExtra convertToMediaExtraEntity(MediaExtraDto mediaExtraDto);
+
+  List<MediaExtraDto> convertToMediaExtraDtoList (List<MediaExtra> medias);
+
+  List<MediaDto> convertToMediaDtoList (List<Media> medias);
 
   ProcessStageResponseDTO convertToProcessStageDTO(ProcessStage processStage);
 
@@ -57,11 +62,13 @@ public interface Mapper {
 
   OrderResponseDto orderToOrderResponseDto(Order order);
 
-    Employee convertToEmployeeEntity(EmployeeRequestDto employeeRequestDto);
+  Employee convertToEmployeeEntity(EmployeeRequestDto employeeRequestDto);
 
-    EmployeeResponseDto convertToEmployeeResponseDto(Employee employee);
+  EmployeeResponseDto convertToEmployeeResponseDto(Employee employee);
 
-    AccountDto convertToAccountDto(Account account);
+  List<EmployeeResponseDto> convertToEmployeeResponseDtoList (List<Employee> employees);
+
+  AccountDto convertToAccountDto(Account account);
 
 }
 

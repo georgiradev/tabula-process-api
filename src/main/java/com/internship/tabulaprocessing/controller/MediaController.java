@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequestMapping("/media")
@@ -22,19 +21,19 @@ public class MediaController {
 
     @GetMapping
     public PagedResult<MediaDto> getAll(QueryParameter queryParameter) {
-        return  mediaService.getAll(queryParameter);
+        return  mediaService.getAll(queryParameter.getPageable());
     }
 
     @PostMapping
     public ResponseEntity<MediaDto> create(@Valid @RequestBody MediaDto mediaDto) {
-        return mediaService.create(mediaDto);
+        return ResponseEntity.ok(mediaService.create(mediaDto));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<MediaDto> getOne(@PathVariable String id) {
 
         int num = Integer.parseInt(id);
-        return mediaService.getOne(num);
+        return ResponseEntity.ok(mediaService.getOne(num));
     }
 
     @DeleteMapping("/{id}")

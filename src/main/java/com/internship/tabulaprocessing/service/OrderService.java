@@ -25,7 +25,7 @@ public class OrderService {
     public Order getOneById(int id) {
         Optional<Order> orderOptional = orderRepository.findById(id);
 
-        if (orderOptional.isEmpty()) {
+        if (!orderOptional.isPresent()) {
             throw new EntityNotFoundException("Invalid order id : " + id);
         }
 
@@ -51,7 +51,7 @@ public class OrderService {
         //TODO
         Optional<Order> orderOptional = orderRepository.findById(id);
 
-        if (orderOptional.isEmpty()) {
+        if (!orderOptional.isPresent()) {
             throw new EntityNotFoundException("A order with id+ " + id + " does not exist");
         }
         /* Optional<Customer> customerOptional = customerService.getById(customerId)
@@ -67,7 +67,7 @@ public class OrderService {
 
     public void delete(int id) {
         Optional<Order> orderOptional = orderRepository.findById(id);
-        if (orderOptional.isEmpty()) {
+        if (!orderOptional.isPresent()) {
             throw new EntityNotFoundException("A order with id: " + id + " does not exist");
         }
 

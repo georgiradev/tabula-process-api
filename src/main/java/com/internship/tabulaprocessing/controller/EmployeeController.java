@@ -22,7 +22,7 @@ public class EmployeeController {
 
     @GetMapping
     public PagedResult<EmployeeResponseDto> getAll(QueryParameter queryParameter) {
-        return employeeService.getAll(queryParameter);
+        return employeeService.getAll(queryParameter.getPageable());
     }
 
     @PostMapping
@@ -32,13 +32,11 @@ public class EmployeeController {
 
     @GetMapping("/{id}")
     public ResponseEntity<EmployeeResponseDto> getOne(@PathVariable int id) {
-
         return employeeService.getOne(id);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable String id)  {
-
         int num = Integer.parseInt(id);
         return employeeService.deleteById(num);
     }

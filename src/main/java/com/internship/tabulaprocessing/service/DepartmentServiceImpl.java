@@ -26,7 +26,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     public Department findById(int id) {
 
         Optional<Department> optional = departmentRepository.findById(id);
-        if (optional.isEmpty()) {
+        if (!optional.isPresent()) {
             throw new EntityNotFoundException(String.format("Departmеnt with id %s, not found.", id));
         }
 
@@ -37,7 +37,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     public Department findByName(String name) {
 
         Optional<Department> optional = departmentRepository.findByName(name);
-        if (optional.isEmpty()) {
+        if (!optional.isPresent()) {
             throw new EntityNotFoundException(String.format("Department with name %s, not found!", name));
         }
         return optional.get();
