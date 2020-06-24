@@ -7,23 +7,15 @@ import com.internship.tabulaprocessing.dto.TimeOffResponse;
 import com.internship.tabulaprocessing.entity.Employee;
 import com.internship.tabulaprocessing.entity.PagedResult;
 import com.internship.tabulaprocessing.entity.TimeOff;
-import com.internship.tabulaprocessing.entity.TimeOffStatus;
 import com.internship.tabulaprocessing.mapper.Mapper;
 import com.internship.tabulaprocessing.service.EmployeeService;
-import com.internship.tabulaprocessing.service.OrderService;
 import com.internship.tabulaprocessing.service.TimeOffService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import java.util.List;
-import java.util.Optional;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 
