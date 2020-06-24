@@ -1,10 +1,13 @@
 package com.internship.tabulaprocessing.service;
 
 
+import com.internship.tabulaprocessing.dto.TimeOffRequest;
 import com.internship.tabulaprocessing.entity.PagedResult;
 import com.internship.tabulaprocessing.entity.TimeOff;
-import com.internship.tabulaprocessing.mapper.Mapper;
+import com.internship.tabulaprocessing.entity.TimeOffStatus;
+import com.internship.tabulaprocessing.exception.NotAllowedException;
 import com.internship.tabulaprocessing.repository.TimeOffRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -13,28 +16,40 @@ import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class TimeOffServiceImpl implements TimeOffService {
-    private TimeOffRepository timeOffRepository;
-    private Mapper mapper;
+    private final TimeOffRepository timeOffRepository;
 
     @Override
     public TimeOff create(TimeOff timeOff) {
-        return null;
+        return timeOffRepository.save(timeOff);
     }
 
     @Override
     public TimeOff update(TimeOff timeOff, int id) {
-        return null;
+        findById(id);
+
+        if(timeOff.getStatus().equals(TimeOffStatus.PENDING)) {
+            timeOff.setId(id);
+            return timeOffRepository.save(timeOff);
+        }
+
+        throw new NotAllowedException(String
+                .format("You cannot update time off request with id = %s," +
+                        " because it has already been %s", id ,
+                        timeOff.getStatus().toString()));
     }
 
     @Override
-    public TimeOff findById(int id) {
+    public Optional<TimeOff> findById(int id) {
         Optional<TimeOff> foundTimeOff = timeOffRepository.findById(id);
+
         if(foundTimeOff.isEmpty()) {
             throw new EntityNotFoundException(String
                     .format("TimeOff with id = %s is not found!", id));
         }
-        return foundTimeOff.get();
+
+        return foundTimeOff;
     }
 
     @Override
@@ -47,10 +62,29 @@ public class TimeOffServiceImpl implements TimeOffService {
     @Override
     public void delete(int id) {
         Optional<TimeOff> foundTimeOff = timeOffRepository.findById(id);
+
         if(foundTimeOff.isEmpty()) {
             throw new EntityNotFoundException(String
                     .format("TimeOff with id = %s is not found!", id));
         }
-        timeOffRepository.deleteById(id);
+
+        if(foundTimeOff.get().getStatus().equals(TimeOffStatus.PENDING)) {
+            timeOffRepository.deleteById(id);
+        }
+
+        if(foundTimeOff.get().getStatus().equals(TimeOffStatus.APPROVED)) {
+            throw new NotAllowedException(String
+                    .format("You cannot delete time off request with id = %s," +
+                            " because it has already been APPROVED. A deletion " +
+                            "request is send to your manager!", id));
+
+            //TODO: A deletion request to be send
+        }
+
+        if(foundTimeOff.get().getStatus().equals(TimeOffStatus.REJECTED)) {
+            throw new NotAllowedException(String
+                    .format("You cannot delete time off request with id = %s," +
+                            " because it has already been REJECTED", id));
+        }
     }
 }

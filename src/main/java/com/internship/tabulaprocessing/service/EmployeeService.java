@@ -2,12 +2,10 @@ package com.internship.tabulaprocessing.service;
 
 import com.internship.tabulacore.entity.Account;
 import com.internship.tabulacore.repository.AccountRepository;
-import com.internship.tabulaprocessing.controller.QueryParameter;
 import com.internship.tabulaprocessing.dto.EmployeeRequestDto;
 import com.internship.tabulaprocessing.dto.EmployeeResponseDto;
 import com.internship.tabulaprocessing.entity.Department;
 import com.internship.tabulaprocessing.entity.Employee;
-import com.internship.tabulaprocessing.entity.Media;
 import com.internship.tabulaprocessing.entity.PagedResult;
 import com.internship.tabulaprocessing.mapper.Mapper;
 import com.internship.tabulaprocessing.repository.DepartmentRepository;
@@ -21,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
-import java.util.function.Function;
 
 @Service
 public class EmployeeService {

@@ -25,9 +25,9 @@ public class TimeOff {
     @JoinColumn(name = "id")
     private TimeOffTypes timeOffTypeId;*/
 
-    private LocalDateTime startDate;
+    private LocalDateTime startDateTime;
 
-    private LocalDateTime endDate;
+    private LocalDateTime endDateTime;
 
     private TimeOffStatus status;
 
@@ -36,7 +36,7 @@ public class TimeOff {
     @ManyToOne (fetch = FetchType.LAZY)
     private Employee employeeId;
 
-    @ManyToOne
+    @ManyToOne (fetch = FetchType.LAZY)
     private Employee approverId;
 
 

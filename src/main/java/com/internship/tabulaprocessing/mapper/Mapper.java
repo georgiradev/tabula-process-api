@@ -13,7 +13,8 @@ import java.util.List;
 
 @org.mapstruct.Mapper(
         unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE,
-        componentModel = "spring")
+        componentModel = "spring",
+        uses ={ TimeOffStatus.class})
 public interface Mapper {
 
   Mapper INSTANCE = Mappers.getMapper(Mapper.class);
@@ -64,12 +65,24 @@ public interface Mapper {
 
   Employee convertToEmployeeEntity(EmployeeRequestDto employeeRequestDto);
 
+  @Mapping(target = "department", source = "departmentDto")
+  @Mapping(target = "account", source = "accountDto")
+  Employee convertToEmployeeEntity(EmployeeResponseDto employeeResponseDto);
+
   EmployeeResponseDto convertToEmployeeResponseDto(Employee employee);
 
   List<EmployeeResponseDto> convertToEmployeeResponseDtoList (List<Employee> employees);
 
   AccountDto convertToAccountDto(Account account);
 
+  @Mapping(target = "employeeId", ignore = true)
+  @Mapping(target = "approverId", ignore = true)
+  @Mapping(target = "status", expression = "java(com.internship.tabulaprocessing.entity.TimeOffStatus.valueOf(timeOffDto.getStatus()))")
+  TimeOff convertToTimeOffEntity (TimeOffRequest timeOffDto);
+
+  @Mapping(target = "employeeId", expression = "java(timeOff.getEmployeeId().getId())")
+  @Mapping(target = "approverId", expression = "java(timeOff.getApproverId().getId())")
+  TimeOffResponse convertToTimeOffResponse (TimeOff timeOff);
 }
 
 
