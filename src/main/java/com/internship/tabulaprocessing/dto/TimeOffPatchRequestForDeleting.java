@@ -6,27 +6,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TimeOffResponse {
-    private int id;
-
-    //ToDo: to be set to enum type
-    private String typeOfTimeOff;
-
-    private LocalDateTime startDateTime;
-
-    private LocalDateTime endDateTime;
-
-    private int employeeId;
-
-    private int approverId;
-
+public class TimeOffPatchRequestForDeleting {
     private TimeOffStatus status;
-
-    private String comment;
 }

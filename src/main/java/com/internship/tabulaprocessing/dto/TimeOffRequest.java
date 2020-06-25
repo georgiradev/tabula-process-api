@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TimeOffRequest {
+    //ToDo: to be set to enum type
     @NotNull(message = "Type off time off cannot be null!")
     private String typeOfTimeOff;
 
@@ -26,10 +27,8 @@ public class TimeOffRequest {
     @NotNull(message = "You should provide endDateTime of timeOff")
     private LocalDateTime endDateTime;
 
-    //ToDo: to be removed!
     private int employeeId;
 
-    //ToDo: to be removed!
     private int approverId;
 
     private String comment;

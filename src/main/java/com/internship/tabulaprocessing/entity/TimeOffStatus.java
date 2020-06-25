@@ -3,5 +3,6 @@ package com.internship.tabulaprocessing.entity;
 public enum TimeOffStatus {
     PENDING,
     REJECTED,
-    APPROVED
+    APPROVED,
+    PENDING_DELETION
 }

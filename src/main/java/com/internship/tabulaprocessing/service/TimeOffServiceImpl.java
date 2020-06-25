@@ -62,7 +62,6 @@ public class TimeOffServiceImpl implements TimeOffService {
             throw new EntityNotFoundException(String
                     .format("TimeOff with id = %s is not found!", id));
         }
-
         return foundTimeOff;
     }
 
@@ -91,12 +90,15 @@ public class TimeOffServiceImpl implements TimeOffService {
         }
 
         if(foundTimeOff.get().getStatus().equals(TimeOffStatus.APPROVED)) {
+
+            foundTimeOff.get().setStatus(TimeOffStatus.PENDING_DELETION);
+            //TODO: update with patch
+            update(foundTimeOff.get(),id);
+
             throw new NotAllowedException(String
                     .format("You cannot delete time off request with id = %s," +
                             " because it has already been APPROVED. A deletion " +
-                            "request is send to your manager!", id));
-
-            //TODO: A deletion request to be created
+                            "request is send!", id));
         }
 
         if(foundTimeOff.get().getStatus().equals(TimeOffStatus.REJECTED)) {
