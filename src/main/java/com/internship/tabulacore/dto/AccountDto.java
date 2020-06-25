@@ -1,11 +1,28 @@
 package com.internship.tabulacore.dto;
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Getter
+@Setter
 public class AccountDto {
 
-    private String fullName;
-    private String email;
+  private int id;
 
+  private String fullName;
+
+  private String email;
+
+  @JsonIgnore
+  private String password;
+
+  private LocalDateTime datetimeCreated;
+
+  private LocalDateTime datetimeUpdated;
+
+  private List<RoleDto> roles;
 }

@@ -70,6 +70,10 @@ public interface Mapper {
 
   AccountDto convertToAccountDto(Account account);
 
+  @Mapping(source = "companyId", target = "company.id")
+  Customer customerDtoToEntity(CustomerRequestDto customerRequestDto);
+
+  CustomerResponseDto customerEntityToDto(Customer customer);
 }
 
 

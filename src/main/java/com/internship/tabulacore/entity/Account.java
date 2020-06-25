@@ -21,33 +21,32 @@ import java.util.Set;
 @Table(name="accounts", catalog = "tabulacore")
 public class Account {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column (name="account_id")
-    private int id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column (name="account_id")
+  private int id;
 
-    private String fullName;
+  private String fullName;
 
-    private String email;
+  private String email;
 
-    private String password;
+  private String password;
 
-    @CreatedDate
-    private LocalDateTime datetimeCreated;
+  @CreatedDate
+  private LocalDateTime datetimeCreated;
 
-    @LastModifiedDate
-    private LocalDateTime datetimeUpdated;
+  @LastModifiedDate
+  private LocalDateTime datetimeUpdated;
 
-    @EqualsAndHashCode.Exclude
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {
-            CascadeType.MERGE,
-            CascadeType.PERSIST
-    })
-    @Fetch(FetchMode.JOIN)
-    @JoinTable(name = "accounts_roles",
-            joinColumns = @JoinColumn(name = "account_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles = new HashSet<>();
+  @EqualsAndHashCode.Exclude
+  @ManyToMany(fetch = FetchType.EAGER, cascade = {
+          CascadeType.MERGE,
+          CascadeType.PERSIST
+  })
+  @Fetch(FetchMode.JOIN)
+  @JoinTable(name = "accounts_roles",
+          joinColumns = @JoinColumn(name = "account_id"),
+          inverseJoinColumns = @JoinColumn(name = "role_id"))
+  private Set<Role> roles = new HashSet<>();
 
 }
-

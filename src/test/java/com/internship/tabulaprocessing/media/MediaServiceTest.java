@@ -104,5 +104,6 @@ class MediaServiceTest {
         when(mediaRepository.findById(5)).thenReturn(Optional.empty());
         assertThrows(EntityNotFoundException.class, () -> mediaService.update(5, mediaDto));
     }
+
 }
 
