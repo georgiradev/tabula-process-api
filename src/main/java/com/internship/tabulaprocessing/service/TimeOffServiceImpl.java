@@ -92,7 +92,6 @@ public class TimeOffServiceImpl implements TimeOffService {
         if(foundTimeOff.get().getStatus().equals(TimeOffStatus.APPROVED)) {
 
             foundTimeOff.get().setStatus(TimeOffStatus.PENDING_DELETION);
-            //TODO: update with patch
             update(foundTimeOff.get(),id);
 
             throw new NotAllowedException(String
