@@ -18,12 +18,10 @@ import java.util.Set;
 @Data
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name="accounts", catalog = "tabulacore")
 public class Account {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column (name="account_id")
   private int id;
 
   private String fullName;
@@ -44,7 +42,7 @@ public class Account {
           CascadeType.PERSIST
   })
   @Fetch(FetchMode.JOIN)
-  @JoinTable(name = "accounts_roles",
+  @JoinTable(name = "account_role",
           joinColumns = @JoinColumn(name = "account_id"),
           inverseJoinColumns = @JoinColumn(name = "role_id"))
   private Set<Role> roles = new HashSet<>();

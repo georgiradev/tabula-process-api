@@ -21,7 +21,7 @@ public class Process {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    protected int id;
+    private int id;
 
     @NotNull
     private String name;
