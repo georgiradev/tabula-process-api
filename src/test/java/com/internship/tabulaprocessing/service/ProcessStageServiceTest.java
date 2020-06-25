@@ -48,7 +48,7 @@ class ProcessStageServiceTest {
 
     Mockito.when(repository.findAll(queryParameter.getPageable())).thenReturn(stages);
 
-    List<ProcessStage> allProcessStages = service.findAll(queryParameter.getPageable());
+    Page<ProcessStage> allProcessStages = service.findAll(queryParameter.getPageable());
 
     for (ProcessStage stage : allProcessStages) {
       assertEquals(stage.getDepartment(), stage.getDepartmentEntity().getName());

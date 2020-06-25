@@ -4,6 +4,7 @@ import com.internship.tabulaprocessing.entity.Department;
 import com.internship.tabulaprocessing.exception.EntityAlreadyPresentException;
 import com.internship.tabulaprocessing.repository.DepartmentRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -18,8 +19,9 @@ public class DepartmentServiceImpl implements DepartmentService {
     private final DepartmentRepository departmentRepository;
 
     @Override
-    public List<Department> findAll(Pageable pageable) {
-        return departmentRepository.findAll(pageable).toList();
+    public Page<Department> findAll(Pageable pageable) {
+
+        return departmentRepository.findAll(pageable);
     }
 
     @Override
