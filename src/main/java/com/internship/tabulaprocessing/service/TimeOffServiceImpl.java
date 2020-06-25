@@ -96,7 +96,7 @@ public class TimeOffServiceImpl implements TimeOffService {
                             " because it has already been APPROVED. A deletion " +
                             "request is send to your manager!", id));
 
-            //TODO: A deletion request to be send
+            //TODO: A deletion request to be created
         }
 
         if(foundTimeOff.get().getStatus().equals(TimeOffStatus.REJECTED)) {

@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "`order`", catalog = "tabula")
+@Table(name = "`order`")
 public class Order {
 
     @Id
