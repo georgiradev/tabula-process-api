@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class TimeOffResponse {
     private int id;
-    //TODO: to be changed to enum type
     private String typeOfTimeOff;
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;

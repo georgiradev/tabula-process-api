@@ -1,7 +1,5 @@
 package com.internship.tabulaprocessing.service;
 
-
-import com.internship.tabulaprocessing.dto.TimeOffRequest;
 import com.internship.tabulaprocessing.entity.PagedResult;
 import com.internship.tabulaprocessing.entity.TimeOff;
 import com.internship.tabulaprocessing.entity.TimeOffStatus;
@@ -13,7 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
-import java.time.LocalDate;
+import java.util.List;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -32,15 +30,21 @@ public class TimeOffServiceImpl implements TimeOffService {
             throw new NotAllowedException("The endDateTime field is invalid!");
         }
 
+        timeOff.setStatus(TimeOffStatus.PENDING);
         return timeOffRepository.save(timeOff);
     }
 
     @Override
     public TimeOff update(TimeOff timeOff, int id) {
-        findById(id);
+        Optional<TimeOff> foundTimeOff = findById(id);
+
+        if(foundTimeOff.isPresent()) {
+            timeOff.setStatus(foundTimeOff.get().getStatus());
+        }
 
         if(timeOff.getStatus().equals(TimeOffStatus.PENDING)) {
             timeOff.setId(id);
+            timeOff.setStatus(TimeOffStatus.PENDING);
             return timeOffRepository.save(timeOff);
         }
 
@@ -67,6 +71,10 @@ public class TimeOffServiceImpl implements TimeOffService {
         Page<TimeOff> timeOffs = timeOffRepository.findAll(pageable);
         return new PagedResult<>(timeOffs.toList(), pageable.getPageNumber()+1,
                 timeOffs.getTotalPages());
+    }
+
+    public List<TimeOff> getAllAsList() {
+        return  timeOffRepository.findAll();
     }
 
     @Override

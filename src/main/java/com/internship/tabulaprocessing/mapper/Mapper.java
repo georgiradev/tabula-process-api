@@ -75,13 +75,12 @@ public interface Mapper {
 
   AccountDto convertToAccountDto(Account account);
 
-  @Mapping(target = "employeeId", ignore = true)
-  @Mapping(target = "approverId", ignore = true)
-  @Mapping(target = "status", expression = "java(com.internship.tabulaprocessing.entity.TimeOffStatus.valueOf(timeOffDto.getStatus()))")
+  @Mapping(target = "employee", ignore = true)
+  @Mapping(target = "approver", ignore = true)
   TimeOff convertToTimeOffEntity (TimeOffRequest timeOffDto);
 
-  @Mapping(target = "employeeId", expression = "java(timeOff.getEmployeeId().getId())")
-  @Mapping(target = "approverId", expression = "java(timeOff.getApproverId().getId())")
+  @Mapping(target = "employeeId", expression = "java(timeOff.getEmployee().getId())")
+  @Mapping(target = "approverId", expression = "java(timeOff.getApprover().getId())")
   TimeOffResponse convertToTimeOffResponse (TimeOff timeOff);
 }
 

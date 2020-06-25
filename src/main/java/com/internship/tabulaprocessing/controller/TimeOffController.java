@@ -31,8 +31,6 @@ public class TimeOffController {
 
   @PostMapping
   public ResponseEntity<TimeOffResponse> create(@Valid @RequestBody TimeOffRequest timeOffRequest) {
-
-    timeOffRequest.setStatus(timeOffRequest.getStatus().toUpperCase());
     TimeOff savedTimeOff = timeOffService.create(fetchAndSetEmployeeAndApprover(timeOffRequest));
     return ResponseEntity.ok(mapper.convertToTimeOffResponse(savedTimeOff));
   }
@@ -51,7 +49,6 @@ public class TimeOffController {
   public ResponseEntity<TimeOffResponse> update(@PathVariable("id") @Min(1) int id,
                                                 @Valid @RequestBody TimeOffRequest timeOffRequest) {
 
-    timeOffRequest.setStatus(timeOffRequest.getStatus().toUpperCase());
     TimeOff updatedTimeOff = timeOffService.update(fetchAndSetEmployeeAndApprover(timeOffRequest), id);
     return ResponseEntity.ok(mapper.convertToTimeOffResponse(updatedTimeOff));
   }

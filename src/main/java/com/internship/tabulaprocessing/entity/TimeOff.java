@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name="timeOffs")
@@ -22,8 +23,7 @@ public class TimeOff {
 
    /* @ManyToOne(fetch = FetchType.LAZY,
                cascade = {CascadeType.DETACH, CascadeType.REFRESH, CascadeType.MERGE})
-    @JoinColumn(name = "id")
-    private TimeOffTypes timeOffTypeId;*/
+    private TimeOffTypes timeOffType;*/
 
     private LocalDateTime startDateTime;
 
@@ -39,5 +39,22 @@ public class TimeOff {
     @ManyToOne (fetch = FetchType.LAZY)
     private Employee approver;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TimeOff timeOff = (TimeOff) o;
+        return  id == timeOff.id &&
+                Objects.equals(startDateTime, timeOff.startDateTime) &&
+                Objects.equals(endDateTime, timeOff.endDateTime) &&
+                status == timeOff.status &&
+                Objects.equals(comment, timeOff.comment) &&
+                Objects.equals(employee, timeOff.employee) &&
+                Objects.equals(approver, timeOff.approver);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, startDateTime, endDateTime, status, comment, employee, approver);
+    }
 }

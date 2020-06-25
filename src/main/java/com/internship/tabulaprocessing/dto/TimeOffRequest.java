@@ -32,8 +32,5 @@ public class TimeOffRequest {
     //ToDo: to be removed!
     private int approverId;
 
-    //ToDo: to be removed!
-    private String status;
-
     private String comment;
 }
