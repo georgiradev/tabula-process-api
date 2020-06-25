@@ -12,23 +12,26 @@ import java.util.List;
 @Table(name = "company")
 public class Company {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private int id;
 
-    private String name;
+  private String name;
 
-    private double discountRate;
+  private double discountRate;
 
-    private String address;
+  private String address;
 
-    private String country;
+  private String country;
 
-    private String city;
+  private String city;
 
-    private String vatNumber;
+  private String vatNumber;
 
-//  @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-//  private List<Customer> customers;
-
+  @OneToMany(
+      mappedBy = "company",
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY,
+      orphanRemoval = true)
+  private List<Customer> customers;
 }

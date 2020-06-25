@@ -17,8 +17,7 @@ public class OrderProvider {
         Customer customer = new Customer();
         customer.setId(1);
         customer.setAccountId(1);
-        customer.setCompanyId(1);
-        customer.setPhoneNumber("0877722846");
+        customer.setPhone("0877722846");
 
         // set the order
         Order order = new Order();

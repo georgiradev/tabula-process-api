@@ -48,13 +48,13 @@ public class OrderItemService {
   private void validateOrderItem(OrderItem orderItem) {
     Optional<Media> foundMedia = mediaRepository.findById(orderItem.getMedia().getId());
 
-    if (!foundMedia.isPresent()) {
+    if (foundMedia.isEmpty()) {
       throw new EntityNotFoundException("Media not found with id " + orderItem.getMedia().getId());
     }
     orderItem.setMedia(foundMedia.get());
     Optional<Order> foundOrder = orderRepository.findById(orderItem.getOrder().getId());
 
-    if (!foundOrder.isPresent()) {
+    if (foundOrder.isEmpty()) {
       throw new EntityNotFoundException("Order not found with id " + orderItem.getOrder().getId());
     }
     orderItem.setOrder(foundOrder.get());
@@ -91,7 +91,7 @@ public class OrderItemService {
     validateOrderItem(orderItem);
     Optional<OrderItem> foundOrderItem = orderItemRepository.findById(id);
 
-    if(!foundOrderItem.isPresent()) {
+    if(foundOrderItem.isEmpty()) {
       throw new EntityNotFoundException("Order item not found with id " + orderItem.getId());
     }
     OrderItem orderItemToUpdate = foundOrderItem.get();

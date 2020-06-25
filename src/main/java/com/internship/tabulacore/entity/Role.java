@@ -24,4 +24,3 @@ public class Role {
     @ManyToMany(mappedBy = "roles")
     private Set<Account> accounts = new HashSet<>();
 }
-

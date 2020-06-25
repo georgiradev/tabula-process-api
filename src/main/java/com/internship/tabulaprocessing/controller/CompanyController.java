@@ -33,7 +33,7 @@ public class CompanyController {
     Company company = mapper.companyRequestDtoToCompany(companyRequestDto);
     Optional<Company> savedCompany = companyService.save(company);
 
-    if (!savedCompany.isPresent()) {
+    if (savedCompany.isEmpty()) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
     CompanyResponseDto companyResponseDto = mapper.companyToCompanyResponseDto(savedCompany.get());
