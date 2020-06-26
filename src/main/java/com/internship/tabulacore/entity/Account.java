@@ -1,7 +1,9 @@
 package com.internship.tabulacore.entity;
 
+import com.internship.tabulaprocessing.entity.Employee;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;

@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class CustomerResponseDto {
+public class CustomerDtoNoCompany {
 
   private int id;
 
@@ -17,10 +17,6 @@ public class CustomerResponseDto {
   private int accountId;
 
   private String phone;
-
-  private CompanyDtoNoCustomers company;
-
-  private int companyId;
 
   private List<String> ordersIds;
 }
