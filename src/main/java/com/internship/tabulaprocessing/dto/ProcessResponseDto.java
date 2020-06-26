@@ -10,6 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProcessResponseDto {
+
     private int id;
     private String name;
 }

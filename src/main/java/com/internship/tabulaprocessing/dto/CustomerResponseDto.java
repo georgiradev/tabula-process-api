@@ -10,17 +10,17 @@ import java.util.List;
 @Setter
 public class CustomerResponseDto {
 
-    private int id;
+  private int id;
 
-    private AccountDto account;
+  private AccountDto account;
 
-    private int accountId;
+  private int accountId;
 
-    private String phone;
+  private String phone;
 
-    private CompanyResponseDto company;
+  private CompanyResponseDto company;
 
-    private int companyId;
+  private int companyId;
 
-    private List<String> ordersIds;
+  private List<String> ordersIds;
 }

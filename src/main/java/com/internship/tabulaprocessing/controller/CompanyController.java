@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/companies")
 @RequiredArgsConstructor
 public class CompanyController {
-
   private final CompanyService companyService;
   private final Mapper mapper;
 

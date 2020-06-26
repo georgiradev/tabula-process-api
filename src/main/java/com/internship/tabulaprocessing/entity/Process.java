@@ -1,6 +1,5 @@
 package com.internship.tabulaprocessing.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,6 +27,5 @@ public class Process {
 
     @OneToMany(mappedBy = "processEntity",fetch = FetchType.EAGER,cascade = {CascadeType.REMOVE})
     private List<ProcessStage> processStageList = new ArrayList<>();
-
 
 }

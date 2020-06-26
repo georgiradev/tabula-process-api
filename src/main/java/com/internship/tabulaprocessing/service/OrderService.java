@@ -18,70 +18,69 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class OrderService {
 
-    private final OrderRepository orderRepository;
+  private final OrderRepository orderRepository;
 
-    //private final CustomerService customerService;
+  // private final CustomerService customerService;
 
-    public Order getOneById(int id) {
-        Optional<Order> orderOptional = orderRepository.findById(id);
+  public Order getOneById(int id) {
+    Optional<Order> orderOptional = orderRepository.findById(id);
 
-        if (!orderOptional.isPresent()) {
-            throw new EntityNotFoundException("Invalid order id : " + id);
-        }
-
-        return orderOptional.get();
-
+    if (!orderOptional.isPresent()) {
+      throw new EntityNotFoundException("Invalid order id : " + id);
     }
 
-    public Order create(Order order, Integer customerId) throws NotSupportedException {
-        //TODO
-      /* Optional<Customer> customerOptional = customerService.getById(customerId)
-              if (customerOptional.isEmpty()) {
-            throw new EntityNotFoundException("A customer with id : " + id + " does not exist");
+    return orderOptional.get();
+  }
 
-        }
-                return orderRepository.save(order);
+  public Order create(Order order, Integer customerId) throws NotSupportedException {
+    // TODO
+    /* Optional<Customer> customerOptional = customerService.getById(customerId)
+          if (customerOptional.isEmpty()) {
+        throw new EntityNotFoundException("A customer with id : " + id + " does not exist");
 
-        */
-        throw new NotSupportedException();
+    }
+            return orderRepository.save(order);
+
+    */
+    throw new NotSupportedException();
+  }
+
+  public Order update(Order order, int id) {
+
+    // TODO
+    Optional<Order> orderOptional = orderRepository.findById(id);
+
+    if (!orderOptional.isPresent()) {
+      throw new EntityNotFoundException("A order with id+ " + id + " does not exist");
+    }
+    /* Optional<Customer> customerOptional = customerService.getById(customerId)
+          if (customerOptional.isEmpty()) {
+        throw new EntityNotFoundException("A customer with id : " + id + " does not exist");
+
+    }
+    */
+    order.setId(id);
+
+    return orderRepository.save(order);
+  }
+
+  public void delete(int id) {
+    Optional<Order> orderOptional = orderRepository.findById(id);
+    if (!orderOptional.isPresent()) {
+      throw new EntityNotFoundException("A order with id: " + id + " does not exist");
     }
 
-    public Order update(Order order, int id) {
+    orderRepository.deleteById(id);
+  }
 
-        //TODO
-        Optional<Order> orderOptional = orderRepository.findById(id);
+  public List<Order> findAll(int pageNo) {
+    Pageable paging = PageRequest.of(pageNo, 10);
+    Page<Order> pagedResult = orderRepository.findAll(paging);
 
-        if (!orderOptional.isPresent()) {
-            throw new EntityNotFoundException("A order with id+ " + id + " does not exist");
-        }
-        /* Optional<Customer> customerOptional = customerService.getById(customerId)
-              if (customerOptional.isEmpty()) {
-            throw new EntityNotFoundException("A customer with id : " + id + " does not exist");
-
-        }
-        */
-        order.setId(id);
-
-        return orderRepository.save(order);
+    if (pagedResult.hasContent()) {
+      return pagedResult.getContent();
+    } else {
+      throw new EntityNotFoundException("No orders");
     }
-
-    public void delete(int id) {
-        Optional<Order> orderOptional = orderRepository.findById(id);
-        if (!orderOptional.isPresent()) {
-            throw new EntityNotFoundException("A order with id: " + id + " does not exist");
-        }
-
-        orderRepository.deleteById(id);
-    }
-
-    public List<Order> findAll(int pageNo) {
-        Pageable paging = PageRequest.of(pageNo, 10);
-        Page<Order> pagedResult = orderRepository.findAll(paging);
-
-        if (pagedResult.hasContent()) {
-            return pagedResult.getContent();
-        } else {
-            throw new EntityNotFoundException("No orders");
-        }
-    }
+  }
 }

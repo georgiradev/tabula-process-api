@@ -26,20 +26,20 @@ public class ProcessStageServiceImpl implements ProcessStageService {
     @Override
     public ProcessStage persist(ProcessStage processStage) {
 
-        Optional<ProcessStage> optionalProcessStage = repository.findByName(processStage.getName());
+    Optional<ProcessStage> optionalProcessStage = repository.findByName(processStage.getName());
         if (optionalProcessStage.isPresent()) {
-            throw new EntityAlreadyPresentException(
-                    String.format("Process Stage with name %s, already present.", processStage.getName()));
-        }
+        throw new EntityAlreadyPresentException(
+                String.format("Process Stage with name %s, already present.", processStage.getName()));
+    }
 
         if (processStage.getNextStage() != null) {
-            processStage.setNextStageEntity(this.getNextStageByName(processStage.getNextStage()));
-        }
+        processStage.setNextStageEntity(this.getNextStageByName(processStage.getNextStage()));
+    }
         processStage.setDepartmentEntity(this.getDepartmentByName(processStage.getDepartment()));
         processStage.setProcessEntity(this.getProcessByName(processStage.getProcess()));
 
         return repository.save(processStage);
-    }
+}
 
     @Override
     public ProcessStage update(ProcessStage processStage, int id) {
@@ -131,4 +131,5 @@ public class ProcessStageServiceImpl implements ProcessStageService {
 
         return processStage;
     }
+
 }

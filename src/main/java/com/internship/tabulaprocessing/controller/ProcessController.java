@@ -20,54 +20,55 @@ import java.util.List;
 @RequestMapping("/processes")
 public class ProcessController {
 
-    private ProcessServiceImpl processService;
+  private ProcessServiceImpl processService;
 
-    private Mapper mapper;
+  private Mapper mapper;
 
-    @Autowired
-    public ProcessController(ProcessServiceImpl processService, Mapper mapper) {
-        this.processService = processService;
-        this.mapper = mapper;
+  @Autowired
+  public ProcessController(ProcessServiceImpl processService, Mapper mapper) {
+    this.processService = processService;
+    this.mapper = mapper;
+  }
+
+  @GetMapping("/{id}")
+  public HttpEntity get(@PathVariable(name = "id") Integer id) {
+    Process process = processService.getOneById(id);
+    return ResponseEntity.ok(mapper.processToProcessGetDTO(process));
+  }
+
+  @GetMapping
+  public ResponseEntity<List<ProcessResponseDto>> getAllByPage(
+      @RequestParam(defaultValue = "0") int pageNo) {
+
+    List<Process> allProcesses = processService.findAll(pageNo);
+    List<ProcessResponseDto> allToDto = new ArrayList<>();
+    for (Process process : allProcesses) {
+      allToDto.add(mapper.processToProcessGetDTO(process));
     }
+    return ResponseEntity.ok(allToDto);
+  }
 
-    @GetMapping("/{id}")
-    public HttpEntity get(@PathVariable(name = "id") Integer id) {
-        Process process = processService.getOneById(id);
-        return ResponseEntity.ok(mapper.processToProcessGetDTO(process));
-    }
+  @PostMapping
+  public HttpEntity create(@Valid @RequestBody ProcessRequestDto processRequestDto) {
 
-    @GetMapping
-    public ResponseEntity<List<ProcessResponseDto>> getAllByPage(
-            @RequestParam(defaultValue = "0") int pageNo) {
+    Process process = mapper.processPostDTOtoProcess(processRequestDto);
+    Process createdProcess = processService.create(process);
+    return ResponseEntity.ok(mapper.processToProcessGetDTO(createdProcess));
+  }
 
-        List<Process> allProcesses = processService.findAll(pageNo);
-        List<ProcessResponseDto> allToDto = new ArrayList<>();
-        for (Process process : allProcesses) {
-            allToDto.add(mapper.processToProcessGetDTO(process));
-        }
-        return ResponseEntity.ok(allToDto);
-    }
+  @PutMapping("/{id}")
+  public HttpEntity update(
+      @PathVariable("id") Integer id, @Valid @RequestBody ProcessRequestDto processRequestDto) {
 
-    @PostMapping
-    public HttpEntity create(@Valid @RequestBody ProcessRequestDto processRequestDto) {
+    Process process = mapper.processPutDTOtoProcess(processRequestDto);
+    Process updatedProcess = processService.update(process, id);
+    return ResponseEntity.ok(mapper.processToProcessGetDTO(updatedProcess));
+  }
 
-        Process process = mapper.processPostDTOtoProcess(processRequestDto);
-        Process createdProcess = processService.create(process);
-        return ResponseEntity.ok(mapper.processToProcessGetDTO(createdProcess));
-    }
+  @DeleteMapping("/{id}")
+  public HttpEntity delete(@PathVariable("id") Integer id) {
 
-    @PutMapping("/{id}")
-    public HttpEntity update(@PathVariable("id") Integer id, @Valid @RequestBody ProcessRequestDto processRequestDto) {
-
-        Process process = mapper.processPutDTOtoProcess(processRequestDto);
-        Process updatedProcess = processService.update(process, id);
-        return ResponseEntity.ok(mapper.processToProcessGetDTO(updatedProcess));
-    }
-
-    @DeleteMapping("/{id}")
-    public HttpEntity delete(@PathVariable("id") Integer id) {
-
-        processService.delete(id);
-        return ResponseEntity.ok("Deleted successfully");
-    }
+    processService.delete(id);
+    return ResponseEntity.ok("Deleted successfully");
+  }
 }

@@ -69,3 +69,4 @@ public class DepartmentController {
         return ResponseEntity.ok(String.format("Department with id of %s, sucessfully deleted!", id));
     }
 }
+

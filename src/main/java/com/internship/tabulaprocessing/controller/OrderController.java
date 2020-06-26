@@ -1,6 +1,5 @@
 package com.internship.tabulaprocessing.controller;
 
-
 import com.internship.tabulaprocessing.dto.OrderRequestDto;
 import com.internship.tabulaprocessing.dto.OrderResponseDto;
 import com.internship.tabulaprocessing.entity.Order;
@@ -22,54 +21,56 @@ import java.util.List;
 @RequestMapping("/orders")
 public class OrderController {
 
-    private OrderService orderService;
+  private OrderService orderService;
 
-    private Mapper mapper;
+  private Mapper mapper;
 
-    @Autowired
-    public OrderController(OrderService orderService, Mapper mapper) {
-        this.orderService = orderService;
-        this.mapper = mapper;
+  @Autowired
+  public OrderController(OrderService orderService, Mapper mapper) {
+    this.orderService = orderService;
+    this.mapper = mapper;
+  }
+
+  @GetMapping("/{id}")
+  public HttpEntity get(@PathVariable(name = "id") Integer id) {
+    Order order = orderService.getOneById(id);
+    return ResponseEntity.ok(mapper.orderToOrderResponseDto(order));
+  }
+
+  @GetMapping
+  public ResponseEntity<List<OrderResponseDto>> getAllByPage(
+      @RequestParam(defaultValue = "0") int pageNo) {
+
+    List<Order> allOrders = orderService.findAll(pageNo);
+    List<OrderResponseDto> allToDto = new ArrayList<>();
+    for (Order orders : allOrders) {
+      allToDto.add(mapper.orderToOrderResponseDto(orders));
     }
+    return ResponseEntity.ok(allToDto);
+  }
 
-    @GetMapping("/{id}")
-    public HttpEntity get(@PathVariable(name = "id") Integer id) {
-        Order order = orderService.getOneById(id);
-        return ResponseEntity.ok(mapper.orderToOrderResponseDto(order));
-    }
+  @PostMapping
+  public HttpEntity create(@RequestBody @Valid OrderRequestDto orderRequestDto)
+      throws NotSupportedException {
 
-    @GetMapping
-    public ResponseEntity<List<OrderResponseDto>> getAllByPage(
-            @RequestParam(defaultValue = "0") int pageNo) {
+    Order order = mapper.orderRequestDtoToOrder(orderRequestDto);
+    Order createdOrder = orderService.create(order, order.getCustomer().getId());
+    return ResponseEntity.ok(mapper.orderToOrderResponseDto(createdOrder));
+  }
 
-        List<Order> allOrders = orderService.findAll(pageNo);
-        List<OrderResponseDto> allToDto = new ArrayList<>();
-        for (Order orders : allOrders) {
-            allToDto.add(mapper.orderToOrderResponseDto(orders));
-        }
-        return ResponseEntity.ok(allToDto);
-    }
+  @PutMapping("/{id}")
+  public HttpEntity update(
+      @PathVariable("id") Integer id, @RequestBody @Valid OrderRequestDto orderRequestDto) {
 
-    @PostMapping
-    public HttpEntity create(@RequestBody @Valid OrderRequestDto orderRequestDto) throws NotSupportedException {
+    Order order = mapper.orderRequestDtoToOrder(orderRequestDto);
+    Order updatedOrder = orderService.update(order, id);
+    return ResponseEntity.ok(mapper.orderToOrderResponseDto(updatedOrder));
+  }
 
-        Order order = mapper.orderRequestDtoToOrder(orderRequestDto);
-        Order createdOrder = orderService.create(order, order.getCustomer().getId());
-        return ResponseEntity.ok(mapper.orderToOrderResponseDto(createdOrder));
-    }
+  @DeleteMapping("/{id}")
+  public HttpEntity delete(@PathVariable("id") Integer id) {
 
-    @PutMapping("/{id}")
-    public HttpEntity update(@PathVariable("id") Integer id, @RequestBody @Valid OrderRequestDto orderRequestDto) {
-
-        Order order = mapper.orderRequestDtoToOrder(orderRequestDto);
-        Order updatedOrder = orderService.update(order, id);
-        return ResponseEntity.ok(mapper.orderToOrderResponseDto(updatedOrder));
-    }
-
-    @DeleteMapping("/{id}")
-    public HttpEntity delete(@PathVariable("id") Integer id) {
-
-        orderService.delete(id);
-        return ResponseEntity.ok("Deleted successfully");
-    }
+    orderService.delete(id);
+    return ResponseEntity.ok("Deleted successfully");
+  }
 }

@@ -23,10 +23,7 @@ public class ProcessStagePersistDTO {
 
   private String nextStage;
 
-  @NotBlank
-  private String process;
+  @NotBlank private String process;
 
-  @NotBlank
-  private String department;
-
+  @NotBlank private String department;
 }

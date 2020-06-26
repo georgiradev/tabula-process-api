@@ -3,17 +3,16 @@ package com.internship.tabulaprocessing.mapper;
 import com.internship.tabulacore.dto.AccountDto;
 import com.internship.tabulacore.entity.Account;
 import com.internship.tabulaprocessing.dto.*;
-
-import com.internship.tabulaprocessing.entity.*;
-
 import com.internship.tabulaprocessing.entity.Process;
+import com.internship.tabulaprocessing.entity.*;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
+
 import java.util.List;
 
 @org.mapstruct.Mapper(
-        unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE,
-        componentModel = "spring")
+    unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE,
+    componentModel = "spring")
 public interface Mapper {
 
   Mapper INSTANCE = Mappers.getMapper(Mapper.class);
@@ -34,9 +33,9 @@ public interface Mapper {
 
   MediaExtra convertToMediaExtraEntity(MediaExtraDto mediaExtraDto);
 
-  List<MediaExtraDto> convertToMediaExtraDtoList (List<MediaExtra> medias);
+  List<MediaExtraDto> convertToMediaExtraDtoList(List<MediaExtra> medias);
 
-  List<MediaDto> convertToMediaDtoList (List<Media> medias);
+  List<MediaDto> convertToMediaDtoList(List<Media> medias);
 
   ProcessStageResponseDTO convertToProcessStageDTO(ProcessStage processStage);
 
@@ -67,7 +66,7 @@ public interface Mapper {
 
   EmployeeResponseDto convertToEmployeeResponseDto(Employee employee);
 
-  List<EmployeeResponseDto> convertToEmployeeResponseDtoList (List<Employee> employees);
+  List<EmployeeResponseDto> convertToEmployeeResponseDtoList(List<Employee> employees);
 
   AccountDto convertToAccountDto(Account account);
 
@@ -75,7 +74,10 @@ public interface Mapper {
   Customer customerDtoToEntity(CustomerRequestDto customerRequestDto);
 
   CustomerResponseDto customerEntityToDto(Customer customer);
+
+  @Mapping(source = "paid", target = "paid")
+  TimeOffType timeOffTypeRequestDtoToEntity(TimeOffTypeRequestDto timeOffTypeRequestDto);
+
+  @Mapping(source = "paid", target = "paid")
+  TimeOffTypeResponseDto entityToTimeOffTypeResponseDto(TimeOffType timeOffType);
 }
-
-
-

@@ -89,7 +89,7 @@ class DepartmentServiceImplTest {
     Department department = new Department();
     department.setId(1);
     Mockito.when(departmentRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
-    assertThrows(RuntimeException.class, () -> departmentService.update(department,1));
+    assertThrows(RuntimeException.class, () -> departmentService.update(department, 1));
   }
 
   @Test

@@ -25,85 +25,80 @@ import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-
 
 @ExtendWith(MockitoExtension.class)
 class MediaServiceTest {
 
-    @Mock
-    private MediaRepository mediaRepository;
+  @Mock private MediaRepository mediaRepository;
 
-    @InjectMocks
-    private MediaService mediaService;
+  @InjectMocks private MediaService mediaService;
 
-    @Mock
-    private Mapper mapper;
+  @Mock private Mapper mapper;
 
-    @Test
-    void getOne() {
-        when(mediaRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class, () -> mediaService.getOne(Mockito.anyInt()));
-    }
+  @Test
+  void getOne() {
+    when(mediaRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
+    assertThrows(EntityNotFoundException.class, () -> mediaService.getOne(Mockito.anyInt()));
+  }
 
-    @Test
-    void getAllIfEmpty() {
-        QueryParameter queryParameter = new QueryParameter();
-        Mockito.when(mediaRepository.findAll(queryParameter.getPageable()))
-                .thenReturn(new PageImpl<>(new ArrayList<>(), queryParameter.getPageable(), 5));
+  @Test
+  void getAllIfEmpty() {
+    QueryParameter queryParameter = new QueryParameter();
+    Mockito.when(mediaRepository.findAll(queryParameter.getPageable()))
+        .thenReturn(new PageImpl<>(new ArrayList<>(), queryParameter.getPageable(), 5));
 
-        PagedResult<MediaDto> employeeDtoPagedResult= mediaService.getAll(queryParameter.getPageable());
-        assertTrue(employeeDtoPagedResult.getElements().isEmpty());
-    }
+    PagedResult<MediaDto> employeeDtoPagedResult =
+        mediaService.getAll(queryParameter.getPageable());
+    assertTrue(employeeDtoPagedResult.getElements().isEmpty());
+  }
 
-    @Test
-    void create (){
-        MediaExtra mediaExtra = MediaExtraProvider.getMediaExtraInstance();
+  @Test
+  void create() {
+    MediaExtra mediaExtra = MediaExtraProvider.getMediaExtraInstance();
 
-        Media media = MediaProvider.getMediaInstance();
-        media.setMediaExtras(Collections.singleton(mediaExtra));
+    Media media = MediaProvider.getMediaInstance();
+    media.setMediaExtras(Collections.singleton(mediaExtra));
 
-        MediaDto mediaDto = new MediaDto();
+    MediaDto mediaDto = new MediaDto();
 
-        mediaDto.setMediaExtraIds(
-                media.getMediaExtras().stream()
-                        .map(mediaExtra1 -> String.valueOf(mediaExtra1.getId()))
-                        .collect(Collectors.toList())
-        );
+    mediaDto.setMediaExtraIds(
+        media.getMediaExtras().stream()
+            .map(mediaExtra1 -> String.valueOf(mediaExtra1.getId()))
+            .collect(Collectors.toList()));
 
-        mediaDto.setId(media.getId());
-        mediaDto.setName(media.getName());
-        mediaDto.setPrice(media.getPrice());
+    mediaDto.setId(media.getId());
+    mediaDto.setName(media.getName());
+    mediaDto.setPrice(media.getPrice());
 
-        when(mapper.convertToMediaDTO(any())).thenReturn(mediaDto);
-        when(mediaRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(media));
+    when(mapper.convertToMediaDTO(any())).thenReturn(mediaDto);
+    when(mediaRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(media));
 
-        MediaDto actualMedia = mediaService.getOne(1);
+    MediaDto actualMedia = mediaService.getOne(1);
 
-        assertEquals(media.getId(), actualMedia.getId());
-        assertEquals(media.getName(), actualMedia.getName());
+    assertEquals(media.getId(), actualMedia.getId());
+    assertEquals(media.getName(), actualMedia.getName());
+  }
 
-    }
+  @Test
+  void DeleteById() {
+    mediaService.deleteById(89);
+    verify(mediaRepository, times(1)).deleteById(eq(89));
+  }
 
-    @Test
-    void DeleteById(){
-        mediaService.deleteById(89);
-        verify(mediaRepository, times(1)).deleteById(eq(89));
-    }
-
-    @Test
-    void update() {
-        MediaDto mediaDto = new MediaDto();
-        mediaDto.setId(5);
-        when(mediaRepository.findById(5)).thenReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class, () -> mediaService.update(5, mediaDto));
-    }
-
+  @Test
+  void update() {
+    MediaDto mediaDto = new MediaDto();
+    mediaDto.setId(5);
+    when(mediaRepository.findById(5)).thenReturn(Optional.empty());
+    assertThrows(EntityNotFoundException.class, () -> mediaService.update(5, mediaDto));
+  }
 }
-

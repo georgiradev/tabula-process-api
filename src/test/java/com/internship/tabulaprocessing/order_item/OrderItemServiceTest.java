@@ -1,9 +1,15 @@
 package com.internship.tabulaprocessing.order_item;
 
 import com.internship.tabulaprocessing.controller.QueryParameter;
-import com.internship.tabulaprocessing.entity.*;
+import com.internship.tabulaprocessing.entity.Media;
+import com.internship.tabulaprocessing.entity.MediaExtra;
+import com.internship.tabulaprocessing.entity.Order;
+import com.internship.tabulaprocessing.entity.OrderItem;
 import com.internship.tabulaprocessing.exception.EntityAlreadyPresentException;
-import com.internship.tabulaprocessing.provider.*;
+import com.internship.tabulaprocessing.provider.MediaExtraProvider;
+import com.internship.tabulaprocessing.provider.MediaProvider;
+import com.internship.tabulaprocessing.provider.OrderItemProvider;
+import com.internship.tabulaprocessing.provider.OrderProvider;
 import com.internship.tabulaprocessing.repository.MediaRepository;
 import com.internship.tabulaprocessing.repository.OrderItemRepository;
 import com.internship.tabulaprocessing.repository.OrderRepository;
@@ -21,7 +27,6 @@ import javax.persistence.EntityNotFoundException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -44,9 +49,9 @@ public class OrderItemServiceTest {
     OrderItem orderItem = assembleObject();
 
     when(mediaRepository.findById(any(Integer.class)))
-        .thenReturn(Optional.of(orderItem.getMedia()));
+            .thenReturn(Optional.of(orderItem.getMedia()));
     when(orderRepository.findById(any(Integer.class)))
-        .thenReturn(Optional.of(orderItem.getOrder()));
+            .thenReturn(Optional.of(orderItem.getOrder()));
     when(orderItemRepository.save(orderItem)).thenReturn(orderItem);
 
     assertEquals(Optional.of(orderItem), orderItemService.save(orderItem));
@@ -58,7 +63,7 @@ public class OrderItemServiceTest {
 
     when(orderItemRepository.findIfPresent(
             any(Integer.class), any(Integer.class), any(Double.class), any(Double.class)))
-        .thenReturn(Collections.singletonList(orderItem));
+            .thenReturn(Collections.singletonList(orderItem));
 
     assertThrows(EntityAlreadyPresentException.class, () -> orderItemService.save(orderItem));
   }

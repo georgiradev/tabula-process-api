@@ -9,6 +9,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -30,8 +31,7 @@ public class Order {
   @JoinColumn(name = "customer_id")
   private Customer customer;
 
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-  private Timestamp dateTimeCreated;
+  private LocalDateTime dateTimeCreated;
 
   private BigDecimal price;
 

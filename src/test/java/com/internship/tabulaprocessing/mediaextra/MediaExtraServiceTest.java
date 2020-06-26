@@ -32,93 +32,91 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class MediaExtraServiceTest {
 
-    @Mock
-    private MediaExtraRepository mediaExtraRepository;
+  @Mock private MediaExtraRepository mediaExtraRepository;
 
-    @InjectMocks
-    private MediaExtraService mediaExtraService;
+  @InjectMocks private MediaExtraService mediaExtraService;
 
-    @Mock
-    private Mapper mapper;
+  @Mock private Mapper mapper;
 
-    @Test
-    void getOneIfNotExists() {
-        when(mediaExtraRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class, () -> mediaExtraService.getOne(Mockito.anyInt()));
-    }
+  @Test
+  void getOneIfNotExists() {
+    when(mediaExtraRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
+    assertThrows(EntityNotFoundException.class, () -> mediaExtraService.getOne(Mockito.anyInt()));
+  }
 
-    @Test
-    void getOne() {
-        MediaExtra mediaExtra = MediaExtraProvider.getMediaExtraInstance();
+  @Test
+  void getOne() {
+    MediaExtra mediaExtra = MediaExtraProvider.getMediaExtraInstance();
 
-        when(mediaExtraRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(mediaExtra));
-        MediaExtraDto actualMediaExtra = mediaExtraService.getOne(1);
+    when(mediaExtraRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(mediaExtra));
+    MediaExtraDto actualMediaExtra = mediaExtraService.getOne(1);
 
-        assertEquals(mapper.convertToMediaExtraDTO(mediaExtra), actualMediaExtra);
+    assertEquals(mapper.convertToMediaExtraDTO(mediaExtra), actualMediaExtra);
+  }
 
-    }
+  @Test
+  void DeleteById() {
+    mediaExtraService.deleteById(89);
+    verify(mediaExtraRepository, times(1)).deleteById(eq(89));
+  }
 
-    @Test
-    void DeleteById(){
-        mediaExtraService.deleteById(89);
-        verify(mediaExtraRepository, times(1)).deleteById(eq(89));
-    }
+  @Test
+  void update() {
+    MediaExtraDto mediaExtraDto =
+        mapper.convertToMediaExtraDTO(MediaExtraProvider.getMediaExtraInstance());
+    when(mediaExtraRepository.findById(5)).thenReturn(Optional.empty());
+    assertThrows(EntityNotFoundException.class, () -> mediaExtraService.update(5, mediaExtraDto));
+  }
 
-    @Test
-    void update() {
-        MediaExtraDto mediaExtraDto = mapper.convertToMediaExtraDTO(MediaExtraProvider.getMediaExtraInstance());
-        when(mediaExtraRepository.findById(5)).thenReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class, () -> mediaExtraService.update(5, mediaExtraDto));
-    }
+  @Test
+  void create() {
+    MediaExtra mediaExtra = new MediaExtra();
+    mediaExtra.setId(1);
+    mediaExtra.setName("name1");
+    mediaExtra.setPrice(BigDecimal.valueOf(15));
 
-    @Test
-    void create (){
-        MediaExtra mediaExtra = new MediaExtra();
-        mediaExtra.setId(1);
-        mediaExtra.setName("name1");
-        mediaExtra.setPrice(BigDecimal.valueOf(15));
+    MediaExtraDto mediaExtraDto = new MediaExtraDto();
 
-        MediaExtraDto mediaExtraDto = new MediaExtraDto();
+    when(mapper.convertToMediaExtraDTO(any())).thenReturn(mediaExtraDto);
 
-        when(mapper.convertToMediaExtraDTO(any())).thenReturn(mediaExtraDto);
+    mediaExtraDto.setId(mediaExtra.getId());
+    mediaExtraDto.setName(mediaExtra.getName());
+    mediaExtra.setPrice(mediaExtra.getPrice());
 
-        mediaExtraDto.setId(mediaExtra.getId());
-        mediaExtraDto.setName(mediaExtra.getName());
-        mediaExtra.setPrice(mediaExtra.getPrice());
+    when(mediaExtraRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(mediaExtra));
+    MediaExtraDto actualMediaExtra = mediaExtraService.getOne(1);
 
-        when(mediaExtraRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(mediaExtra));
-        MediaExtraDto actualMediaExtra = mediaExtraService.getOne(1);
+    assertEquals(mediaExtra.getId(), actualMediaExtra.getId());
+    assertEquals(mediaExtra.getName(), actualMediaExtra.getName());
+  }
 
-        assertEquals(mediaExtra.getId(), actualMediaExtra.getId());
-        assertEquals(mediaExtra.getName(), actualMediaExtra.getName());
+  @Test
+  void getAll() {
+    MediaExtra mediaExtra = new MediaExtra();
+    mediaExtra.setId(1);
+    mediaExtra.setName("name1");
+    mediaExtra.setPrice(BigDecimal.valueOf(1));
 
-    }
+    MediaExtra mediaExtra2 = new MediaExtra();
+    mediaExtra2.setId(2);
+    mediaExtra2.setName("name2");
+    mediaExtra2.setPrice(BigDecimal.valueOf(2));
 
-    @Test
-    void getAll() {
-        MediaExtra mediaExtra = new MediaExtra();
-        mediaExtra.setId(1);
-        mediaExtra.setName("name1");
-        mediaExtra.setPrice(BigDecimal.valueOf(1));
+    List<MediaExtra> expectedMediaExtra = new ArrayList<>();
+    expectedMediaExtra.add(mediaExtra);
+    expectedMediaExtra.add(mediaExtra2);
 
-        MediaExtra mediaExtra2 = new MediaExtra();
-        mediaExtra2.setId(2);
-        mediaExtra2.setName("name2");
-        mediaExtra2.setPrice(BigDecimal.valueOf(2));
+    Pageable pageable = PageRequest.of(1, 2);
+    Page<MediaExtra> expectedPage =
+        new PageImpl<>(expectedMediaExtra, pageable, expectedMediaExtra.size());
 
-        List<MediaExtra> expectedMediaExtra = new ArrayList<>();
-        expectedMediaExtra.add(mediaExtra);
-        expectedMediaExtra.add(mediaExtra2);
+    doReturn(expectedPage).when(mediaExtraRepository).findAll(pageable);
+    PagedResult<MediaExtraDto> actual = mediaExtraService.getAll(pageable);
 
-        Pageable pageable = PageRequest.of(1,2);
-        Page<MediaExtra> expectedPage = new PageImpl<>(expectedMediaExtra, pageable, expectedMediaExtra.size());
-
-        doReturn(expectedPage).when(mediaExtraRepository).findAll(pageable);
-        PagedResult<MediaExtraDto> actual = mediaExtraService.getAll(pageable);
-
-        assertNotNull(actual);
-        assertEquals(mapper.convertToMediaExtraDtoList(expectedPage.getContent()), actual.getElements());
-        assertEquals(expectedPage.getContent().get(0), mediaExtra);
-        assertEquals(expectedPage.getTotalPages(), actual.getNumOfTotalPages());
-    }
+    assertNotNull(actual);
+    assertEquals(
+        mapper.convertToMediaExtraDtoList(expectedPage.getContent()), actual.getElements());
+    assertEquals(expectedPage.getContent().get(0), mediaExtra);
+    assertEquals(expectedPage.getTotalPages(), actual.getNumOfTotalPages());
+  }
 }

@@ -15,7 +15,7 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 public class ProcessStageResponseDTO {
 
-  @Min(value = 0,message = "Id cannot be less than zero")
+  @Min(value = 0, message = "Id cannot be less than zero")
   int id;
 
   @NotBlank

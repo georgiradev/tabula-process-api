@@ -13,41 +13,40 @@ import java.util.List;
 @RequestMapping("/media_extras")
 public class MediaExtraController {
 
-    private MediaExtraService mediaExtraService;
+  private MediaExtraService mediaExtraService;
 
-    public MediaExtraController(MediaExtraService mediaExtraService) {
-        this.mediaExtraService = mediaExtraService;
-    }
+  public MediaExtraController(MediaExtraService mediaExtraService) {
+    this.mediaExtraService = mediaExtraService;
+  }
 
-    @GetMapping
-    public PagedResult<MediaExtraDto> getAll(QueryParameter queryParameter) {
-        return  mediaExtraService.getAll(queryParameter.getPageable());
-    }
+  @GetMapping
+  public PagedResult<MediaExtraDto> getAll(QueryParameter queryParameter) {
+    return mediaExtraService.getAll(queryParameter.getPageable());
+  }
 
-    @PostMapping
-    public ResponseEntity<MediaExtraDto> create(@Valid @RequestBody MediaExtraDto mediaExtraDto) {
-        return mediaExtraService.create(mediaExtraDto);
-    }
+  @PostMapping
+  public ResponseEntity<MediaExtraDto> create(@Valid @RequestBody MediaExtraDto mediaExtraDto) {
+    return mediaExtraService.create(mediaExtraDto);
+  }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<MediaExtraDto> getOne(@PathVariable String id) {
+  @GetMapping("/{id}")
+  public ResponseEntity<MediaExtraDto> getOne(@PathVariable String id) {
 
-        int num = Integer.parseInt(id);
-        return ResponseEntity.ok(mediaExtraService.getOne(num));
-    }
+    int num = Integer.parseInt(id);
+    return ResponseEntity.ok(mediaExtraService.getOne(num));
+  }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable String id)  {
+  @DeleteMapping("/{id}")
+  public ResponseEntity<?> delete(@PathVariable String id) {
 
-        int num = Integer.parseInt(id);
-        return mediaExtraService.deleteById(num);
-    }
+    int num = Integer.parseInt(id);
+    return mediaExtraService.deleteById(num);
+  }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<MediaExtraDto> update(@PathVariable String id,
-                                           @Valid @RequestBody MediaExtraDto mediaExtraDto) {
-        int num = Integer.parseInt(id);
-        return mediaExtraService.update(num, mediaExtraDto);
-    }
-
+  @PutMapping("/{id}")
+  public ResponseEntity<MediaExtraDto> update(
+      @PathVariable String id, @Valid @RequestBody MediaExtraDto mediaExtraDto) {
+    int num = Integer.parseInt(id);
+    return mediaExtraService.update(num, mediaExtraDto);
+  }
 }

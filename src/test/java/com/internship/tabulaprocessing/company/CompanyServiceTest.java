@@ -68,7 +68,7 @@ public class CompanyServiceTest {
 
     when(companyRepository.findById(company.getId())).thenReturn(Optional.empty());
 
-    assertThrows(EntityNotFoundException.class,() -> companyService.find(company.getId()));
+    assertThrows(EntityNotFoundException.class, () -> companyService.find(company.getId()));
   }
 
   @Test
@@ -129,6 +129,7 @@ public class CompanyServiceTest {
 
     when(companyRepository.findById(company.getId())).thenReturn(Optional.empty());
 
-    assertThrows(EntityNotFoundException.class, () -> companyService.update(company.getId(), company));
+    assertThrows(
+        EntityNotFoundException.class, () -> companyService.update(company.getId(), company));
   }
 }

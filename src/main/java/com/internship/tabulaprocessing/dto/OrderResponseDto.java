@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -15,15 +15,15 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 public class OrderResponseDto {
 
-    private int id;
+  private int id;
 
-    private Timestamp dateTimeCreated;
+  private LocalDateTime dateTimeCreated;
 
-    private BigDecimal price;
+  private BigDecimal price;
 
-    private String note;
+  private String note;
 
-    private Customer customer;
+  private Customer customer;
 
-    private String[] orderItemsIds;
+  private String[] orderItemsIds;
 }
