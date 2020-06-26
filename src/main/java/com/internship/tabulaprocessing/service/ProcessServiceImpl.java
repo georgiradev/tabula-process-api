@@ -65,15 +65,8 @@ public class ProcessServiceImpl {
     processRepository.deleteById(id);
   }
 
-  public List<Process> findAll(int pageNo) {
-    Pageable paging = PageRequest.of(pageNo, 10);
-    Page<Process> pagedResult = processRepository.findAll(paging);
-
-    if (pagedResult.hasContent()) {
-      return pagedResult.getContent();
-    } else {
-      throw new EntityNotFoundException("No processes");
-    }
+  public Page<Process> findAll(Pageable pageable) {
+    return processRepository.findAll(pageable);
   }
 
   public Optional<Process> getByName(String name) {
