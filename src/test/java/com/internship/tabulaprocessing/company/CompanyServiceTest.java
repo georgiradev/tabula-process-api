@@ -1,5 +1,6 @@
 package com.internship.tabulaprocessing.company;
 
+import com.internship.tabulaprocessing.controller.QueryParameter;
 import com.internship.tabulaprocessing.entity.Company;
 import com.internship.tabulaprocessing.exception.EntityAlreadyPresentException;
 import com.internship.tabulaprocessing.provider.CompanyProvider;
@@ -94,20 +95,22 @@ public class CompanyServiceTest {
   void testFindAllCompanies() {
     List<Company> companies = CompanyProvider.getCompaniesInstance();
     Page<Company> paging = new PageImpl<>(companies);
+    QueryParameter queryParameter = new QueryParameter();
 
     when(companyRepository.findAll(any(Pageable.class))).thenReturn(paging);
 
-    assertEquals(companies, companyService.findAll(1));
+    assertEquals(paging, companyService.findAll(queryParameter));
   }
 
   @Test
   void testFindAllCompaniesButNoContentFound() {
     List<Company> companies = Collections.emptyList();
     Page<Company> paging = new PageImpl<>(companies);
+    QueryParameter queryParameter = new QueryParameter();
 
     when(companyRepository.findAll(any(Pageable.class))).thenReturn(paging);
 
-    assertEquals(companies, companyService.findAll(1));
+    assertEquals(paging, companyService.findAll(queryParameter));
   }
 
   @Test

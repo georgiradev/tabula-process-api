@@ -19,7 +19,7 @@ public class OrderItemResponseDto {
 
   private String note;
 
-  private BigDecimal pricePerPiece;
+  private BigDecimal totalPrice;
 
   private int mediaId;
 

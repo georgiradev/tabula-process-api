@@ -3,9 +3,11 @@ package com.internship.tabulaprocessing.controller;
 import com.internship.tabulaprocessing.dto.OrderItemRequestDto;
 import com.internship.tabulaprocessing.dto.OrderItemResponseDto;
 import com.internship.tabulaprocessing.entity.OrderItem;
+import com.internship.tabulaprocessing.entity.PagedResult;
 import com.internship.tabulaprocessing.mapper.Mapper;
 import com.internship.tabulaprocessing.service.OrderItemService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -15,7 +17,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Validated
 @RestController
@@ -59,12 +60,16 @@ public class OrderItemController {
   }
 
   @GetMapping
-  public ResponseEntity<List<OrderItemResponseDto>> getAllOrderItems(
-      @RequestParam(defaultValue = "0") int pageNo) {
+  public ResponseEntity<PagedResult<OrderItemResponseDto>> getAllOrderItems(
+      @Valid QueryParameter queryParameter) {
 
-    List<OrderItem> allOrderItems = orderItemService.findAll(pageNo);
-    List<OrderItemResponseDto> allToDto =
-        allOrderItems.stream().map(mapper::orderItemDtoToEntity).collect(Collectors.toList());
+    Page<OrderItem> pagedResult = orderItemService.findAll(queryParameter);
+
+    Page<OrderItemResponseDto> pagedResultDto = pagedResult.map(mapper::orderItemDtoToEntity);
+
+    PagedResult<OrderItemResponseDto> allToDto =
+        new PagedResult<>(
+            pagedResultDto.toList(), queryParameter.getPage(), pagedResultDto.getTotalPages());
 
     return ResponseEntity.ok(allToDto);
   }
@@ -77,8 +82,9 @@ public class OrderItemController {
     OrderItem orderItem = mapper.orderItemRequestDtoToEntity(orderItemRequestDto);
     Optional<OrderItem> updatedOrderItem = orderItemService.update(id, orderItem);
 
-    if(updatedOrderItem.isPresent()) {
-      OrderItemResponseDto orderItemResponseDto = mapper.orderItemDtoToEntity(updatedOrderItem.get());
+    if (updatedOrderItem.isPresent()) {
+      OrderItemResponseDto orderItemResponseDto =
+          mapper.orderItemDtoToEntity(updatedOrderItem.get());
 
       return ResponseEntity.ok(orderItemResponseDto);
     }

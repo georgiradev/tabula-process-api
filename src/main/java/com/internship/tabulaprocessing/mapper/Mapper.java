@@ -56,6 +56,7 @@ public interface Mapper {
 
   @Mapping(source = "media.id", target = "mediaId")
   @Mapping(source = "order.id", target = "orderId")
+  @Mapping(source = "pricePerPiece", target = "totalPrice")
   OrderItemResponseDto orderItemDtoToEntity(OrderItem orderItem);
 
   Order orderRequestDtoToOrder(OrderRequestDto orderRequestDto);
