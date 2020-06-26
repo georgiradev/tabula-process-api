@@ -7,18 +7,18 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
-
 public interface ProcessStageService {
 
-    ProcessStage persist(ProcessStage processStage);
+  ProcessStage persist(ProcessStage processStage);
 
-    ProcessStage update(ProcessStage processStage, int id);
+  ProcessStage update(ProcessStage processStage, int id);
 
-    ProcessStage findById(int id);
+  ProcessStage findById(int id);
 
-    Page<ProcessStage> findAll(Pageable pageable);
+  Page<ProcessStage> findAll(Pageable pageable);
 
-    ProcessStage findByName(String name);
+  ProcessStage findByName(String name);
 
-    void delete(int id);
+  void delete(int id);
+
 }

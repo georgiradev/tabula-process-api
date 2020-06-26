@@ -17,8 +17,7 @@ public class AccountDto {
 
   private String email;
 
-  @JsonIgnore
-  private String password;
+  @JsonIgnore private String password;
 
   private LocalDateTime datetimeCreated;
 

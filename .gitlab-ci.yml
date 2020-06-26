@@ -14,7 +14,7 @@ test_packaging:
     - cp /opt/tabula/process/data.sql ./src/main/resources
     - chmod +x ./mvnw
     - ./mvnw clean package
-    
+
 verifying_development:
   stage: verify
   tags:

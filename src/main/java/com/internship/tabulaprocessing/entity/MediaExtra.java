@@ -17,18 +17,16 @@ import java.util.Set;
 @Table(name = "media_extra")
 public class MediaExtra {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    private String name;
-    private BigDecimal price;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private int id;
 
-    @JsonIgnoreProperties("mediaExtras")
-    @ManyToMany (mappedBy = "mediaExtras", cascade = {
-            CascadeType.DETACH,
-            CascadeType.MERGE,
-            CascadeType.REFRESH,
-            CascadeType.PERSIST
-    })
-    private Set<Media> medias = new HashSet<>();
+  private String name;
+  private BigDecimal price;
+
+  @JsonIgnoreProperties("mediaExtras")
+  @ManyToMany(
+      mappedBy = "mediaExtras",
+      cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
+  private Set<Media> medias = new HashSet<>();
 }

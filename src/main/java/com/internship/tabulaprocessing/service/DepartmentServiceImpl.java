@@ -16,60 +16,61 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class DepartmentServiceImpl implements DepartmentService {
 
-    private final DepartmentRepository departmentRepository;
+  private final DepartmentRepository departmentRepository;
 
-    @Override
-    public Page<Department> findAll(Pageable pageable) {
+  @Override
+  public Page<Department> findAll(Pageable pageable) {
 
-        return departmentRepository.findAll(pageable);
+    return departmentRepository.findAll(pageable);
+  }
+
+  @Override
+  public Department findById(int id) {
+
+    Optional<Department> optional = departmentRepository.findById(id);
+    if (!optional.isPresent()) {
+      throw new EntityNotFoundException(String.format("Departmеnt with id %s, not found.", id));
     }
 
-    @Override
-    public Department findById(int id) {
+    return optional.get();
+  }
 
-        Optional<Department> optional = departmentRepository.findById(id);
-        if (!optional.isPresent()) {
-            throw new EntityNotFoundException(String.format("Departmеnt with id %s, not found.", id));
-        }
+  @Override
+  public Department findByName(String name) {
 
-        return optional.get();
+    Optional<Department> optional = departmentRepository.findByName(name);
+    if (!optional.isPresent()) {
+      throw new EntityNotFoundException(String.format("Department with name %s, not found!", name));
     }
+    return optional.get();
+  }
 
-    @Override
-    public Department findByName(String name) {
+  @Override
+  public Department persist(Department department) {
 
-        Optional<Department> optional = departmentRepository.findByName(name);
-        if (!optional.isPresent()) {
-            throw new EntityNotFoundException(String.format("Department with name %s, not found!", name));
-        }
-        return optional.get();
+    department.setId(0);
+    Optional<Department> optional = departmentRepository.findByName(department.getName());
+    if (optional.isPresent()) {
+      throw new EntityAlreadyPresentException(String.format("Departmеnt with name %s, already exists", department.getName()));
     }
+    return departmentRepository.save(department);
+  }
 
-    @Override
-    public Department persist(Department department) {
+  @Override
+  public Department update(Department department, int id) {
 
-        department.setId(0);
-        Optional<Department> optional = departmentRepository.findByName(department.getName());
-        if (optional.isPresent()) {
-            throw new EntityAlreadyPresentException(String.format("Departmеnt with name %s, already exists", department.getName()));
-        }
-        return departmentRepository.save(department);
-    }
+    findById(id);
+    department.setId(id);
 
-    @Override
-    public Department update(Department department, int id) {
+    return departmentRepository.save(department);
+  }
 
-        findById(id);
-        department.setId(id);
+  @Override
+  public void delete(int id) {
 
-        return departmentRepository.save(department);
-    }
+    findById(id);
+    departmentRepository.deleteById(id);
 
-    @Override
-    public void delete(int id) {
+  }
 
-        findById(id);
-        departmentRepository.deleteById(id);
-
-    }
 }

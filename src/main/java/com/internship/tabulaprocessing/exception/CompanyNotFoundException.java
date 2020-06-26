@@ -4,7 +4,7 @@ import javax.persistence.EntityNotFoundException;
 
 public class CompanyNotFoundException extends EntityNotFoundException {
 
-    public CompanyNotFoundException(String message) {
-        super(message);
-    }
+  public CompanyNotFoundException(String message) {
+    super(message);
+  }
 }

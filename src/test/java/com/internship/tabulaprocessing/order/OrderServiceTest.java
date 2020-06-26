@@ -27,86 +27,83 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class OrderServiceTest {
 
-    @Mock
-    private OrderRepository orderRepository;
+  @Mock private OrderRepository orderRepository;
 
-    @InjectMocks
-    private OrderService orderService;
+  @InjectMocks private OrderService orderService;
 
-    @Test
-    public void testGetById() {
-        Order order = OrderProvider.getOrderInstance();
+  @Test
+  public void testGetById() {
+    Order order = OrderProvider.getOrderInstance();
 
-        when(orderRepository.findById(1)).thenReturn(Optional.of(order));
-        Optional<Order> result = Optional.ofNullable(orderService.getOneById(1));
+    when(orderRepository.findById(1)).thenReturn(Optional.of(order));
+    Optional<Order> result = Optional.ofNullable(orderService.getOneById(1));
 
-        Assertions.assertThat(result).isNotNull();
-        result.ifPresent(value -> assertEquals(order, value));
-    }
+    Assertions.assertThat(result).isNotNull();
+    result.ifPresent(value -> assertEquals(order, value));
+  }
 
-    @Test
-    public void testGetOrderByIdShouldFail() {
-        Order order = OrderProvider.getOrderInstance();
+  @Test
+  public void testGetOrderByIdShouldFail() {
+    Order order = OrderProvider.getOrderInstance();
 
-        when(orderRepository.findById(order.getId())).thenReturn(Optional.empty());
+    when(orderRepository.findById(order.getId())).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> orderService.getOneById(order.getId()));
-    }
+    assertThrows(EntityNotFoundException.class, () -> orderService.getOneById(order.getId()));
+  }
 
-    @Test
-    void testDeleteOrder() {
-        Order order = OrderProvider.getOrderInstance();
+  @Test
+  void testDeleteOrder() {
+    Order order = OrderProvider.getOrderInstance();
 
-        when(orderRepository.findById(order.getId())).thenReturn(Optional.of(order));
-        orderService.delete(order.getId());
+    when(orderRepository.findById(order.getId())).thenReturn(Optional.of(order));
+    orderService.delete(order.getId());
 
-        verify(orderRepository, times(1)).deleteById(order.getId());
-    }
+    verify(orderRepository, times(1)).deleteById(order.getId());
+  }
 
-    @Test
-    void testDeleteOrderShouldFail() {
-        when(orderRepository.findById(1)).thenReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class, () -> orderService.delete(1));
-    }
+  @Test
+  void testDeleteOrderShouldFail() {
+    when(orderRepository.findById(1)).thenReturn(Optional.empty());
+    assertThrows(EntityNotFoundException.class, () -> orderService.delete(1));
+  }
 
-    @Test
-    void testUpdateOrder() {
-        Order order = OrderProvider.getOrderInstance();
+  @Test
+  void testUpdateOrder() {
+    Order order = OrderProvider.getOrderInstance();
 
-        when(orderRepository.findById(order.getId())).thenReturn(Optional.of(order));
-        given(orderRepository.save(order)).willReturn(order);
-        Optional<Order> updatedOrder = Optional.ofNullable(orderService.update(order, 1));
+    when(orderRepository.findById(order.getId())).thenReturn(Optional.of(order));
+    given(orderRepository.save(order)).willReturn(order);
+    Optional<Order> updatedOrder = Optional.ofNullable(orderService.update(order, 1));
 
-        Assertions.assertThat(updatedOrder).isNotNull();
-        verify(orderRepository).save(any(Order.class));
-    }
+    Assertions.assertThat(updatedOrder).isNotNull();
+    verify(orderRepository).save(any(Order.class));
+  }
 
-    @Test
-    void testUpdateOrderShouldFailBecauseOfWrongId() {
-        Order order = OrderProvider.getOrderInstance();
+  @Test
+  void testUpdateOrderShouldFailBecauseOfWrongId() {
+    Order order = OrderProvider.getOrderInstance();
 
-        when(orderRepository.findById(order.getId())).thenReturn(Optional.empty());
+    when(orderRepository.findById(order.getId())).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> orderService.update(order, 1));
-    }
+    assertThrows(EntityNotFoundException.class, () -> orderService.update(order, 1));
+  }
 
+  @Test
+  void testFindAllOrders() {
+    List<Order> orders = OrderProvider.getOrdersInstance();
+    Page<Order> paging = new PageImpl<>(orders);
 
-    @Test
-    void testFindAllOrders() {
-        List<Order> orders = OrderProvider.getOrdersInstance();
-        Page<Order> paging = new PageImpl<>(orders);
+    when(orderRepository.findAll(any(Pageable.class))).thenReturn(paging);
 
-        when(orderRepository.findAll(any(Pageable.class))).thenReturn(paging);
+    assertEquals(orders, orderService.findAll(1));
+  }
 
-        assertEquals(orders, orderService.findAll(1));
-    }
+  @Test
+  void testFindAllOrdersButNoContentFound() {
+    Page<Order> paging = Page.empty();
 
-    @Test
-    void testFindAllOrdersButNoContentFound() {
-        Page<Order> paging = Page.empty();
+    when(orderRepository.findAll(any(Pageable.class))).thenReturn(paging);
 
-        when(orderRepository.findAll(any(Pageable.class))).thenReturn(paging);
-
-        assertThrows(EntityNotFoundException.class, () -> orderService.findAll(1));
-    }
+    assertThrows(EntityNotFoundException.class, () -> orderService.findAll(1));
+  }
 }

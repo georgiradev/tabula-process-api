@@ -7,8 +7,9 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface ProcessStageRepository extends JpaRepository<ProcessStage,Integer> {
+public interface ProcessStageRepository extends JpaRepository<ProcessStage, Integer> {
 
-    Optional<ProcessStage> findByName(String name);
-    ProcessStage findByNextStageEntityId(int id);
+  Optional<ProcessStage> findByName(String name);
+
+  ProcessStage findByNextStageEntityId(int id);
 }

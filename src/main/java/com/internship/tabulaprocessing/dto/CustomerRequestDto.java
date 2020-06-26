@@ -14,8 +14,7 @@ public class CustomerRequestDto {
   @Min(value = 1)
   private int accountId;
 
-  @NotBlank
-  private String phone;
+  @NotBlank private String phone;
 
   @Min(value = 1)
   private int companyId;

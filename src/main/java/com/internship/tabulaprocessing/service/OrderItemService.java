@@ -20,86 +20,87 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class OrderItemService {
+    private final MediaRepository mediaRepository;
+    private final OrderRepository orderRepository;
+    private final OrderItemRepository orderItemRepository;
 
-  private final MediaRepository mediaRepository;
-  private final OrderRepository orderRepository;
-  private final OrderItemRepository orderItemRepository;
+    public Optional<OrderItem> save(OrderItem orderItem) {
 
-  public Optional<OrderItem> save(OrderItem orderItem) {
+        List<OrderItem> foundOrderItems =
+                orderItemRepository.findIfPresent(
+                        orderItem.getOrder().getId(),
+                        orderItem.getMedia().getId(),
+                        orderItem.getWidth(),
+                        orderItem.getHeight());
 
-    List<OrderItem> foundOrderItems =
-        orderItemRepository.findIfPresent(
-            orderItem.getOrder().getId(),
-            orderItem.getMedia().getId(),
-            orderItem.getWidth(),
-            orderItem.getHeight());
+        if (!foundOrderItems.isEmpty()) {
+            throw new EntityAlreadyPresentException("Order item already in database");
+        }
+        validateOrderItem(orderItem);
+        calculatePrice(orderItem, orderItem.getPricePerPiece());
 
-    if (!foundOrderItems.isEmpty()) {
-      throw new EntityAlreadyPresentException("Order item already in database");
+        return Optional.of(orderItemRepository.save(orderItem));
     }
-    validateOrderItem(orderItem);
-    calculatePrice(orderItem, orderItem.getPricePerPiece());
 
-    return Optional.of(orderItemRepository.save(orderItem));
-  }
+    private void validateOrderItem(OrderItem orderItem) {
+        Optional<Media> foundMedia = mediaRepository.findById(orderItem.getMedia().getId());
 
-  private void validateOrderItem(OrderItem orderItem) {
-    Optional<Media> foundMedia = mediaRepository.findById(orderItem.getMedia().getId());
+        if (foundMedia.isEmpty()) {
+            throw new EntityNotFoundException("Media not found with id " + orderItem.getMedia().getId());
+        }
+        orderItem.setMedia(foundMedia.get());
+        Optional<Order> foundOrder = orderRepository.findById(orderItem.getOrder().getId());
 
-    if (foundMedia.isEmpty()) {
-      throw new EntityNotFoundException("Media not found with id " + orderItem.getMedia().getId());
+        if (foundOrder.isEmpty()) {
+            throw new EntityNotFoundException("Order not found with id " + orderItem.getOrder().getId());
+        }
+        orderItem.setOrder(foundOrder.get());
     }
-    orderItem.setMedia(foundMedia.get());
-    Optional<Order> foundOrder = orderRepository.findById(orderItem.getOrder().getId());
 
-    if (foundOrder.isEmpty()) {
-      throw new EntityNotFoundException("Order not found with id " + orderItem.getOrder().getId());
+    private void calculatePrice(OrderItem orderItem, BigDecimal pricePerPiece) {
+        // Price formula = width x height x price per piece
+
+        orderItem.setPricePerPiece(
+                pricePerPiece.multiply(
+                        BigDecimal.valueOf(orderItem.getHeight())
+                                .multiply(BigDecimal.valueOf(orderItem.getWidth()))));
     }
-    orderItem.setOrder(foundOrder.get());
-  }
 
-  private void calculatePrice(OrderItem orderItem, BigDecimal pricePerPiece) {
-    // Price formula = width x height x price per piece
-
-    orderItem.setPricePerPiece(
-        pricePerPiece.multiply(
-            BigDecimal.valueOf(orderItem.getHeight())
-                .multiply(BigDecimal.valueOf(orderItem.getWidth()))));
-  }
-
-  public Optional<OrderItem> findById(int id) {
-    return Optional.of(
-        orderItemRepository
-            .findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Order item not found with id " + id)));
-  }
-
-  public Page<OrderItem> findAll(QueryParameter queryParameter) {
-    return orderItemRepository.findAll(queryParameter.getPageable());
-  }
-
-  public Optional<OrderItem> update(int id, OrderItem orderItem) {
-    validateOrderItem(orderItem);
-    Optional<OrderItem> foundOrderItem = orderItemRepository.findById(id);
-
-    if (foundOrderItem.isEmpty()) {
-      throw new EntityNotFoundException("Order item not found with id " + id);
+    public Optional<OrderItem> findById(int id) {
+        return Optional.of(
+                orderItemRepository
+                        .findById(id)
+                        .orElseThrow(() -> new EntityNotFoundException("Order item not found with id " + id)));
     }
-    OrderItem orderItemToUpdate = foundOrderItem.get();
 
-    orderItemToUpdate.setOrder(orderItem.getOrder());
-    orderItemToUpdate.setMedia(orderItem.getMedia());
-    orderItemToUpdate.setCount(orderItem.getCount());
-    orderItemToUpdate.setHeight(orderItem.getHeight());
-    orderItemToUpdate.setWidth(orderItem.getWidth());
-    orderItemToUpdate.setNote(orderItem.getNote());
-    calculatePrice(orderItemToUpdate, orderItem.getPricePerPiece());
+    public Page<OrderItem> findAll(QueryParameter queryParameter) {
+        return orderItemRepository.findAll(queryParameter.getPageable());
+    }
 
-    return Optional.of(orderItemRepository.saveAndFlush(orderItemToUpdate));
-  }
+    public Optional<OrderItem> update(int id, OrderItem orderItem) {
+        validateOrderItem(orderItem);
+        Optional<OrderItem> foundOrderItem = orderItemRepository.findById(id);
 
-  public void delete(int id) {
-    findById(id);
-    orderItemRepository.deleteById(id);
-  }
+        if (foundOrderItem.isEmpty()) {
+            throw new EntityNotFoundException("Order item not found with id " + id);
+        }
+        OrderItem orderItemToUpdate = foundOrderItem.get();
+
+        orderItemToUpdate.setOrder(orderItem.getOrder());
+        orderItemToUpdate.setMedia(orderItem.getMedia());
+        orderItemToUpdate.setCount(orderItem.getCount());
+        orderItemToUpdate.setHeight(orderItem.getHeight());
+        orderItemToUpdate.setWidth(orderItem.getWidth());
+        orderItemToUpdate.setNote(orderItem.getNote());
+        calculatePrice(orderItemToUpdate, orderItem.getPricePerPiece());
+
+        return Optional.of(orderItemRepository.saveAndFlush(orderItemToUpdate));
+    }
+
+    public void delete(int id) {
+        findById(id);
+        orderItemRepository.deleteById(id);
+    }
 }
+
+

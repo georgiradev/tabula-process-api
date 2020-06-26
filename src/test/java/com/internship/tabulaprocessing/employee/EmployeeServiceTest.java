@@ -1,6 +1,5 @@
 package com.internship.tabulaprocessing.employee;
 
-
 import com.internship.tabulacore.entity.Account;
 import com.internship.tabulacore.repository.AccountRepository;
 import com.internship.tabulaprocessing.controller.QueryParameter;
@@ -39,106 +38,101 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-
 @ExtendWith(MockitoExtension.class)
 class EmployeeServiceTest {
 
-    @Mock
-    private EmployeeRepository employeeRepository;
-    @Mock
-    private AccountRepository accountRepository;
-    @Mock
-    private DepartmentRepository departmentRepository;
+  @Mock private EmployeeRepository employeeRepository;
+  @Mock private AccountRepository accountRepository;
+  @Mock private DepartmentRepository departmentRepository;
 
-    @Mock
-    private Mapper mapper;
+  @Mock private Mapper mapper;
 
-    @InjectMocks
-    private EmployeeService employeeService;
+  @InjectMocks private EmployeeService employeeService;
 
-    @Test
-    void CreateIfAccountNotFound(){
+  @Test
+  void CreateIfAccountNotFound() {
 
-        EmployeeRequestDto employeeRequestDto = new EmployeeRequestDto();
+    EmployeeRequestDto employeeRequestDto = new EmployeeRequestDto();
 
-        employeeRequestDto.setRatePerHour(BigDecimal.valueOf(23.45));
-        employeeRequestDto.setAccountId(2);
-        employeeRequestDto.setDepartmentId(2);
-        when(accountRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class, () -> employeeService.create(employeeRequestDto));
+    employeeRequestDto.setRatePerHour(BigDecimal.valueOf(23.45));
+    employeeRequestDto.setAccountId(2);
+    employeeRequestDto.setDepartmentId(2);
+    when(accountRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
+    assertThrows(EntityNotFoundException.class, () -> employeeService.create(employeeRequestDto));
+  }
 
-    }
+  @Test
+  void getAllIfEmpty() {
 
-    @Test
-    void getAllIfEmpty() {
+    QueryParameter queryParameter = new QueryParameter();
+    Mockito.when(employeeRepository.findAll(queryParameter.getPageable()))
+        .thenReturn(new PageImpl<>(new ArrayList<>(), queryParameter.getPageable(), 5));
 
-        QueryParameter queryParameter = new QueryParameter();
-        Mockito.when(employeeRepository.findAll(queryParameter.getPageable()))
-                .thenReturn(new PageImpl<>(new ArrayList<>(), queryParameter.getPageable(), 5));
+    PagedResult<EmployeeResponseDto> employeeDtoPagedResult =
+        employeeService.getAll(queryParameter.getPageable());
+    assertTrue(employeeDtoPagedResult.getElements().isEmpty());
+  }
 
-        PagedResult<EmployeeResponseDto> employeeDtoPagedResult= employeeService.getAll(queryParameter.getPageable());
-        assertTrue(employeeDtoPagedResult.getElements().isEmpty());
+  @Test
+  void DeleteById() {
 
-    }
+    employeeService.deleteById(89);
+    verify(employeeRepository, times(1)).deleteById(eq(89));
+  }
 
-    @Test
-    void DeleteById(){
+  @Test
+  void CreateIfDepartmentNotFound() {
 
-        employeeService.deleteById(89);
-        verify(employeeRepository, times(1)).deleteById(eq(89));
-    }
+    EmployeeRequestDto employeeRequestDto = new EmployeeRequestDto();
+    employeeRequestDto.setRatePerHour(BigDecimal.valueOf(23.45));
+    employeeRequestDto.setAccountId(2);
+    employeeRequestDto.setDepartmentId(2);
 
-    @Test
-    void CreateIfDepartmentNotFound(){
+    Account account = new Account();
+    when(accountRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(account));
 
-        EmployeeRequestDto employeeRequestDto = new EmployeeRequestDto();
-        employeeRequestDto.setRatePerHour(BigDecimal.valueOf(23.45));
-        employeeRequestDto.setAccountId(2);
-        employeeRequestDto.setDepartmentId(2);
+    when(departmentRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
+    assertThrows(EntityNotFoundException.class, () -> employeeService.create(employeeRequestDto));
+  }
 
-        Account account = new Account();
-        when(accountRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(account));
+  @Test
+  void getOne() {
+    when(employeeRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
+    assertThrows(EntityNotFoundException.class, () -> employeeService.getOne(Mockito.anyInt()));
+  }
 
-        when(departmentRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class, () -> employeeService.create(employeeRequestDto));
+  @Test
+  void updateIfEmployeeNotFount() {
+    EmployeeRequestDto employeeRequestDto = new EmployeeRequestDto();
+    when(employeeRepository.findById(5)).thenReturn(Optional.empty());
+    assertThrows(
+        EntityNotFoundException.class, () -> employeeService.update(5, employeeRequestDto));
+  }
 
-    }
+  @Test
+  void updateIfDepartmentNotFount() {
+    EmployeeRequestDto employeeRequestDto = new EmployeeRequestDto();
 
-    @Test
-    void getOne() {
-        when(employeeRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class, () -> employeeService.getOne(Mockito.anyInt()));
+    Employee employee = new Employee();
+    when(employeeRepository.findById(anyInt())).thenReturn(Optional.of(employee));
 
-    }
+    when(departmentRepository.findById(anyInt())).thenReturn(Optional.empty());
+    assertThrows(
+        EntityNotFoundException.class, () -> employeeService.update(5, employeeRequestDto));
+  }
 
-    @Test
-    void updateIfEmployeeNotFount() {
-        EmployeeRequestDto employeeRequestDto = new EmployeeRequestDto();
-        when(employeeRepository.findById(5)).thenReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class, () -> employeeService.update(5, employeeRequestDto));
-    }
-    @Test
-    void updateIfDepartmentNotFount() {
-        EmployeeRequestDto employeeRequestDto = new EmployeeRequestDto();
+  @Test
+  void updateIfAccountNotFount() {
+    EmployeeRequestDto employeeRequestDto = new EmployeeRequestDto();
 
-        Employee employee = new Employee();
-        when(employeeRepository.findById(anyInt())).thenReturn(Optional.of(employee));
+    Employee employee = EmployeeProvider.getEmployeeInstance();
+    when(employeeRepository.findById(anyInt())).thenReturn(Optional.of(employee));
 
-        when(departmentRepository.findById(anyInt())).thenReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class, () -> employeeService.update(5, employeeRequestDto));
-    }
+    Department department = new Department();
+    when(departmentRepository.findById(anyInt())).thenReturn(Optional.of(department));
 
-    @Test
-    void updateIfAccountNotFount() {
-        EmployeeRequestDto employeeRequestDto = new EmployeeRequestDto();
-
-        Employee employee = EmployeeProvider.getEmployeeInstance();
-        when(employeeRepository.findById(anyInt())).thenReturn(Optional.of(employee));
-
-        Department department  = new Department();
-        when(departmentRepository.findById(anyInt())).thenReturn(Optional.of(department));
-
-        when(accountRepository.findById(anyInt())).thenReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class, () -> employeeService.update(1, employeeRequestDto));
-    }
+    when(accountRepository.findById(anyInt())).thenReturn(Optional.empty());
+    assertThrows(
+        EntityNotFoundException.class, () -> employeeService.update(1, employeeRequestDto));
+  }
 }

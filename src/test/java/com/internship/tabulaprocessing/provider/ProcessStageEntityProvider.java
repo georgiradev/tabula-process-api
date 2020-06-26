@@ -37,16 +37,15 @@ public class ProcessStageEntityProvider {
     return prePersist;
   }
 
-  public static ProcessStage getPersistedStage(String stage){
+  public static ProcessStage getPersistedStage(String stage) {
 
-      ProcessStage persistedEntity = new ProcessStage();
-      persistedEntity.setName(stage);
-      persistedEntity.setDepartmentEntity(getDepartment());
-      persistedEntity.setProcessEntity(getProces());
-      persistedEntity.setNextStageEntity(persistedEntity);
+    ProcessStage persistedEntity = new ProcessStage();
+    persistedEntity.setName(stage);
+    persistedEntity.setDepartmentEntity(getDepartment());
+    persistedEntity.setProcessEntity(getProces());
+    persistedEntity.setNextStageEntity(persistedEntity);
 
-      return persistedEntity;
-
+    return persistedEntity;
   }
 
   public static List<ProcessStage> getStageList() {
@@ -56,11 +55,10 @@ public class ProcessStageEntityProvider {
             getProcessStage("last_stage"),
             getProcessStage("middle_stage"));
 
-    for(ProcessStage stage:stages){
-        stage.setNextStageEntity(getProcessStage(stage.getNextStage()));
-        stage.setDepartmentEntity(getDepartment());
-        stage.setProcessEntity(getProces());
-
+    for (ProcessStage stage : stages) {
+      stage.setNextStageEntity(getProcessStage(stage.getNextStage()));
+      stage.setDepartmentEntity(getDepartment());
+      stage.setProcessEntity(getProces());
     }
     return stages;
   }

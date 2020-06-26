@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
-
 @Entity
 @Data
 @NoArgsConstructor
