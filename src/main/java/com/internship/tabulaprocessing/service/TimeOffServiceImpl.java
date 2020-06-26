@@ -3,6 +3,7 @@ package com.internship.tabulaprocessing.service;
 import com.internship.tabulaprocessing.entity.PagedResult;
 import com.internship.tabulaprocessing.entity.TimeOff;
 import com.internship.tabulaprocessing.entity.TimeOffStatus;
+import com.internship.tabulaprocessing.exception.EntityAlreadyPresentException;
 import com.internship.tabulaprocessing.exception.NotAllowedException;
 import com.internship.tabulaprocessing.repository.TimeOffRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class TimeOffServiceImpl implements TimeOffService {
         }
 
         timeOff.setStatus(TimeOffStatus.PENDING);
+
         return timeOffRepository.save(timeOff);
     }
 
@@ -92,7 +94,8 @@ public class TimeOffServiceImpl implements TimeOffService {
         if(foundTimeOff.get().getStatus().equals(TimeOffStatus.APPROVED)) {
 
             foundTimeOff.get().setStatus(TimeOffStatus.PENDING_DELETION);
-            update(foundTimeOff.get(),id);
+            foundTimeOff.get().setId(id);
+            timeOffRepository.save(foundTimeOff.get());
 
             throw new NotAllowedException(String
                     .format("You cannot delete time off request with id = %s," +

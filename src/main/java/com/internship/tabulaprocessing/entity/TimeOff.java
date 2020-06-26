@@ -29,6 +29,7 @@ public class TimeOff {
 
     private LocalDateTime endDateTime;
 
+    @Enumerated(EnumType.STRING)
     private TimeOffStatus status;
 
     private String comment;
@@ -47,7 +48,7 @@ public class TimeOff {
         return  id == timeOff.id &&
                 Objects.equals(startDateTime, timeOff.startDateTime) &&
                 Objects.equals(endDateTime, timeOff.endDateTime) &&
-                status == timeOff.status &&
+                status.name().equals(timeOff.status.name()) &&
                 Objects.equals(comment, timeOff.comment) &&
                 Objects.equals(employee, timeOff.employee) &&
                 Objects.equals(approver, timeOff.approver);

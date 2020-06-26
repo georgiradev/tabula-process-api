@@ -120,11 +120,6 @@ public class TimeOffServiceImplTest {
     }
 
     @Test
-    void createTestWhenEntityAlreadyExists() {
-      //TODO
-    }
-
-    @Test
     void updateTest() {
         TimeOff expected = new TimeOff();
 
