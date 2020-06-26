@@ -23,14 +23,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-
-
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
-        entityManagerFactoryRef = "mainEntityManagerFactory",
-        transactionManagerRef = "mainTransactionManager",
-        basePackages = {"com.internship.tabulaprocessing.repository"})
+    entityManagerFactoryRef = "mainEntityManagerFactory",
+    transactionManagerRef = "mainTransactionManager",
+    basePackages = {"com.internship.tabulaprocessing.repository"})
 public class DatabaseConfig {
 
     private Environment env;

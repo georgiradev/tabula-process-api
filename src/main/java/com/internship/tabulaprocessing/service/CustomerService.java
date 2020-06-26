@@ -74,16 +74,22 @@ public class CustomerService {
   }
 
   public Optional<Customer> update(int id, Customer customer) {
-    Optional<Account> account = getAccount(id);
+    Optional<Account> account = getAccount(customer.getAccountId());
     Optional<Customer> oldCustomerDetails = customerRepository.findById(id);
 
     if (oldCustomerDetails.isEmpty()) {
       throw new EntityNotFoundException("Customer not found with id " + id);
     }
+    Optional<Company> foundCompany = companyRepository.findById(customer.getCompany().getId());
+
+    if (foundCompany.isEmpty()) {
+      throw new EntityNotFoundException(
+          "Company not found with id " + customer.getCompany().getId());
+    }
 
     Customer customerToUpdate = oldCustomerDetails.get();
     customerToUpdate.setAccountId(account.get().getId());
-    customerToUpdate.setCompany(customer.getCompany());
+    customerToUpdate.setCompany(foundCompany.get());
     customerToUpdate.setPhone(customer.getPhone());
 
     return Optional.of(customerRepository.saveAndFlush(customerToUpdate));

@@ -25,35 +25,37 @@ import javax.sql.DataSource;
     basePackages = {"com.internship.tabulacore.repository"})
 public class SecondaryDBConfig {
 
-  private Environment env;
+    private Environment env;
 
-  public SecondaryDBConfig(Environment env) {
-    this.env = env;
-  }
+    public SecondaryDBConfig(Environment env) {
+        this.env = env;
+    }
 
-  @Bean(name = "secondaryDataSource")
-  @ConfigurationProperties(prefix = "spring.tabulacore")
-  public DataSource dataSource() {
-    DriverManagerDataSource dataSource = new DriverManagerDataSource();
-    dataSource.setDriverClassName(env.getProperty("tabulacore.datasource.driver-class-name"));
-    dataSource.setUrl(env.getProperty("spring.tabulacore.datasource.url"));
-    dataSource.setUsername(env.getProperty("spring.tabulacore.datasource.username"));
-    dataSource.setPassword(env.getProperty("spring.tabulacore.datasource.password"));
+    @Bean(name = "secondaryDataSource")
+    @ConfigurationProperties (prefix = "spring.tabulacore")
+    public DataSource dataSource() {
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName(env.getProperty("tabulacore.datasource.driver-class-name"));
+        dataSource.setUrl(env.getProperty("spring.tabulacore.datasource.url"));
+        dataSource.setUsername(env.getProperty("spring.tabulacore.datasource.username"));
+        dataSource.setPassword(env.getProperty("spring.tabulacore.datasource.password"));
 
-    return dataSource;
-  }
+        return dataSource;
+    }
 
-  @Bean(name = "secondaryEntityManagerFactory")
-  public LocalContainerEntityManagerFactoryBean secondaryEntityManagerFactory(
-      EntityManagerFactoryBuilder builder,
-      @Qualifier("secondaryDataSource") DataSource dataSource) {
-    return builder.dataSource(dataSource).packages("com.internship.tabulacore.entity").build();
-  }
+    @Bean(name = "secondaryEntityManagerFactory")
+    public LocalContainerEntityManagerFactoryBean secondaryEntityManagerFactory(EntityManagerFactoryBuilder builder,
+                                                    @Qualifier("secondaryDataSource") DataSource dataSource) {
+        return builder
+                .dataSource(dataSource)
+                .packages("com.internship.tabulacore.entity")
+                .build();
+    }
 
-  @Bean(name = "secondaryTransactionManager")
-  public PlatformTransactionManager secondaryTransactionManager(
-      @Qualifier("secondaryEntityManagerFactory")
-          EntityManagerFactory secondaryEntityManagerFactory) {
-    return new JpaTransactionManager(secondaryEntityManagerFactory);
-  }
+    @Bean(name = "secondaryTransactionManager")
+    public PlatformTransactionManager secondaryTransactionManager(
+            @Qualifier("secondaryEntityManagerFactory") EntityManagerFactory secondaryEntityManagerFactory) {
+        return new JpaTransactionManager(secondaryEntityManagerFactory);
+    }
+
 }

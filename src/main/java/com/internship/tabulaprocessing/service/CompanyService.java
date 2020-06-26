@@ -6,13 +6,9 @@ import com.internship.tabulaprocessing.exception.EntityAlreadyPresentException;
 import com.internship.tabulaprocessing.repository.CompanyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,7 +19,7 @@ public class CompanyService {
 
   public Optional<Company> save(Company company) {
     Optional<Company> foundCompany =
-        companyRepository.findByNameAndAddress(company.getName(), company.getAddress());
+            companyRepository.findByNameAndAddress(company.getName(), company.getAddress());
 
     if (foundCompany.isPresent()) {
       throw new EntityAlreadyPresentException("Company already in database");
@@ -34,9 +30,9 @@ public class CompanyService {
 
   public Optional<Company> find(int id) {
     return Optional.of(
-        companyRepository
-            .findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Company not found with id " + id)));
+            companyRepository
+                    .findById(id)
+                    .orElseThrow(() -> new EntityNotFoundException("Company not found with id " + id)));
   }
 
   public void delete(int id) {
@@ -60,8 +56,6 @@ public class CompanyService {
       company.setCountry(theCompany.getCountry());
       company.setDiscountRate(theCompany.getDiscountRate());
       company.setVatNumber(theCompany.getVatNumber());
-
-      // ToDo *** need customer findAll method to get customers for this company
 
       return Optional.of(companyRepository.saveAndFlush(company));
     }

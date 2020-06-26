@@ -142,6 +142,7 @@ public class CustomerServiceTest {
 
     when(accountRepository.findById(any(Integer.class))).thenReturn(Optional.of(account));
     when(customerRepository.findById(any(Integer.class))).thenReturn(Optional.of(customer));
+    when(companyRepository.findById(any(Integer.class))).thenReturn(Optional.of(customer.getCompany()));
     when(customerRepository.saveAndFlush(any(Customer.class))).thenReturn(customer);
 
     assertEquals(Optional.of(customer), customerService.update(1, customer));

@@ -3,12 +3,9 @@ package com.internship.tabulaprocessing.dto;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Getter
 @Setter
-public class CompanyResponseDto {
+public class CompanyDtoNoCustomers {
 
     private int id;
 
@@ -23,6 +20,4 @@ public class CompanyResponseDto {
     private String city;
 
     private String vatNumber;
-
-    private List<CustomerDtoNoCompany> customers = new ArrayList<>();
 }
