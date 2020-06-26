@@ -1,6 +1,5 @@
 package com.internship.tabulaprocessing.controller;
 
-
 import com.internship.tabulaprocessing.dto.EmployeeRequestDto;
 import com.internship.tabulaprocessing.dto.EmployeeResponseDto;
 import com.internship.tabulaprocessing.entity.PagedResult;
@@ -14,36 +13,37 @@ import javax.validation.Valid;
 @RequestMapping("/employees")
 public class EmployeeController {
 
-    private EmployeeService employeeService;
+  private EmployeeService employeeService;
 
-    public EmployeeController(EmployeeService employeeService) {
-        this.employeeService = employeeService;
-    }
+  public EmployeeController(EmployeeService employeeService) {
+    this.employeeService = employeeService;
+  }
 
-    @GetMapping
-    public PagedResult<EmployeeResponseDto> getAll(QueryParameter queryParameter) {
-        return employeeService.getAll(queryParameter.getPageable());
-    }
+  @GetMapping
+  public PagedResult<EmployeeResponseDto> getAll(QueryParameter queryParameter) {
+    return employeeService.getAll(queryParameter.getPageable());
+  }
 
-    @PostMapping
-    public ResponseEntity<EmployeeResponseDto> create(@Valid @RequestBody EmployeeRequestDto employeeRequestDto) {
-        return employeeService.create(employeeRequestDto);
-    }
+  @PostMapping
+  public ResponseEntity<EmployeeResponseDto> create(
+      @Valid @RequestBody EmployeeRequestDto employeeRequestDto) {
+    return employeeService.create(employeeRequestDto);
+  }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<EmployeeResponseDto> getOne(@PathVariable int id) {
-        return employeeService.getOne(id);
-    }
+  @GetMapping("/{id}")
+  public ResponseEntity<EmployeeResponseDto> getOne(@PathVariable int id) {
+    return employeeService.getOne(id);
+  }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable String id)  {
-        int num = Integer.parseInt(id);
-        return employeeService.deleteById(num);
-    }
+  @DeleteMapping("/{id}")
+  public ResponseEntity<?> delete(@PathVariable String id) {
+    int num = Integer.parseInt(id);
+    return employeeService.deleteById(num);
+  }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<EmployeeResponseDto> update(@PathVariable int id,
-                                                      @RequestBody EmployeeRequestDto employeeRequestDto) {
-        return employeeService.update(id, employeeRequestDto);
-    }
+  @PutMapping("/{id}")
+  public ResponseEntity<EmployeeResponseDto> update(
+      @PathVariable int id, @RequestBody EmployeeRequestDto employeeRequestDto) {
+    return employeeService.update(id, employeeRequestDto);
+  }
 }

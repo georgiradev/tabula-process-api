@@ -8,8 +8,6 @@ import com.internship.tabulaprocessing.provider.ProcessStageEntityProvider;
 import com.internship.tabulaprocessing.repository.DepartmentRepository;
 import com.internship.tabulaprocessing.repository.ProcessRepository;
 import com.internship.tabulaprocessing.repository.ProcessStageRepository;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,7 +17,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,7 +45,7 @@ class ProcessStageServiceTest {
 
     Mockito.when(repository.findAll(queryParameter.getPageable())).thenReturn(stages);
 
-    List<ProcessStage> allProcessStages = service.findAll(queryParameter.getPageable());
+    Page<ProcessStage> allProcessStages = service.findAll(queryParameter.getPageable());
 
     for (ProcessStage stage : allProcessStages) {
       assertEquals(stage.getDepartment(), stage.getDepartmentEntity().getName());
@@ -61,7 +58,6 @@ class ProcessStageServiceTest {
   void persist() {
     ProcessStage prePersist = ProcessStageEntityProvider.getProcessStage("testStage");
     prePersist.setNextStage(null);
-
 
     Department department = ProcessStageEntityProvider.getDepartment();
     Process process = ProcessStageEntityProvider.getProces();
@@ -109,9 +105,7 @@ class ProcessStageServiceTest {
         .thenReturn(Optional.of(department));
     Mockito.when(repository.findByName(Mockito.anyString())).thenReturn(Optional.of(processStage));
 
-    assertDoesNotThrow(()->service.update(prePersist, 1));
-
-
+    assertDoesNotThrow(() -> service.update(prePersist, 1));
   }
 
   @Test
@@ -122,7 +116,8 @@ class ProcessStageServiceTest {
     stage.setDepartment("test");
     stage.setNextStage("test");
 
-    Mockito.when(repository.findById(Mockito.anyInt())).thenReturn(Optional.of(ProcessStageEntityProvider.getPersistedStage("test")));
+    Mockito.when(repository.findById(Mockito.anyInt()))
+        .thenReturn(Optional.of(ProcessStageEntityProvider.getPersistedStage("test")));
     Mockito.when(repository.findByNextStageEntityId(Mockito.anyInt()))
         .thenReturn(ProcessStageEntityProvider.getPersistedStage("test"));
     repository.deleteById(stage.getId());

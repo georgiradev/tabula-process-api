@@ -15,17 +15,15 @@ import java.math.BigDecimal;
 @Table(name = "employee")
 public class Employee {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private int id;
 
-    private BigDecimal ratePerHour;
+  private BigDecimal ratePerHour;
 
-    private int accountId;
+  private int accountId;
 
-    @ManyToOne
-    private Department department;
+  @ManyToOne private Department department;
 
-    @Transient
-    Account account;
+  @Transient Account account;
 }

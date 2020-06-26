@@ -3,9 +3,9 @@ package com.internship.tabulaprocessing.service;
 import com.internship.tabulaprocessing.entity.PagedResult;
 import com.internship.tabulaprocessing.entity.TimeOff;
 import com.internship.tabulaprocessing.entity.TimeOffStatus;
-import com.internship.tabulaprocessing.exception.EntityAlreadyPresentException;
 import com.internship.tabulaprocessing.exception.NotAllowedException;
 import com.internship.tabulaprocessing.repository.TimeOffRepository;
+import com.internship.tabulaprocessing.repository.TimeOffTypeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +20,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TimeOffServiceImpl implements TimeOffService {
     private final TimeOffRepository timeOffRepository;
+    private final TimeOffTypeRepository timeOffTypeRepository;
 
     @Override
     public TimeOff create(TimeOff timeOff) {
@@ -54,6 +55,11 @@ public class TimeOffServiceImpl implements TimeOffService {
                 .format("You cannot update time off request with id = %s," +
                         " because it has already been %s", id ,
                         timeOff.getStatus().toString()));
+    }
+
+    public TimeOff patchUpdate(TimeOff timeOff, int id) {
+        findById(id);
+        return timeOffRepository.save(timeOff);
     }
 
     @Override

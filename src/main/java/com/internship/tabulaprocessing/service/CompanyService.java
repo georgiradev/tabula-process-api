@@ -1,5 +1,6 @@
 package com.internship.tabulaprocessing.service;
 
+import com.internship.tabulaprocessing.controller.QueryParameter;
 import com.internship.tabulaprocessing.entity.Company;
 import com.internship.tabulaprocessing.exception.EntityAlreadyPresentException;
 import com.internship.tabulaprocessing.repository.CompanyRepository;
@@ -43,15 +44,8 @@ public class CompanyService {
     companyRepository.deleteById(id);
   }
 
-  public List<Company> findAll(int pageNo) {
-    Pageable paging = PageRequest.of(pageNo, 10);
-    Page<Company> pagedResult = companyRepository.findAll(paging);
-
-    if (pagedResult.hasContent()) {
-      return pagedResult.getContent();
-    } else {
-      return Collections.emptyList();
-    }
+  public Page<Company> findAll(QueryParameter queryParameter) {
+    return companyRepository.findAll(queryParameter.getPageable());
   }
 
   public Optional<Company> update(int id, Company theCompany) {

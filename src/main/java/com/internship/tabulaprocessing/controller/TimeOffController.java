@@ -1,17 +1,14 @@
 package com.internship.tabulaprocessing.controller;
 
-
-import com.internship.tabulaprocessing.dto.EmployeeResponseDto;
-import com.internship.tabulaprocessing.dto.TimeOffPatchRequest;
-import com.internship.tabulaprocessing.dto.TimeOffRequest;
-import com.internship.tabulaprocessing.dto.TimeOffResponse;
+import com.internship.tabulaprocessing.dto.*;
 import com.internship.tabulaprocessing.entity.Employee;
 import com.internship.tabulaprocessing.entity.PagedResult;
 import com.internship.tabulaprocessing.entity.TimeOff;
 import com.internship.tabulaprocessing.mapper.Mapper;
 import com.internship.tabulaprocessing.mapper.PatchMapper;
 import com.internship.tabulaprocessing.service.EmployeeService;
-import com.internship.tabulaprocessing.service.TimeOffService;
+import com.internship.tabulaprocessing.service.TimeOffServiceImpl;
+import com.internship.tabulaprocessing.service.TimeOffTypeService;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
@@ -29,10 +26,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TimeOffController {
 
-  private final TimeOffService timeOffService;
+  private final TimeOffServiceImpl timeOffService;
   private final Mapper mapper;
   private final PatchMapper patchMapper;
   private final EmployeeService employeeService;
+  private final TimeOffTypeService timeOffTypeService;
 
   @PostMapping
   public ResponseEntity<TimeOffResponse> create(@Valid @RequestBody TimeOffRequest timeOffRequest) {
@@ -64,6 +62,21 @@ public class TimeOffController {
     return ResponseEntity.ok(String.format("TimeOff with id = %s is deleted!", id));
   }
 
+  @PatchMapping(path = "manager/{id}", consumes = {"application/merge-patch+json"})
+  public ResponseEntity<TimeOffResponse> patch(@PathVariable int id, @RequestBody TimeOffPatchStatusRequest data) {
+
+    //PatchMapping for updating status
+    //ONLY MANAGER CAN UPDATE STATUS
+
+    Optional<TimeOff> timeOff = timeOffService.findById(id);
+
+    if(timeOff.isPresent() && data!=null) {
+      TimeOff patchedTimeOff = patchMapper.mapObjectsToTimeOffEntity(data, timeOff.get());
+      return ResponseEntity.ok(mapper.convertToTimeOffResponse(timeOffService.patchUpdate(patchedTimeOff, id)));
+    }
+    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+  }
+
   @PatchMapping(path = "/{id}", consumes = {"application/merge-patch+json"})
   public ResponseEntity<TimeOffResponse> patch(@PathVariable int id, @RequestBody TimeOffPatchRequest data) {
 
@@ -78,13 +91,14 @@ public class TimeOffController {
 
   private TimeOff fetchAndSetEmployeeAndApprover(@RequestBody @Valid TimeOffRequest timeOffRequest) {
 
-    TimeOff timeOff = mapper.convertToTimeOffEntity(timeOffRequest);
-
     EmployeeResponseDto employeeResponseDto = employeeService.getOne(timeOffRequest.getEmployeeId()).getBody();
     Employee employee = mapper.convertToEmployeeEntity(employeeResponseDto);
 
     EmployeeResponseDto approverResponseDto = employeeService.getOne(timeOffRequest.getApproverId()).getBody();
     Employee approver = mapper.convertToEmployeeEntity(approverResponseDto);
+
+    TimeOff timeOff = mapper.convertToTimeOffEntity(timeOffRequest);
+    timeOff.setTimeOffType(timeOffTypeService.getOneByName(timeOffRequest.getTypeOfTimeOff()));
 
     timeOff.setEmployee(employee);
     timeOff.setApprover(approver);

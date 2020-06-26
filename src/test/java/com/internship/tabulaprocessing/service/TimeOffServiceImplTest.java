@@ -179,4 +179,18 @@ public class TimeOffServiceImplTest {
         when(timeOffRepository.findById(timeOff.getId())).thenReturn(Optional.of(timeOff));
         assertThrows(NotAllowedException.class, () -> service.delete(timeOff.getId()));
     }
+
+    @Test
+    void testEqualsAndHashCode() {
+        TimeOff timeOff = new TimeOff();
+        timeOff.setId(1);
+        timeOff.setStatus(TimeOffStatus.APPROVED);
+
+        TimeOff timeOff2 = new TimeOff();
+        timeOff2.setId(1);
+        timeOff2.setStatus(TimeOffStatus.APPROVED);
+
+        assertEquals(timeOff,timeOff2);
+        assertEquals(timeOff.hashCode(),timeOff2.hashCode());
+    }
 }

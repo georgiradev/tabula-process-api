@@ -1,5 +1,7 @@
 package com.internship.tabulaprocessing.dto;
 
+import com.internship.tabulaprocessing.entity.TimeOffType;
+import com.internship.tabulaprocessing.entity.TypeName;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,9 +15,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TimeOffRequest {
-    //ToDo: to be set to enum type
     @NotNull(message = "Type off time off cannot be null!")
-    private String typeOfTimeOff;
+    private TypeName typeOfTimeOff;
 
     @NotNull(message = "You should provide startDateTime of timeOff")
     private LocalDateTime startDateTime;

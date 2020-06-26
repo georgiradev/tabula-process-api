@@ -9,7 +9,9 @@ import java.util.Optional;
 
 public interface CompanyRepository extends JpaRepository<Company, Integer> {
 
-    @Query(value = "SELECT DISTINCT * FROM company AS c WHERE c.name = :name AND c.address = :address", nativeQuery = true)
-    Optional<Company> findByNameAndAddress(
-            @Param("name") String name, @Param("address") String address);
+  @Query(
+      value = "SELECT DISTINCT * FROM company AS c WHERE c.name = :name AND c.address = :address",
+      nativeQuery = true)
+  Optional<Company> findByNameAndAddress(
+      @Param("name") String name, @Param("address") String address);
 }

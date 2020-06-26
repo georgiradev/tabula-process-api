@@ -19,8 +19,7 @@ public class OrderItemRequestDto {
   @Min(value = 1)
   private int count;
 
-  @NotBlank
-  private String note;
+  @NotBlank private String note;
 
   @DecimalMin(value = "0.0", inclusive = false)
   @Digits(integer = 7, fraction = 2)

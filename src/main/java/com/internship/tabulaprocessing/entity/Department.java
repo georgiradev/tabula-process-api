@@ -8,16 +8,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "departments")
+@Table(name = "department")
 @Getter
 @Setter
 public class Department {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    private String name;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private int id;
 
-    @OneToMany(mappedBy = "departmentEntity",fetch = FetchType.EAGER,cascade = {CascadeType.REMOVE})
-    private List<ProcessStage> processStageList = new ArrayList<>();
+  private String name;
+
+  @OneToMany(
+      mappedBy = "departmentEntity",
+      fetch = FetchType.EAGER,
+      cascade = {CascadeType.REMOVE})
+  private List<ProcessStage> processStageList = new ArrayList<>();
 }

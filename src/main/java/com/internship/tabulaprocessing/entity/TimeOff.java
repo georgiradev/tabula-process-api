@@ -21,9 +21,10 @@ public class TimeOff {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-   /* @ManyToOne(fetch = FetchType.LAZY,
-               cascade = {CascadeType.DETACH, CascadeType.REFRESH, CascadeType.MERGE})
-    private TimeOffTypes timeOffType;*/
+    @ManyToOne (fetch = FetchType.LAZY,
+            cascade = {CascadeType.DETACH, CascadeType.REFRESH, CascadeType.MERGE})
+    @Enumerated(EnumType.STRING)
+    private TimeOffType timeOffType;
 
     private LocalDateTime startDateTime;
 
@@ -34,10 +35,12 @@ public class TimeOff {
 
     private String comment;
 
-    @ManyToOne (fetch = FetchType.LAZY)
+    @ManyToOne (fetch = FetchType.LAZY,
+            cascade = {CascadeType.DETACH, CascadeType.REFRESH, CascadeType.MERGE})
     private Employee employee;
 
-    @ManyToOne (fetch = FetchType.LAZY)
+    @ManyToOne (fetch = FetchType.LAZY,
+            cascade = {CascadeType.DETACH, CascadeType.REFRESH, CascadeType.MERGE})
     private Employee approver;
 
     @Override
@@ -48,7 +51,8 @@ public class TimeOff {
         return  id == timeOff.id &&
                 Objects.equals(startDateTime, timeOff.startDateTime) &&
                 Objects.equals(endDateTime, timeOff.endDateTime) &&
-                status.name().equals(timeOff.status.name()) &&
+                Objects.equals(timeOffType, timeOff.timeOffType) &&
+                Objects.equals(status, timeOff.status) &&
                 Objects.equals(comment, timeOff.comment) &&
                 Objects.equals(employee, timeOff.employee) &&
                 Objects.equals(approver, timeOff.approver);
@@ -56,6 +60,6 @@ public class TimeOff {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, startDateTime, endDateTime, status, comment, employee, approver);
+        return Objects.hash(id, startDateTime, endDateTime, timeOffType, status, comment, employee, approver);
     }
 }

@@ -1,6 +1,7 @@
 package com.internship.tabulaprocessing.dto;
 
 import com.internship.tabulaprocessing.entity.TimeOffStatus;
+import com.internship.tabulaprocessing.entity.TypeName;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,10 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TimeOffPatchRequest {
-    //ToDo: to be set to enum type
-    private String typeOfTimeOff;
-
-    private TimeOffStatus status;
+    private TypeName typeOfTimeOff;
 
     private LocalDateTime startDateTime;
 

@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ class DepartmentServiceImplTest {
     Mockito.when(departmentRepository.findAll(queryParameter.getPageable()))
         .thenReturn(new PageImpl<>(new ArrayList<>(), queryParameter.getPageable(), 5));
 
-    List<Department> departmentList = departmentService.findAll(queryParameter.getPageable());
+    Page<Department> departmentList = departmentService.findAll(queryParameter.getPageable());
     assertTrue(departmentList.isEmpty());
 
     queryParameter.setSize(3);
@@ -45,7 +46,7 @@ class DepartmentServiceImplTest {
                 queryParameter.getSize()));
 
     departmentList = departmentService.findAll(queryParameter.getPageable());
-    assertTrue(departmentList.size() == queryParameter.getSize());
+    assertTrue(departmentList.getSize() == queryParameter.getSize());
   }
 
   @Test
@@ -88,7 +89,7 @@ class DepartmentServiceImplTest {
     Department department = new Department();
     department.setId(1);
     Mockito.when(departmentRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
-    assertThrows(RuntimeException.class, () -> departmentService.update(department,1));
+    assertThrows(RuntimeException.class, () -> departmentService.update(department, 1));
   }
 
   @Test

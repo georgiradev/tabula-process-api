@@ -8,28 +8,31 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.List;
 
-@Entity
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
+@Entity
+@Table(name = "customer")
 public class Customer {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    protected int id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private int id;
 
-    private int accountId;
+  private String phone;
 
-    private int companyId;
+  @ManyToOne(
+      cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+  @JoinColumn(name = "company_id")
+  private Company company;
 
-    private String phoneNumber;
+  @Column(name = "account_id")
+  private int accountId;
 
-    @OneToMany(mappedBy = "customer",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true)
-    private List<Order> orders;
-
+  @OneToMany(
+      mappedBy = "customer",
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY,
+      orphanRemoval = true)
+  private List<Order> orders;
 }
 

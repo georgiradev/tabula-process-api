@@ -18,30 +18,28 @@ import java.util.Set;
 @Table(name = "media")
 public class Media {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    private String name;
-    private BigDecimal price;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private int id;
 
-    @JsonIgnoreProperties("medias")
-    @ManyToMany(cascade = {
-            CascadeType.DETACH,
-            CascadeType.MERGE,
-            CascadeType.REFRESH,
-            CascadeType.PERSIST
-    })
-    @JoinTable(
-            name = "media_extra_media",
-            joinColumns = @JoinColumn(name = "media_id"),
-            inverseJoinColumns = @JoinColumn(name = "media_extra_id"))
-    private Set<MediaExtra> mediaExtras = new HashSet<>();
+  private String name;
+  private BigDecimal price;
 
-    public void calculatePrice(){
-        for(MediaExtra mediaExtra: this.mediaExtras)
-            price=price.add(mediaExtra.getPrice());
+  @JsonIgnoreProperties("medias")
+  @ManyToMany(
+      cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
+  @JoinTable(
+      name = "media_extra_media",
+      joinColumns = @JoinColumn(name = "media_id"),
+      inverseJoinColumns = @JoinColumn(name = "media_extra_id"))
+  private Set<MediaExtra> mediaExtras = new HashSet<>();
+
+  @OneToMany(mappedBy = "media", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<OrderItem> orderItems;
+
+  public void calculatePrice() {
+    if (mediaExtras != null) {
+      for (MediaExtra mediaExtra : this.mediaExtras) price = price.add(mediaExtra.getPrice());
     }
-
-    @OneToMany(mappedBy = "media", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OrderItem> orderItems;
+  }
 }

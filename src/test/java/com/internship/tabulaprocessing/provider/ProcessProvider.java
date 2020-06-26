@@ -6,16 +6,16 @@ import java.util.Collections;
 import java.util.List;
 
 public class ProcessProvider {
-    public static Process getProcessInstance() {
-        Process process = new Process();
+  public static Process getProcessInstance() {
+    Process process = new Process();
 
-        process.setId(1);
-        process.setName("shipping");
+    process.setId(1);
+    process.setName("shipping");
 
-        return process;
-    }
+    return process;
+  }
 
-    public static List<Process> getProcessesInstance() {
-        return Collections.singletonList(getProcessInstance());
-    }
+  public static List<Process> getProcessesInstance() {
+    return Collections.singletonList(getProcessInstance());
+  }
 }
