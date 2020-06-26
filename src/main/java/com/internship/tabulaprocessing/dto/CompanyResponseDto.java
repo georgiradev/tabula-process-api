@@ -3,6 +3,8 @@ package com.internship.tabulaprocessing.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 public class CompanyResponseDto {
@@ -21,5 +23,5 @@ public class CompanyResponseDto {
 
     private String vatNumber;
 
-    // private List<Customer> customers;
+    private List<CustomerResponseDto> customers;
 }

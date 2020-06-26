@@ -3,9 +3,11 @@ package com.internship.tabulaprocessing.controller;
 import com.internship.tabulaprocessing.dto.CompanyRequestDto;
 import com.internship.tabulaprocessing.dto.CompanyResponseDto;
 import com.internship.tabulaprocessing.entity.Company;
+import com.internship.tabulaprocessing.entity.PagedResult;
 import com.internship.tabulaprocessing.mapper.Mapper;
 import com.internship.tabulaprocessing.service.CompanyService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -13,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -36,7 +37,7 @@ public class CompanyController {
     if (savedCompany.isEmpty()) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
-    CompanyResponseDto companyResponseDto = mapper.companyToCompanyResponseDto(savedCompany.get());
+    CompanyResponseDto companyResponseDto = convertToDto(savedCompany.get());
 
     return ResponseEntity.ok(companyResponseDto);
   }
@@ -46,8 +47,7 @@ public class CompanyController {
     Optional<Company> foundCompany = companyService.find(id);
 
     if (foundCompany.isPresent()) {
-      CompanyResponseDto companyResponseDto =
-          mapper.companyToCompanyResponseDto(foundCompany.get());
+      CompanyResponseDto companyResponseDto = convertToDto(foundCompany.get());
 
       return ResponseEntity.ok(companyResponseDto);
     }
@@ -56,12 +56,15 @@ public class CompanyController {
   }
 
   @GetMapping
-  public ResponseEntity<List<CompanyResponseDto>> getAllCompanies(
-      @RequestParam(defaultValue = "0") int pageNo) {
+  public ResponseEntity<PagedResult<CompanyResponseDto>> getAllCompanies(
+      @Valid QueryParameter queryParameter) {
 
-    List<Company> allCompanies = companyService.findAll(pageNo);
-    List<CompanyResponseDto> allToDto =
-        allCompanies.stream().map(mapper::companyToCompanyResponseDto).collect(Collectors.toList());
+    Page<Company> pagedResult = companyService.findAll(queryParameter);
+    Page<CompanyResponseDto> pagedResultDto = pagedResult.map(this::convertToDto);
+
+    PagedResult<CompanyResponseDto> allToDto =
+        new PagedResult<>(
+            pagedResultDto.toList(), queryParameter.getPage(), pagedResultDto.getTotalPages());
 
     return ResponseEntity.ok(allToDto);
   }
@@ -74,8 +77,7 @@ public class CompanyController {
     Optional<Company> updatedCompany = companyService.update(id, company);
 
     if (updatedCompany.isPresent()) {
-      CompanyResponseDto companyResponseDto =
-          mapper.companyToCompanyResponseDto(updatedCompany.get());
+      CompanyResponseDto companyResponseDto = convertToDto(updatedCompany.get());
 
       return ResponseEntity.ok(companyResponseDto);
     }
@@ -88,5 +90,16 @@ public class CompanyController {
     companyService.delete(id);
 
     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+  }
+
+  private CompanyResponseDto convertToDto(Company company) {
+    CompanyResponseDto companyResponseDto = mapper.companyToCompanyResponseDto(company);
+
+    companyResponseDto.setCustomers(
+        company.getCustomers().stream()
+            .map(mapper::customerEntityToDto)
+            .collect(Collectors.toList()));
+
+    return companyResponseDto;
   }
 }

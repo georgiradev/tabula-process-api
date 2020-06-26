@@ -1,5 +1,6 @@
 package com.internship.tabulaprocessing.service;
 
+import com.internship.tabulaprocessing.controller.QueryParameter;
 import com.internship.tabulaprocessing.entity.Media;
 import com.internship.tabulaprocessing.entity.Order;
 import com.internship.tabulaprocessing.entity.OrderItem;
@@ -9,13 +10,10 @@ import com.internship.tabulaprocessing.repository.OrderItemRepository;
 import com.internship.tabulaprocessing.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,7 +38,7 @@ public class OrderItemService {
       throw new EntityAlreadyPresentException("Order item already in database");
     }
     validateOrderItem(orderItem);
-    calculatePrice(orderItem);
+    calculatePrice(orderItem, orderItem.getPricePerPiece());
 
     return Optional.of(orderItemRepository.save(orderItem));
   }
@@ -60,13 +58,13 @@ public class OrderItemService {
     orderItem.setOrder(foundOrder.get());
   }
 
-  private void calculatePrice(OrderItem orderItem) {
+  private void calculatePrice(OrderItem orderItem, BigDecimal pricePerPiece) {
     // Price formula = width x height x price per piece
 
     orderItem.setPricePerPiece(
-        orderItem
-            .getPricePerPiece()
-            .multiply(BigDecimal.valueOf(orderItem.getHeight()).multiply(BigDecimal.valueOf(orderItem.getWidth()))));
+        pricePerPiece.multiply(
+            BigDecimal.valueOf(orderItem.getHeight())
+                .multiply(BigDecimal.valueOf(orderItem.getWidth()))));
   }
 
   public Optional<OrderItem> findById(int id) {
@@ -76,23 +74,16 @@ public class OrderItemService {
             .orElseThrow(() -> new EntityNotFoundException("Order item not found with id " + id)));
   }
 
-  public List<OrderItem> findAll(int pageNo) {
-    Pageable paging = PageRequest.of(pageNo, 10);
-    Page<OrderItem> pagedResult = orderItemRepository.findAll(paging);
-
-    if (pagedResult.hasContent()) {
-      return pagedResult.getContent();
-    } else {
-      return Collections.emptyList();
-    }
+  public Page<OrderItem> findAll(QueryParameter queryParameter) {
+    return orderItemRepository.findAll(queryParameter.getPageable());
   }
 
   public Optional<OrderItem> update(int id, OrderItem orderItem) {
     validateOrderItem(orderItem);
     Optional<OrderItem> foundOrderItem = orderItemRepository.findById(id);
 
-    if(foundOrderItem.isEmpty()) {
-      throw new EntityNotFoundException("Order item not found with id " + orderItem.getId());
+    if (foundOrderItem.isEmpty()) {
+      throw new EntityNotFoundException("Order item not found with id " + id);
     }
     OrderItem orderItemToUpdate = foundOrderItem.get();
 
@@ -102,7 +93,7 @@ public class OrderItemService {
     orderItemToUpdate.setHeight(orderItem.getHeight());
     orderItemToUpdate.setWidth(orderItem.getWidth());
     orderItemToUpdate.setNote(orderItem.getNote());
-    calculatePrice(orderItemToUpdate);
+    calculatePrice(orderItemToUpdate, orderItem.getPricePerPiece());
 
     return Optional.of(orderItemRepository.saveAndFlush(orderItemToUpdate));
   }

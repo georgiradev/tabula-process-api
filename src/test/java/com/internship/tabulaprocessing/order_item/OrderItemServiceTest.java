@@ -1,5 +1,6 @@
 package com.internship.tabulaprocessing.order_item;
 
+import com.internship.tabulaprocessing.controller.QueryParameter;
 import com.internship.tabulaprocessing.entity.*;
 import com.internship.tabulaprocessing.exception.EntityAlreadyPresentException;
 import com.internship.tabulaprocessing.provider.*;
@@ -108,20 +109,22 @@ public class OrderItemServiceTest {
   void testFindAllOrderItems() {
     List<OrderItem> orderItems = Collections.singletonList(assembleObject());
     Page<OrderItem> paging = new PageImpl<>(orderItems);
+    QueryParameter queryParameter = new QueryParameter();
 
     when(orderItemRepository.findAll(any(Pageable.class))).thenReturn(paging);
 
-    assertEquals(orderItems, orderItemService.findAll(1));
+    assertEquals(paging, orderItemService.findAll(queryParameter));
   }
 
   @Test
   void testFindAllOrderItemsButNoContentFound() {
     List<OrderItem> orderItems = Collections.emptyList();
     Page<OrderItem> paging = new PageImpl<>(orderItems);
+    QueryParameter queryParameter = new QueryParameter();
 
     when(orderItemRepository.findAll(any(Pageable.class))).thenReturn(paging);
 
-    assertEquals(orderItems, orderItemService.findAll(1));
+    assertEquals(paging, orderItemService.findAll(queryParameter));
   }
 
   @Test
