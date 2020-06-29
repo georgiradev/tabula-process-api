@@ -35,10 +35,8 @@ public class TimeOff {
 
     private String comment;
 
-
     @ManyToOne (cascade = {CascadeType.DETACH, CascadeType.REFRESH, CascadeType.MERGE})
     private Employee employee;
-
 
     @ManyToOne (cascade = {CascadeType.DETACH, CascadeType.REFRESH, CascadeType.MERGE})
     private Employee approver;

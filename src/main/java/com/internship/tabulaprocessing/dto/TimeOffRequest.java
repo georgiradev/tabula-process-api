@@ -1,12 +1,12 @@
 package com.internship.tabulaprocessing.dto;
 
-import com.internship.tabulaprocessing.entity.TimeOffType;
 import com.internship.tabulaprocessing.entity.TypeName;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
@@ -24,8 +24,10 @@ public class TimeOffRequest {
     @NotNull(message = "You should provide endDateTime of timeOff")
     private LocalDateTime endDateTime;
 
+    @NotEmpty(message = "Employee ID cannot be null!")
     private int employeeId;
 
+    @NotEmpty(message = "Approver ID cannot be null!")
     private int approverId;
 
     private String comment;
