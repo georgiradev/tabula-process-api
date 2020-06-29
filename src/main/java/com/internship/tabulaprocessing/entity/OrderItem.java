@@ -24,6 +24,7 @@ public class OrderItem {
 
   private String note;
 
+  @Column(name = "price_per_piece")
   private BigDecimal pricePerPiece;
 
   @ManyToOne(fetch = FetchType.LAZY)

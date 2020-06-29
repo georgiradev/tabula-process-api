@@ -1,5 +1,6 @@
 package com.internship.tabulaprocessing.controller;
 
+import com.internship.tabulacore.entity.Account;
 import com.internship.tabulaprocessing.dto.CompanyRequestDto;
 import com.internship.tabulaprocessing.dto.CompanyResponseDto;
 import com.internship.tabulaprocessing.dto.CustomerDtoNoCompany;
@@ -37,12 +38,13 @@ public class CompanyController {
     Company company = mapper.companyRequestDtoToCompany(companyRequestDto);
     Optional<Company> savedCompany = companyService.save(company);
 
-    if (savedCompany.isEmpty()) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-    }
-    CompanyResponseDto companyResponseDto = convertToDto(savedCompany.get());
+    if (savedCompany.isPresent()) {
+      CompanyResponseDto companyResponseDto = convertToDto(savedCompany.get());
 
-    return ResponseEntity.ok(companyResponseDto);
+      return ResponseEntity.ok(companyResponseDto);
+    }
+
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
   }
 
   @GetMapping("/{id}")
@@ -100,10 +102,9 @@ public class CompanyController {
 
     for (Customer currentCustomer : company.getCustomers()) {
       CustomerDtoNoCompany customerDto = mapper.customerEntityToCustomerDto(currentCustomer);
+      Account account = customerService.getAccount(currentCustomer.getAccountId());
       customerDto.setOrdersIds(customerService.getOrdersIds(currentCustomer.getId()));
-      customerDto.setAccount(
-          mapper.convertToAccountDto(
-              customerService.getAccount(currentCustomer.getAccountId()).get()));
+      customerDto.setAccount(mapper.convertToAccountDto(account));
       companyResponseDto.getCustomers().add(customerDto);
     }
 
