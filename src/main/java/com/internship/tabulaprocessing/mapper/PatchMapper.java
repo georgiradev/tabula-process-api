@@ -12,7 +12,7 @@ public interface PatchMapper {
 
     PatchMapper mapper = Mappers.getMapper(PatchMapper.class);
 
-    TimeOff mapObjectsToTimeOffEntity(TimeOffPatchRequest data, @MappingTarget TimeOff company);
+    TimeOff mapObjectsToTimeOffEntity(TimeOffPatchRequest data, @MappingTarget TimeOff timeOff);
 
-    TimeOff mapObjectsToTimeOffEntity(TimeOffPatchStatusRequest data, @MappingTarget TimeOff company);
+    TimeOff mapObjectsToTimeOffEntity(TimeOffPatchStatusRequest data, @MappingTarget TimeOff timeOff);
 }
