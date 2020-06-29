@@ -206,7 +206,7 @@ public class TimeOffServiceImplTest {
         service.delete(timeOff.getId());
         when(timeOffRepository.findById(timeOff.getId())).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> service.deleteRequest(timeOff.getId()));
+        assertThrows(EntityNotFoundException.class, () -> service.deleteByManager(timeOff.getId()));
     }
 
     @Test
@@ -216,7 +216,7 @@ public class TimeOffServiceImplTest {
         timeOff.setStatus(TimeOffStatus.APPROVED);
 
         when(timeOffRepository.findById(timeOff.getId())).thenReturn(Optional.of(timeOff));
-        assertThrows(NotAllowedException.class, () -> service.deleteRequest(timeOff.getId()));
+        assertThrows(NotAllowedException.class, () -> service.deleteByManager(timeOff.getId()));
     }
 
     @Test

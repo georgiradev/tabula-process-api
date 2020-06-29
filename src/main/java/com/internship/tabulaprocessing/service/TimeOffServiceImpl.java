@@ -23,6 +23,11 @@ public class TimeOffServiceImpl implements TimeOffService {
 
     @Override
     public TimeOff create(TimeOff timeOff) {
+
+        if(isAlreadyCreated(timeOff)) {
+            throw new EntityAlreadyPresentException("TimeOff is already created!");
+        }
+
         if(timeOff.getStartDateTime().isBefore(LocalDateTime.now())) {
             throw new NotAllowedException("The startDateTime field is invalid!");
         }
@@ -31,24 +36,21 @@ public class TimeOffServiceImpl implements TimeOffService {
             throw new NotAllowedException("The endDateTime field is invalid!");
         }
 
-        if(isAlreadyCreated(timeOff)) {
-            throw new EntityAlreadyPresentException("TimeOff is already created!");
-        }
-
         timeOff.setStatus(TimeOffStatus.PENDING);
         return timeOffRepository.save(timeOff);
     }
 
     @Override
     public TimeOff update(TimeOff timeOff, int id) {
+
+        if(isAlreadyCreated(timeOff)) {
+            throw new EntityAlreadyPresentException("TimeOff is already created!");
+        }
+
         Optional<TimeOff> foundTimeOff = findById(id);
 
         if(foundTimeOff.isPresent()) {
             timeOff.setStatus(foundTimeOff.get().getStatus());
-
-            if(isAlreadyCreated(timeOff)) {
-                throw new EntityAlreadyPresentException(String.format("TimeOff with id = %s is already created!", id));
-            }
         }
 
         if(timeOff.getStatus().equals(TimeOffStatus.PENDING)) {
@@ -105,6 +107,7 @@ public class TimeOffServiceImpl implements TimeOffService {
 
         if(foundTimeOff.get().getStatus().equals(TimeOffStatus.PENDING)) {
             timeOffRepository.deleteById(id);
+            return;
         }
 
         if(foundTimeOff.get().getStatus().equals(TimeOffStatus.APPROVED)) {
@@ -126,12 +129,11 @@ public class TimeOffServiceImpl implements TimeOffService {
         }
     }
 
-    public void deleteRequest(int id) {
+    public void deleteByManager(int id) {
         Optional<TimeOff> foundTimeOff = timeOffRepository.findById(id);
 
         if(foundTimeOff.isEmpty()) {
-            throw new EntityNotFoundException(String
-                    .format("TimeOff with id = %s is not found!", id));
+            throw new EntityNotFoundException(String.format("TimeOff with id = %s is not found!", id));
         }
 
         if(foundTimeOff.get().getStatus().equals(TimeOffStatus.PENDING_DELETION)) {
@@ -139,22 +141,16 @@ public class TimeOffServiceImpl implements TimeOffService {
             return;
         }
 
-        throw new NotAllowedException(String
-                    .format("You cannot delete time off request with id = %s", id));
+        throw new NotAllowedException(String.format("You cannot delete time off request with id = %s", id));
     }
 
     public boolean isAlreadyCreated (TimeOff timeOff) {
-       for (TimeOff createdTimeOff : getAllAsList()) {
-           if(createdTimeOff.getId()!=timeOff.getId()) {
-               if(timeOffRepository.duplicatesCount(
-                       timeOff.getStartDateTime(),
-                       timeOff.getEndDateTime(),
-                       timeOff.getEmployee().getId(),
-                       timeOff.getApprover().getId())>=1) {
-                   return true;
-               }
-           }
-       }
+        if(timeOffRepository.duplicatesCount(
+                timeOff.getStartDateTime(),
+                timeOff.getEndDateTime(),
+                timeOff.getEmployee().getId())>=1) {
+            return true;
+        }
        return false;
     }
 }

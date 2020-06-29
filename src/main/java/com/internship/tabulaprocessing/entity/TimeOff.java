@@ -22,10 +22,6 @@ public class TimeOff {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne (cascade = {CascadeType.DETACH, CascadeType.REFRESH, CascadeType.MERGE})
-    @Enumerated(EnumType.STRING)
-    private TimeOffType timeOffType;
-
     private LocalDateTime startDateTime;
 
     private LocalDateTime endDateTime;
@@ -40,6 +36,10 @@ public class TimeOff {
 
     @ManyToOne (cascade = {CascadeType.DETACH, CascadeType.REFRESH, CascadeType.MERGE})
     private Employee approver;
+
+    @ManyToOne (cascade = {CascadeType.DETACH, CascadeType.REFRESH, CascadeType.MERGE})
+    @Enumerated(EnumType.STRING)
+    private TimeOffType timeOffType;
 
     @Override
     public boolean equals(Object o) {

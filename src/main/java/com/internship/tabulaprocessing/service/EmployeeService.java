@@ -70,7 +70,7 @@ public class EmployeeService {
 
     //TODO:!!!
     EmployeeResponseDto employeeResponseDto = mapper.convertToEmployeeResponseDto(employee.get());
-    Optional<Account> account = accountRepository.findById(employee.get().getAccountId());
+    //Optional<Account> account = accountRepository.findById(employee.get().getAccountId());
     //employeeResponseDto.setAccount(mapper.convertToAccountDto(account.get()));
     return ResponseEntity.ok(employeeResponseDto);
   }

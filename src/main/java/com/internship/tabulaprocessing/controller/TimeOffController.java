@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 @Validated
 @RestController
@@ -62,7 +61,7 @@ public class TimeOffController {
 
   @DeleteMapping("/manager/{id}")
   public ResponseEntity<String> deleteRequest(@PathVariable("id") @Min(1) int id) {
-    timeOffService.deleteRequest(id);
+    timeOffService.deleteByManager(id);
     return ResponseEntity.ok(String.format("TimeOff with id = %s is deleted!", id));
   }
 
@@ -109,7 +108,6 @@ public class TimeOffController {
 
     TimeOff timeOff = mapper.convertToTimeOffEntity(timeOffRequest);
     timeOff.setTimeOffType(timeOffTypeService.getOneByName(timeOffRequest.getTypeOfTimeOff()));
-
     timeOff.setEmployee(employee);
     timeOff.setApprover(approver);
 
