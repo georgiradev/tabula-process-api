@@ -51,17 +51,19 @@ public class TimeOff {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TimeOff timeOff = (TimeOff) o;
-        return
+        return  id == timeOff.id &&
+                Objects.equals(timeOffType, timeOff.timeOffType) &&
                 Objects.equals(startDateTime, timeOff.startDateTime) &&
                 Objects.equals(endDateTime, timeOff.endDateTime) &&
-                Objects.equals(timeOffType, timeOff.timeOffType) &&
+                status == timeOff.status &&
+                Objects.equals(comment, timeOff.comment) &&
                 Objects.equals(employee.getId(), timeOff.employee.getId()) &&
                 Objects.equals(approver.getId(), timeOff.approver.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(startDateTime, endDateTime, timeOffType, employee.getId(),
-                approver.getId());
+        return Objects.hash(id, timeOffType, startDateTime, endDateTime,
+                status, comment, employee.getId(), approver.getId());
     }
 }
