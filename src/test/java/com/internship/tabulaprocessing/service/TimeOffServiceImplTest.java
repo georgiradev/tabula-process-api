@@ -91,6 +91,8 @@ public class TimeOffServiceImplTest {
         expected.setStatus(TimeOffStatus.PENDING);
         expected.setStartDateTime(LocalDateTime.of(2020,7,30, 9,30));
         expected.setEndDateTime(LocalDateTime.of(2020,7,30, 18,30));
+        expected.setApprover(new Employee(1, BigDecimal.valueOf(1), 1, null, null));
+        expected.setEmployee(new Employee(2, BigDecimal.valueOf(2), 2, null, null));
 
         when(timeOffRepository.save(expected)).thenReturn(expected);
         TimeOff actual = service.create(expected);
@@ -105,6 +107,8 @@ public class TimeOffServiceImplTest {
         expected.setStatus(TimeOffStatus.PENDING);
         expected.setEndDateTime(LocalDateTime.of(2020,7,30, 9,30));
         expected.setStartDateTime(LocalDateTime.of(2020,7,30, 18,30));
+        expected.setApprover(new Employee(1, BigDecimal.valueOf(1), 1, null, null));
+        expected.setEmployee(new Employee(2, BigDecimal.valueOf(2), 2, null, null));
 
         assertThrows(NotAllowedException.class, () -> service.create(expected));
     }
@@ -132,6 +136,8 @@ public class TimeOffServiceImplTest {
         expected.setStatus(TimeOffStatus.PENDING);
         expected.setEndDateTime(LocalDateTime.of(2020,06,30, 9,30));
         expected.setStartDateTime(LocalDateTime.of(2020,06,30, 18,30));
+        expected.setApprover(new Employee(1, BigDecimal.valueOf(1), 1, null, null));
+        expected.setEmployee(new Employee(2, BigDecimal.valueOf(2), 2, null, null));
 
         doReturn(Optional.of(expected)).when(timeOffRepository).findById(expected.getId());
         Optional<TimeOff> actual = service.findById(expected.getId());
@@ -151,6 +157,8 @@ public class TimeOffServiceImplTest {
         expected.setStatus(TimeOffStatus.APPROVED);
         expected.setEndDateTime(LocalDateTime.of(2020,06,30, 9,30));
         expected.setStartDateTime(LocalDateTime.of(2020,06,30, 18,30));
+        expected.setApprover(new Employee(1, BigDecimal.valueOf(1), 1, null, null));
+        expected.setEmployee(new Employee(2, BigDecimal.valueOf(2), 2, null, null));
 
         doReturn(Optional.of(expected)).when(timeOffRepository).findById(expected.getId());
         Optional<TimeOff> actual = service.findById(expected.getId());
