@@ -60,7 +60,8 @@ public class ProcessStageController {
                         collect(Collectors.toList());
 
         return ResponseEntity.ok(new PagedResult<>(
-                responseList, queryParameter.getPage(), page.getTotalPages()));
+                responseList, queryParameter.getPage(), page.getTotalPages(),
+                page.getTotalElements()));
     }
 
     @GetMapping(value = "/{id}")

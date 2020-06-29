@@ -1,11 +1,13 @@
 package com.internship.tabulaprocessing.service;
 
+import com.internship.tabulaprocessing.dto.TimeOffResponse;
 import com.internship.tabulaprocessing.entity.PagedResult;
 import com.internship.tabulaprocessing.entity.TimeOff;
 import com.internship.tabulaprocessing.entity.TimeOffStatus;
+import com.internship.tabulaprocessing.exception.EntityAlreadyPresentException;
 import com.internship.tabulaprocessing.exception.NotAllowedException;
+import com.internship.tabulaprocessing.mapper.Mapper;
 import com.internship.tabulaprocessing.repository.TimeOffRepository;
-import com.internship.tabulaprocessing.repository.TimeOffTypeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,7 +22,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TimeOffServiceImpl implements TimeOffService {
     private final TimeOffRepository timeOffRepository;
-    private final TimeOffTypeRepository timeOffTypeRepository;
+    private final Mapper mapper;
 
     @Override
     public TimeOff create(TimeOff timeOff) {
@@ -32,8 +34,11 @@ public class TimeOffServiceImpl implements TimeOffService {
             throw new NotAllowedException("The endDateTime field is invalid!");
         }
 
-        timeOff.setStatus(TimeOffStatus.PENDING);
+        if(isAlreadyCreated(timeOff)) {
+            throw new EntityAlreadyPresentException("TimeOff is already created!");
+        }
 
+        timeOff.setStatus(TimeOffStatus.PENDING);
         return timeOffRepository.save(timeOff);
     }
 
@@ -43,6 +48,10 @@ public class TimeOffServiceImpl implements TimeOffService {
 
         if(foundTimeOff.isPresent()) {
             timeOff.setStatus(foundTimeOff.get().getStatus());
+
+            if(isAlreadyCreated(timeOff)) {
+                throw new EntityAlreadyPresentException(String.format("TimeOff with id = %s is already created!", id));
+            }
         }
 
         if(timeOff.getStatus().equals(TimeOffStatus.PENDING)) {
@@ -57,7 +66,7 @@ public class TimeOffServiceImpl implements TimeOffService {
                         timeOff.getStatus().toString()));
     }
 
-    public TimeOff patchUpdate(TimeOff timeOff, int id) {
+    public TimeOff statusUpdate(TimeOff timeOff, int id) {
         findById(id);
         return timeOffRepository.save(timeOff);
     }
@@ -76,12 +85,16 @@ public class TimeOffServiceImpl implements TimeOffService {
     @Override
     public PagedResult<TimeOff> findAll(Pageable pageable) {
         Page<TimeOff> timeOffs = timeOffRepository.findAll(pageable);
-        return new PagedResult<>(timeOffs.toList(), pageable.getPageNumber()+1,
-                timeOffs.getTotalPages());
+
+        return new PagedResult<>(
+                timeOffs.toList(),
+                pageable.getPageNumber()+1,
+                timeOffs.getTotalPages(),
+                timeOffs.getTotalElements());
     }
 
     public List<TimeOff> getAllAsList() {
-        return  timeOffRepository.findAll();
+        return timeOffRepository.findAll();
     }
 
     @Override
@@ -114,5 +127,37 @@ public class TimeOffServiceImpl implements TimeOffService {
                     .format("You cannot delete time off request with id = %s," +
                             " because it has already been REJECTED", id));
         }
+    }
+
+    public void deleteRequest(int id) {
+        Optional<TimeOff> foundTimeOff = timeOffRepository.findById(id);
+
+        if(foundTimeOff.isEmpty()) {
+            throw new EntityNotFoundException(String
+                    .format("TimeOff with id = %s is not found!", id));
+        }
+
+        if(foundTimeOff.get().getStatus().equals(TimeOffStatus.PENDING_DELETION)) {
+            timeOffRepository.deleteById(id);
+            return;
+        }
+
+        throw new NotAllowedException(String
+                    .format("You cannot delete time off request with id = %s", id));
+    }
+
+    public boolean isAlreadyCreated (TimeOff timeOff) {
+       for (TimeOff createdTimeOff : getAllAsList()) {
+           if(createdTimeOff.getId()==timeOff.getId()) {
+               continue;
+           }
+
+           if(timeOffRepository.duplicatesCount(timeOff.getStartDateTime(),
+                   timeOff.getEndDateTime(), timeOff.getEmployee().getId(),
+                   timeOff.getApprover().getId())>=1) {
+               return true;
+           }
+       }
+       return false;
     }
 }

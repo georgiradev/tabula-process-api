@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 @Validated
 @RestController
@@ -26,11 +27,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TimeOffController {
 
-  private final TimeOffServiceImpl timeOffService;
-  private final Mapper mapper;
-  private final PatchMapper patchMapper;
-  private final EmployeeService employeeService;
   private final TimeOffTypeService timeOffTypeService;
+  private final TimeOffServiceImpl timeOffService;
+  private final EmployeeService employeeService;
+  private final PatchMapper patchMapper;
+  private final Mapper mapper;
 
   @PostMapping
   public ResponseEntity<TimeOffResponse> create(@Valid @RequestBody TimeOffRequest timeOffRequest) {
@@ -45,7 +46,10 @@ public class TimeOffController {
 
   @GetMapping
   public ResponseEntity<PagedResult<TimeOff>> getAll(QueryParameter queryParameter) {
-    return ResponseEntity.ok(timeOffService.findAll(queryParameter.getPageable()));
+    PagedResult pagedResult = timeOffService.findAll(queryParameter.getPageable());
+    pagedResult.setElements(mapper.convertToTimeOffResponse(pagedResult.getElements()));
+
+    return ResponseEntity.ok(pagedResult);
   }
 
   @PutMapping("/{id}")
@@ -56,29 +60,35 @@ public class TimeOffController {
     return ResponseEntity.ok(mapper.convertToTimeOffResponse(updatedTimeOff));
   }
 
+  @DeleteMapping("/manager/{id}")
+  public ResponseEntity<String> deleteRequest(@PathVariable("id") @Min(1) int id) {
+    timeOffService.deleteRequest(id);
+    return ResponseEntity.ok(String.format("TimeOff with id = %s is deleted!", id));
+  }
+
   @DeleteMapping("/{id}")
-  public ResponseEntity<String> deleteCompany(@PathVariable("id") @Min(1) int id) {
+  public ResponseEntity<String> delete(@PathVariable("id") @Min(1) int id) {
     timeOffService.delete(id);
     return ResponseEntity.ok(String.format("TimeOff with id = %s is deleted!", id));
   }
 
   @PatchMapping(path = "manager/{id}", consumes = {"application/merge-patch+json"})
   public ResponseEntity<TimeOffResponse> patch(@PathVariable int id, @RequestBody TimeOffPatchStatusRequest data) {
-
-    //PatchMapping for updating status
+    //PatchMapping for updating only status
     //ONLY MANAGER CAN UPDATE STATUS
 
     Optional<TimeOff> timeOff = timeOffService.findById(id);
 
     if(timeOff.isPresent() && data!=null) {
       TimeOff patchedTimeOff = patchMapper.mapObjectsToTimeOffEntity(data, timeOff.get());
-      return ResponseEntity.ok(mapper.convertToTimeOffResponse(timeOffService.patchUpdate(patchedTimeOff, id)));
+      return ResponseEntity.ok(mapper.convertToTimeOffResponse(timeOffService.statusUpdate(patchedTimeOff, id)));
     }
     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
   }
 
   @PatchMapping(path = "/{id}", consumes = {"application/merge-patch+json"})
   public ResponseEntity<TimeOffResponse> patch(@PathVariable int id, @RequestBody TimeOffPatchRequest data) {
+    //ordinary patch mapping, cannot update status
 
     Optional<TimeOff> timeOff = timeOffService.findById(id);
 

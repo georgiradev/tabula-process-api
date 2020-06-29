@@ -43,7 +43,8 @@ public class TimeOffTypeController {
 
     return ResponseEntity.ok(
         new PagedResult<>(
-            responseDtos.toList(), queryParameter.getPage(), responseDtos.getTotalPages()));
+            responseDtos.toList(), queryParameter.getPage(), responseDtos.getTotalPages(),
+                pagedTypes.getTotalElements()));
   }
 
   @PostMapping

@@ -86,6 +86,8 @@ public interface Mapper {
 
   TimeOff convertToTimeOffEntity (TimeOffRequest dto);
 
+  List<TimeOffResponse> convertToTimeOffResponse (List<TimeOff> timeOffs);
+
   @Mapping(target = "typeOfTimeOff", source = "timeOffType.name")
   @Mapping(target = "employeeId", expression = "java(timeOff.getEmployee().getId())")
   @Mapping(target = "approverId", expression = "java(timeOff.getApprover().getId())")

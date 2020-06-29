@@ -1,5 +1,6 @@
 package com.internship.tabulaprocessing.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,7 +22,7 @@ public class TimeOff {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne (fetch = FetchType.LAZY,
+    @ManyToOne (fetch = FetchType.EAGER,
             cascade = {CascadeType.DETACH, CascadeType.REFRESH, CascadeType.MERGE})
     @Enumerated(EnumType.STRING)
     private TimeOffType timeOffType;
@@ -35,11 +36,13 @@ public class TimeOff {
 
     private String comment;
 
-    @ManyToOne (fetch = FetchType.LAZY,
+
+    @ManyToOne (fetch = FetchType.EAGER,
             cascade = {CascadeType.DETACH, CascadeType.REFRESH, CascadeType.MERGE})
     private Employee employee;
 
-    @ManyToOne (fetch = FetchType.LAZY,
+
+    @ManyToOne (fetch = FetchType.EAGER,
             cascade = {CascadeType.DETACH, CascadeType.REFRESH, CascadeType.MERGE})
     private Employee approver;
 
@@ -48,18 +51,17 @@ public class TimeOff {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TimeOff timeOff = (TimeOff) o;
-        return  id == timeOff.id &&
+        return
                 Objects.equals(startDateTime, timeOff.startDateTime) &&
                 Objects.equals(endDateTime, timeOff.endDateTime) &&
                 Objects.equals(timeOffType, timeOff.timeOffType) &&
-                Objects.equals(status, timeOff.status) &&
-                Objects.equals(comment, timeOff.comment) &&
-                Objects.equals(employee, timeOff.employee) &&
-                Objects.equals(approver, timeOff.approver);
+                Objects.equals(employee.getId(), timeOff.employee.getId()) &&
+                Objects.equals(approver.getId(), timeOff.approver.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, startDateTime, endDateTime, timeOffType, status, comment, employee, approver);
+        return Objects.hash(startDateTime, endDateTime, timeOffType, employee.getId(),
+                approver.getId());
     }
 }

@@ -45,7 +45,8 @@ public class EmployeeService {
     return new PagedResult<>(
         getEmployeeResponseDtoList(employees),
         pageable.getPageNumber() + 1,
-        employees.getTotalPages());
+        employees.getTotalPages(),
+        employees.getTotalElements());
   }
 
   private List<EmployeeResponseDto> getEmployeeResponseDtoList(Page<Employee> employees) {
@@ -67,9 +68,10 @@ public class EmployeeService {
       throw new EntityNotFoundException("The employee was not found.");
     }
 
+    //TODO:!!!
     EmployeeResponseDto employeeResponseDto = mapper.convertToEmployeeResponseDto(employee.get());
     Optional<Account> account = accountRepository.findById(employee.get().getAccountId());
-    employeeResponseDto.setAccount(mapper.convertToAccountDto(account.get()));
+    //employeeResponseDto.setAccount(mapper.convertToAccountDto(account.get()));
     return ResponseEntity.ok(employeeResponseDto);
   }
 

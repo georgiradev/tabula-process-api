@@ -69,7 +69,8 @@ public class OrderItemController {
 
     PagedResult<OrderItemResponseDto> allToDto =
         new PagedResult<>(
-            pagedResultDto.toList(), queryParameter.getPage(), pagedResultDto.getTotalPages());
+            pagedResultDto.toList(), queryParameter.getPage(), pagedResultDto.getTotalPages(),
+                pagedResult.getTotalElements());
 
     return ResponseEntity.ok(allToDto);
   }

@@ -1,8 +1,12 @@
 package com.internship.tabulaprocessing.entity;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.stream.Stream;
 
+@Getter
 public enum TimeOffStatus {
     PENDING,
     REJECTED,
