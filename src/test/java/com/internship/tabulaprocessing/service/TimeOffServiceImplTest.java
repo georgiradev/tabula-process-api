@@ -12,7 +12,6 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -40,7 +39,6 @@ public class TimeOffServiceImplTest {
     @Test
     void testGetById() {
         TimeOff timeOff = new TimeOff();
-
         timeOff.setId(1);
         timeOff.setStatus(TimeOffStatus.PENDING);
 
@@ -53,7 +51,6 @@ public class TimeOffServiceImplTest {
     @Test
     void testGetByNonExistingId() {
         TimeOff timeOff = new TimeOff();
-
         timeOff.setId(1);
         timeOff.setStatus(TimeOffStatus.PENDING);
 
@@ -64,12 +61,10 @@ public class TimeOffServiceImplTest {
     @Test
     void testGetByPage() {
         TimeOff timeOff1 = new TimeOff();
-
         timeOff1.setId(1);
         timeOff1.setStatus(TimeOffStatus.PENDING);
 
         TimeOff timeOff2 = new TimeOff();
-
         timeOff2.setId(2);
         timeOff2.setStatus(TimeOffStatus.PENDING);
 
@@ -92,7 +87,6 @@ public class TimeOffServiceImplTest {
     @Test
     void createTest() {
         TimeOff expected = new TimeOff();
-
         expected.setId(1);
         expected.setStatus(TimeOffStatus.PENDING);
         expected.setStartDateTime(LocalDateTime.of(2020,7,30, 9,30));
@@ -107,7 +101,6 @@ public class TimeOffServiceImplTest {
     @Test
     void createTestWithInvalidDate() {
         TimeOff expected = new TimeOff();
-
         expected.setId(1);
         expected.setStatus(TimeOffStatus.PENDING);
         expected.setEndDateTime(LocalDateTime.of(2020,7,30, 9,30));
@@ -119,7 +112,6 @@ public class TimeOffServiceImplTest {
     @Test
     void createAlreadyExistingTimeOff() {
         TimeOff timeOff = new TimeOff();
-
         timeOff.setId(1);
         timeOff.setStatus(TimeOffStatus.PENDING);
         timeOff.setEndDateTime(LocalDateTime.of(2020,7,30, 18,30));
@@ -136,7 +128,6 @@ public class TimeOffServiceImplTest {
     @Test
     void updateTest() {
         TimeOff expected = new TimeOff();
-
         expected.setId(1);
         expected.setStatus(TimeOffStatus.PENDING);
         expected.setEndDateTime(LocalDateTime.of(2020,06,30, 9,30));
@@ -156,7 +147,6 @@ public class TimeOffServiceImplTest {
     @Test
     void updateTestIfEntityStatusChanged() {
         TimeOff expected = new TimeOff();
-
         expected.setId(1);
         expected.setStatus(TimeOffStatus.APPROVED);
         expected.setEndDateTime(LocalDateTime.of(2020,06,30, 9,30));
@@ -172,7 +162,6 @@ public class TimeOffServiceImplTest {
     @Test
     void updateTestIfEntityIsAlreadyCreated() {
         TimeOff expected = new TimeOff();
-
         expected.setId(1);
         expected.setStatus(TimeOffStatus.APPROVED);
         expected.setEndDateTime(LocalDateTime.of(2020, 06, 30, 18, 30));
@@ -187,7 +176,6 @@ public class TimeOffServiceImplTest {
     @Test
     void deleteTest() {
         TimeOff timeOff = new TimeOff();
-
         timeOff.setId(1);
         timeOff.setStatus(TimeOffStatus.PENDING);
 
@@ -201,7 +189,6 @@ public class TimeOffServiceImplTest {
     @Test
     void deleteTestIfStatusIsChanged() {
         TimeOff timeOff = new TimeOff();
-
         timeOff.setId(1);
         timeOff.setStatus(TimeOffStatus.APPROVED);
 
@@ -212,7 +199,6 @@ public class TimeOffServiceImplTest {
     @Test
     void deleteRequestTest() {
         TimeOff timeOff = new TimeOff();
-
         timeOff.setId(1);
         timeOff.setStatus(TimeOffStatus.PENDING_DELETION);
 
@@ -226,11 +212,26 @@ public class TimeOffServiceImplTest {
     @Test
     void deleteRequestTestThrowsError() {
         TimeOff timeOff = new TimeOff();
-
         timeOff.setId(1);
         timeOff.setStatus(TimeOffStatus.APPROVED);
 
         when(timeOffRepository.findById(timeOff.getId())).thenReturn(Optional.of(timeOff));
         assertThrows(NotAllowedException.class, () -> service.deleteRequest(timeOff.getId()));
+    }
+
+    @Test
+    void isAlreadyCreatedTest() {
+        TimeOff timeOff = new TimeOff();
+
+        timeOff.setId(1);
+        timeOff.setStatus(TimeOffStatus.PENDING);
+        timeOff.setEndDateTime(LocalDateTime.of(2020,7,30, 18,30));
+        timeOff.setStartDateTime(LocalDateTime.of(2020,7,30, 9,30));
+        timeOff.setApprover(new Employee(1, BigDecimal.valueOf(1), 1, null, null));
+        timeOff.setEmployee(new Employee(2, BigDecimal.valueOf(2), 2, null, null));
+
+        for (TimeOff foundTimeOff : service.getAllAsList()) {
+            assertTrue(service.isAlreadyCreated(timeOff));
+        }
     }
 }

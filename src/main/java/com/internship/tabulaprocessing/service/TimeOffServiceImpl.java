@@ -6,7 +6,6 @@ import com.internship.tabulaprocessing.entity.TimeOff;
 import com.internship.tabulaprocessing.entity.TimeOffStatus;
 import com.internship.tabulaprocessing.exception.EntityAlreadyPresentException;
 import com.internship.tabulaprocessing.exception.NotAllowedException;
-import com.internship.tabulaprocessing.mapper.Mapper;
 import com.internship.tabulaprocessing.repository.TimeOffRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,7 +21,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TimeOffServiceImpl implements TimeOffService {
     private final TimeOffRepository timeOffRepository;
-    private final Mapper mapper;
 
     @Override
     public TimeOff create(TimeOff timeOff) {
