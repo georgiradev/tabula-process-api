@@ -19,6 +19,7 @@ public class Company {
 
   private String name;
 
+  @Column(name = "discount_rate")
   private double discountRate;
 
   private String address;
@@ -27,6 +28,7 @@ public class Company {
 
   private String city;
 
+  @Column(name = "vat_number")
   private String vatNumber;
 
   @OneToMany(
