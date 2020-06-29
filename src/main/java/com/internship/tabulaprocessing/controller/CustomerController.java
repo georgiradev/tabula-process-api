@@ -32,12 +32,12 @@ public class CustomerController {
       @Valid @RequestBody CustomerRequestDto customerRequestDto) {
 
     Customer customer = mapper.customerDtoToEntity(customerRequestDto);
-    Optional<Account> account = customerService.getAccount(customer.getAccountId());
+    Account account = customerService.getAccount(customer.getAccountId());
     Optional<Customer> savedCustomer = customerService.save(customer);
 
     if (savedCustomer.isPresent()) {
       CustomerResponseDto customerResponseDto = mapper.customerEntityToDto(savedCustomer.get());
-      customerResponseDto.setAccount(mapper.convertToAccountDto(account.get()));
+      customerResponseDto.setAccount(mapper.convertToAccountDto(account));
       customerResponseDto.setOrdersIds(customerService.getOrdersIds(savedCustomer.get().getId()));
 
       return ResponseEntity.status(HttpStatus.CREATED).body(customerResponseDto);
@@ -52,9 +52,8 @@ public class CustomerController {
 
     if (foundCustomer.isPresent()) {
       CustomerResponseDto customerResponseDto = mapper.customerEntityToDto(foundCustomer.get());
-      customerResponseDto.setAccount(
-          mapper.convertToAccountDto(
-              customerService.getAccount(foundCustomer.get().getAccountId()).get()));
+      Account account = customerService.getAccount(foundCustomer.get().getAccountId());
+      customerResponseDto.setAccount(mapper.convertToAccountDto(account));
       customerResponseDto.setOrdersIds(customerService.getOrdersIds(foundCustomer.get().getId()));
 
       return ResponseEntity.ok(customerResponseDto);
@@ -76,8 +75,8 @@ public class CustomerController {
             pagedResult.getTotalElements());
 
     for (CustomerResponseDto customerDto : customerResponseDtoPagedResult.getElements()) {
-      customerDto.setAccount(
-          mapper.convertToAccountDto(customerService.getAccount(customerDto.getAccountId()).get()));
+      Account account = customerService.getAccount(customerDto.getAccountId());
+      customerDto.setAccount(mapper.convertToAccountDto(account));
       customerDto.setOrdersIds(customerService.getOrdersIds(customerDto.getId()));
     }
 
@@ -90,12 +89,12 @@ public class CustomerController {
       @Valid @RequestBody CustomerRequestDto customerRequestDto) {
 
     Customer customer = mapper.customerDtoToEntity(customerRequestDto);
-    Optional<Account> account = customerService.getAccount(customer.getAccountId());
+    Account account = customerService.getAccount(customer.getAccountId());
     Optional<Customer> updatedCustomer = customerService.update(id, customer);
 
     if (updatedCustomer.isPresent()) {
       CustomerResponseDto customerResponseDto = mapper.customerEntityToDto(updatedCustomer.get());
-      customerResponseDto.setAccount(mapper.convertToAccountDto(account.get()));
+      customerResponseDto.setAccount(mapper.convertToAccountDto(account));
       customerResponseDto.setOrdersIds(customerService.getOrdersIds(updatedCustomer.get().getId()));
 
       return ResponseEntity.ok(customerResponseDto);

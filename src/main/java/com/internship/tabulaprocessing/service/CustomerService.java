@@ -33,14 +33,14 @@ public class CustomerService {
     return Optional.of(customerRepository.save(customer));
   }
 
-  public Optional<Account> getAccount(int accountId) {
+  public Account getAccount(int accountId) {
     Optional<Account> account = accountRepository.findById(accountId);
 
     if (account.isEmpty()) {
       throw new EntityNotFoundException("Account not found with id " + accountId);
     }
 
-    return account;
+    return account.get();
   }
 
   public List<String> getOrdersIds(int customerId) {
@@ -74,16 +74,21 @@ public class CustomerService {
   }
 
   public Optional<Customer> update(int id, Customer customer) {
-    Optional<Account> account = getAccount(id);
     Optional<Customer> oldCustomerDetails = customerRepository.findById(id);
 
     if (oldCustomerDetails.isEmpty()) {
       throw new EntityNotFoundException("Customer not found with id " + id);
     }
+    Optional<Company> foundCompany = companyRepository.findById(customer.getCompany().getId());
+
+    if (foundCompany.isEmpty()) {
+      throw new EntityNotFoundException(
+          "Company not found with id " + customer.getCompany().getId());
+    }
 
     Customer customerToUpdate = oldCustomerDetails.get();
-    customerToUpdate.setAccountId(account.get().getId());
-    customerToUpdate.setCompany(customer.getCompany());
+    customerToUpdate.setAccountId(customer.getAccountId());
+    customerToUpdate.setCompany(foundCompany.get());
     customerToUpdate.setPhone(customer.getPhone());
 
     return Optional.of(customerRepository.saveAndFlush(customerToUpdate));

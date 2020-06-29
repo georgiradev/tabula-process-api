@@ -29,10 +29,10 @@ public class Customer {
   private int accountId;
 
   @OneToMany(
-      mappedBy = "customer",
-      cascade = CascadeType.ALL,
-      fetch = FetchType.LAZY,
-      orphanRemoval = true)
+          mappedBy = "customer",
+          cascade = CascadeType.ALL,
+          fetch = FetchType.LAZY,
+          orphanRemoval = true)
   private List<Order> orders;
 }
 

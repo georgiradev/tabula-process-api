@@ -2,10 +2,12 @@ package com.internship.tabulaprocessing.controller;
 
 import com.internship.tabulaprocessing.dto.ProcessResponseDto;
 import com.internship.tabulaprocessing.dto.ProcessRequestDto;
+import com.internship.tabulaprocessing.entity.PagedResult;
 import com.internship.tabulaprocessing.entity.Process;
 import com.internship.tabulaprocessing.mapper.Mapper;
 import com.internship.tabulaprocessing.service.ProcessServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -37,15 +39,15 @@ public class ProcessController {
   }
 
   @GetMapping
-  public ResponseEntity<List<ProcessResponseDto>> getAllByPage(
-      @RequestParam(defaultValue = "0") int pageNo) {
+  public PagedResult<ProcessResponseDto> getAllByPage(QueryParameter queryParameter) {
 
-    List<Process> allProcesses = processService.findAll(pageNo);
+    Page<Process> allProcesses = processService.findAll(queryParameter.getPageable());
     List<ProcessResponseDto> allToDto = new ArrayList<>();
-    for (Process process : allProcesses) {
+    for (Process process : allProcesses.toList()) {
       allToDto.add(mapper.processToProcessGetDTO(process));
     }
-    return ResponseEntity.ok(allToDto);
+    return new PagedResult<>(allToDto,
+            queryParameter.getPageable().getPageNumber() + 1, allProcesses.getTotalPages());
   }
 
   @PostMapping

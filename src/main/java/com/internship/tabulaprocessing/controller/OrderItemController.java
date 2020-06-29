@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
-import java.util.List;
 import java.util.Optional;
 
 @Validated
@@ -64,7 +63,6 @@ public class OrderItemController {
       @Valid QueryParameter queryParameter) {
 
     Page<OrderItem> pagedResult = orderItemService.findAll(queryParameter);
-
     Page<OrderItemResponseDto> pagedResultDto = pagedResult.map(mapper::orderItemDtoToEntity);
 
     PagedResult<OrderItemResponseDto> allToDto =

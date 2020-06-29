@@ -138,10 +138,9 @@ public class CustomerServiceTest {
   @Test
   void testUpdateCustomer() {
     Customer customer = assembleObject();
-    Account account = AccountProvider.getAccountInstance();
 
-    when(accountRepository.findById(any(Integer.class))).thenReturn(Optional.of(account));
     when(customerRepository.findById(any(Integer.class))).thenReturn(Optional.of(customer));
+    when(companyRepository.findById(any(Integer.class))).thenReturn(Optional.of(customer.getCompany()));
     when(customerRepository.saveAndFlush(any(Customer.class))).thenReturn(customer);
 
     assertEquals(Optional.of(customer), customerService.update(1, customer));
@@ -150,9 +149,7 @@ public class CustomerServiceTest {
   @Test
   void testUpdateCustomerByNonExistingIdShouldFail() {
     Customer customer = assembleObject();
-    Account account = AccountProvider.getAccountInstance();
 
-    when(accountRepository.findById(any(Integer.class))).thenReturn(Optional.of(account));
     when(customerRepository.findById(any(Integer.class))).thenReturn(Optional.empty());
 
     assertThrows(
@@ -162,8 +159,6 @@ public class CustomerServiceTest {
   @Test
   void testUpdateCustomerByNonExistingAccountShouldFail() {
     Customer customer = assembleObject();
-
-    when(accountRepository.findById(any(Integer.class))).thenReturn(Optional.empty());
 
     assertThrows(
         EntityNotFoundException.class, () -> customerService.update(customer.getId(), customer));

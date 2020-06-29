@@ -1,11 +1,15 @@
 package com.internship.tabulaprocessing.controller;
 
+import com.internship.tabulacore.entity.Account;
 import com.internship.tabulaprocessing.dto.CompanyRequestDto;
 import com.internship.tabulaprocessing.dto.CompanyResponseDto;
+import com.internship.tabulaprocessing.dto.CustomerDtoNoCompany;
 import com.internship.tabulaprocessing.entity.Company;
+import com.internship.tabulaprocessing.entity.Customer;
 import com.internship.tabulaprocessing.entity.PagedResult;
 import com.internship.tabulaprocessing.mapper.Mapper;
 import com.internship.tabulaprocessing.service.CompanyService;
+import com.internship.tabulaprocessing.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -16,14 +20,15 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Validated
 @RestController
 @RequestMapping("/companies")
 @RequiredArgsConstructor
 public class CompanyController {
+
   private final CompanyService companyService;
+  private final CustomerService customerService;
   private final Mapper mapper;
 
   @PostMapping
@@ -33,12 +38,13 @@ public class CompanyController {
     Company company = mapper.companyRequestDtoToCompany(companyRequestDto);
     Optional<Company> savedCompany = companyService.save(company);
 
-    if (savedCompany.isEmpty()) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-    }
-    CompanyResponseDto companyResponseDto = convertToDto(savedCompany.get());
+    if (savedCompany.isPresent()) {
+      CompanyResponseDto companyResponseDto = convertToDto(savedCompany.get());
 
-    return ResponseEntity.ok(companyResponseDto);
+      return ResponseEntity.ok(companyResponseDto);
+    }
+
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
   }
 
   @GetMapping("/{id}")
@@ -95,10 +101,13 @@ public class CompanyController {
   private CompanyResponseDto convertToDto(Company company) {
     CompanyResponseDto companyResponseDto = mapper.companyToCompanyResponseDto(company);
 
-    companyResponseDto.setCustomers(
-        company.getCustomers().stream()
-            .map(mapper::customerEntityToDto)
-            .collect(Collectors.toList()));
+    for (Customer currentCustomer : company.getCustomers()) {
+      CustomerDtoNoCompany customerDto = mapper.customerEntityToCustomerDto(currentCustomer);
+      Account account = customerService.getAccount(currentCustomer.getAccountId());
+      customerDto.setOrdersIds(customerService.getOrdersIds(currentCustomer.getId()));
+      customerDto.setAccount(mapper.convertToAccountDto(account));
+      companyResponseDto.getCustomers().add(customerDto);
+    }
 
     return companyResponseDto;
   }

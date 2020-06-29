@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -18,6 +19,7 @@ public class Company {
 
   private String name;
 
+  @Column(name = "discount_rate")
   private double discountRate;
 
   private String address;
@@ -26,6 +28,7 @@ public class Company {
 
   private String city;
 
+  @Column(name = "vat_number")
   private String vatNumber;
 
   @OneToMany(
@@ -33,5 +36,5 @@ public class Company {
       cascade = CascadeType.ALL,
       fetch = FetchType.LAZY,
       orphanRemoval = true)
-  private List<Customer> customers;
+  private List<Customer> customers = new ArrayList<>();
 }

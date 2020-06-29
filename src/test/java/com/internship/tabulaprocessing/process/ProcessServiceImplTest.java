@@ -1,5 +1,6 @@
 package com.internship.tabulaprocessing.process;
 
+import com.internship.tabulaprocessing.controller.QueryParameter;
 import com.internship.tabulaprocessing.entity.Process;
 import com.internship.tabulaprocessing.exception.EntityAlreadyPresentException;
 import com.internship.tabulaprocessing.provider.ProcessProvider;
@@ -132,20 +133,13 @@ class ProcessServiceImplTest {
 
   @Test
   void testFindAllProcesses() {
+
     List<Process> processes = ProcessProvider.getProcessesInstance();
     Page<Process> paging = new PageImpl<>(processes);
+    QueryParameter queryParameter = new QueryParameter();
 
     when(processRepository.findAll(any(Pageable.class))).thenReturn(paging);
 
-    assertEquals(processes, processService.findAll(1));
-  }
-
-  @Test
-  void testFindAllProcessesButNoContentFound() {
-    Page<Process> paging = Page.empty();
-
-    when(processRepository.findAll(any(Pageable.class))).thenReturn(paging);
-
-    assertThrows(EntityNotFoundException.class, () -> processService.findAll(1));
+    assertEquals(paging, processService.findAll(queryParameter.getPageable()));
   }
 }
