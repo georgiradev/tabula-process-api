@@ -22,8 +22,7 @@ public class TimeOff {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne (fetch = FetchType.EAGER,
-            cascade = {CascadeType.DETACH, CascadeType.REFRESH, CascadeType.MERGE})
+    @ManyToOne (cascade = {CascadeType.DETACH, CascadeType.REFRESH, CascadeType.MERGE})
     @Enumerated(EnumType.STRING)
     private TimeOffType timeOffType;
 
@@ -37,13 +36,11 @@ public class TimeOff {
     private String comment;
 
 
-    @ManyToOne (fetch = FetchType.EAGER,
-            cascade = {CascadeType.DETACH, CascadeType.REFRESH, CascadeType.MERGE})
+    @ManyToOne (cascade = {CascadeType.DETACH, CascadeType.REFRESH, CascadeType.MERGE})
     private Employee employee;
 
 
-    @ManyToOne (fetch = FetchType.EAGER,
-            cascade = {CascadeType.DETACH, CascadeType.REFRESH, CascadeType.MERGE})
+    @ManyToOne (cascade = {CascadeType.DETACH, CascadeType.REFRESH, CascadeType.MERGE})
     private Employee approver;
 
     @Override
