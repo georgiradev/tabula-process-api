@@ -118,7 +118,7 @@ public class TimeOffServiceImplTest {
 
     @Test
     void createAlreadyExistingTimeOff() {
-      /*  TimeOff timeOff = new TimeOff();
+        TimeOff timeOff = new TimeOff();
 
         timeOff.setId(1);
         timeOff.setStatus(TimeOffStatus.PENDING);
@@ -136,10 +136,14 @@ public class TimeOffServiceImplTest {
         timeOff2.setApprover(new Employee(1, BigDecimal.valueOf(1), 1, null, null));
         timeOff2.setEmployee(new Employee(2, BigDecimal.valueOf(2), 2, null, null));
 
-        when(timeOffRepository.findById(timeOff.getId())).thenReturn(Optional.of(timeOff));
-        service.create(timeOff);
+        List<TimeOff> timeOffs = new ArrayList<>();
+        timeOffs.add(timeOff);
+        timeOffs.add(timeOff2);
 
-        assertThrows(EntityAlreadyPresentException.class, () -> service.create(timeOff2));*/
+        when(timeOffRepository.findAll()).thenReturn(timeOffs);
+        service.create(timeOff2);
+
+        assertThrows(EntityAlreadyPresentException.class, () -> service.create(timeOff2));
     }
 
     @Test

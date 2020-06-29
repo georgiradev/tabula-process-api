@@ -148,14 +148,14 @@ public class TimeOffServiceImpl implements TimeOffService {
 
     public boolean isAlreadyCreated (TimeOff timeOff) {
        for (TimeOff createdTimeOff : getAllAsList()) {
-           if(createdTimeOff.getId()==timeOff.getId()) {
-               continue;
-           }
-
-           if(timeOffRepository.duplicatesCount(timeOff.getStartDateTime(),
-                   timeOff.getEndDateTime(), timeOff.getEmployee().getId(),
-                   timeOff.getApprover().getId())>=1) {
-               return true;
+           if(createdTimeOff.getId()!=timeOff.getId()) {
+               if(timeOffRepository.duplicatesCount(
+                       timeOff.getStartDateTime(),
+                       timeOff.getEndDateTime(),
+                       timeOff.getEmployee().getId(),
+                       timeOff.getApprover().getId())>=1) {
+                   return true;
+               }
            }
        }
        return false;
