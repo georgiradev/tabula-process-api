@@ -47,7 +47,8 @@ public class ProcessController {
       allToDto.add(mapper.processToProcessGetDTO(process));
     }
     return new PagedResult<>(allToDto,
-            queryParameter.getPageable().getPageNumber() + 1, allProcesses.getTotalPages());
+            queryParameter.getPageable().getPageNumber() + 1, allProcesses.getTotalPages(),
+            allProcesses.getTotalElements());
   }
 
   @PostMapping
