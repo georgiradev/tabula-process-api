@@ -127,23 +127,10 @@ public class TimeOffServiceImplTest {
         timeOff.setApprover(new Employee(1, BigDecimal.valueOf(1), 1, null, null));
         timeOff.setEmployee(new Employee(2, BigDecimal.valueOf(2), 2, null, null));
 
-        TimeOff timeOff2 = new TimeOff();
-
-        timeOff2.setId(1);
-        timeOff2.setStatus(TimeOffStatus.PENDING);
-        timeOff2.setEndDateTime(LocalDateTime.of(2020,7,30, 18,30));
-        timeOff2.setStartDateTime(LocalDateTime.of(2020,7,30, 9,30));
-        timeOff2.setApprover(new Employee(1, BigDecimal.valueOf(1), 1, null, null));
-        timeOff2.setEmployee(new Employee(2, BigDecimal.valueOf(2), 2, null, null));
-
-        List<TimeOff> timeOffs = new ArrayList<>();
-        timeOffs.add(timeOff);
-        timeOffs.add(timeOff2);
-
-        when(timeOffRepository.findAll()).thenReturn(timeOffs);
-        service.create(timeOff2);
-
-        assertThrows(EntityAlreadyPresentException.class, () -> service.create(timeOff2));
+        for (TimeOff foundTimeOff : service.getAllAsList()) {
+            service.isAlreadyCreated(timeOff);
+            assertThrows(EntityAlreadyPresentException.class, () -> service.create(timeOff));
+        }
     }
 
     @Test
@@ -182,19 +169,19 @@ public class TimeOffServiceImplTest {
         assertThrows(NotAllowedException.class, () -> service.update(expected, expected.getId()));
     }
 
+    @Test
     void updateTestIfEntityIsAlreadyCreated() {
         TimeOff expected = new TimeOff();
 
         expected.setId(1);
         expected.setStatus(TimeOffStatus.APPROVED);
-        expected.setEndDateTime(LocalDateTime.of(2020,06,30, 18,30));
-        expected.setStartDateTime(LocalDateTime.of(2020,06,30, 9,30));
+        expected.setEndDateTime(LocalDateTime.of(2020, 06, 30, 18, 30));
+        expected.setStartDateTime(LocalDateTime.of(2020, 06, 30, 9, 30));
 
-        doReturn(Optional.of(expected)).when(timeOffRepository).findById(expected.getId());
-        Optional<TimeOff> actual = service.findById(expected.getId());
-
-        assertEquals(actual.get(), expected);
-        assertThrows(NotAllowedException.class, () -> service.update(expected, expected.getId()));
+        for (TimeOff foundTimeOff : service.getAllAsList()) {
+          service.isAlreadyCreated(expected);
+          assertThrows(EntityAlreadyPresentException.class, () -> service.update(expected, expected.getId()));
+        }
     }
 
     @Test
@@ -245,29 +232,5 @@ public class TimeOffServiceImplTest {
 
         when(timeOffRepository.findById(timeOff.getId())).thenReturn(Optional.of(timeOff));
         assertThrows(NotAllowedException.class, () -> service.deleteRequest(timeOff.getId()));
-    }
-
-    @Test
-    void testIsAlreadyCreated() {
-        TimeOff timeOff = new TimeOff();
-        timeOff.setTimeOffType(new TimeOffType(1, TypeName.PARENTAL_LEAVE, true));
-        timeOff.setEndDateTime(LocalDateTime.of(2020,8,2, 9,30));
-        timeOff.setStartDateTime(LocalDateTime.of(2020, 7, 15, 9,30));
-        timeOff.setApprover(new Employee(1, BigDecimal.valueOf(1), 1, null, null));
-        timeOff.setEmployee(new Employee(2, BigDecimal.valueOf(2), 2, null, null));
-
-        TimeOff timeOff2 = new TimeOff();
-        timeOff2.setTimeOffType(new TimeOffType(1, TypeName.PARENTAL_LEAVE, true));
-        timeOff2.setEndDateTime(LocalDateTime.of(2020,8,2, 9,30));
-        timeOff2.setStartDateTime(LocalDateTime.of(2020, 7, 15, 9,30));
-        timeOff2.setApprover(new Employee(1, BigDecimal.valueOf(1), 1, null, null));
-        timeOff2.setEmployee(new Employee(2, BigDecimal.valueOf(2), 2, null, null));
-
-        /*doReturn(Mockito.any()).when(timeOffRepository).duplicatesCount(timeOff2.getStartDateTime(),
-                timeOff2.getEndDateTime(),timeOff2.getEmployee().getId(),
-                timeOff2.getApprover().getId());
-
-        boolean result = service.isAlreadyCreated(timeOff2);
-        assertTrue(result);*/
     }
 }

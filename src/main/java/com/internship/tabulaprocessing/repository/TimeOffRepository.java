@@ -13,7 +13,7 @@ import java.util.Optional;
 @Repository
 public interface TimeOffRepository extends JpaRepository<TimeOff, Integer> {
     @Query(
-            value = "SELECT COUNT(*) FROM timeOffs AS t " +
+            value = "SELECT Count(DISTINCT(t.id)) FROM timeOffs AS t " +
                     "WHERE t.startDateTime = :startDateTime " +
                     "AND t.endDateTime = :endDateTime " +
                     "AND t.employee_id = :employeeId " +
