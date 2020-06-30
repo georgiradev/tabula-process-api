@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -61,5 +62,9 @@ public class CompanyService {
     }
 
     throw new EntityNotFoundException("Company not found with id " + id);
+  }
+
+  public List<Company> findByName(String name) {
+    return companyRepository.findCompaniesByName(name);
   }
 }
