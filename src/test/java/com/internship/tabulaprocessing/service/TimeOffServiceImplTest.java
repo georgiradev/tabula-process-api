@@ -214,7 +214,17 @@ public class TimeOffServiceImplTest {
     }
 
     @Test
-    void deleteTestIfStatusIsChanged() {
+    void deleteNotFoundEntity() {
+        TimeOff timeOff = new TimeOff();
+        timeOff.setId(1);
+        timeOff.setStatus(TimeOffStatus.PENDING);
+
+        when(timeOffRepository.findById(timeOff.getId())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> service.delete(timeOff.getId()));
+    }
+
+    @Test
+    void deleteTestWithApprovedStatus () {
         TimeOff timeOff = new TimeOff();
         timeOff.setId(1);
         timeOff.setStatus(TimeOffStatus.APPROVED);
@@ -224,7 +234,17 @@ public class TimeOffServiceImplTest {
     }
 
     @Test
-    void deleteRequestTest() {
+    void deleteTestWithRejectedStatus () {
+        TimeOff timeOff = new TimeOff();
+        timeOff.setId(1);
+        timeOff.setStatus(TimeOffStatus.REJECTED);
+
+        when(timeOffRepository.findById(timeOff.getId())).thenReturn(Optional.of(timeOff));
+        assertThrows(NotAllowedException.class, () -> service.delete(timeOff.getId()));
+    }
+
+    @Test
+    void deleteByManagerTest() {
         TimeOff timeOff = new TimeOff();
         timeOff.setId(1);
         timeOff.setStatus(TimeOffStatus.PENDING_DELETION);
@@ -237,7 +257,17 @@ public class TimeOffServiceImplTest {
     }
 
     @Test
-    void deleteRequestTestThrowsError() {
+    void deleteByManagerNotFoundEntityTest() {
+        TimeOff timeOff = new TimeOff();
+        timeOff.setId(1);
+        timeOff.setStatus(TimeOffStatus.PENDING_DELETION);
+
+        when(timeOffRepository.findById(timeOff.getId())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> service.deleteByManager(timeOff.getId()));
+    }
+
+    @Test
+    void deleteByManagerTestThrowsError() {
         TimeOff timeOff = new TimeOff();
         timeOff.setId(1);
         timeOff.setStatus(TimeOffStatus.APPROVED);
