@@ -11,8 +11,8 @@ import org.mapstruct.factory.Mappers;
 import java.util.List;
 
 @org.mapstruct.Mapper(
-    unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE,
-    componentModel = "spring")
+        unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE,
+        componentModel = "spring")
 public interface Mapper {
 
   Mapper INSTANCE = Mappers.getMapper(Mapper.class);
