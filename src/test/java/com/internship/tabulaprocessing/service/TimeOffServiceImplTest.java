@@ -141,7 +141,7 @@ public class TimeOffServiceImplTest {
         timeOff.setTimeOffType(new TimeOffType(1, TypeName.PARENTAL_LEAVE, true));
 
         for (TimeOff foundTimeOff : service.getAllAsList()) {
-            service.isAlreadyCreated(timeOff);
+            service.isAlreadyCreated(timeOff, timeOff.getId());
             assertThrows(EntityAlreadyPresentException.class, () -> service.create(timeOff));
         }
     }
@@ -195,7 +195,7 @@ public class TimeOffServiceImplTest {
         expected.setStartDateTime(LocalDateTime.of(2020, 06, 30, 9, 30));
 
         for (TimeOff foundTimeOff : service.getAllAsList()) {
-          service.isAlreadyCreated(expected);
+          service.isAlreadyCreated(expected, expected.getId());
           assertThrows(EntityAlreadyPresentException.class, () -> service.update(expected, expected.getId()));
         }
     }
@@ -259,7 +259,7 @@ public class TimeOffServiceImplTest {
         timeOff.setTimeOffType(new TimeOffType(1, TypeName.PARENTAL_LEAVE, true));
 
         for (TimeOff foundTimeOff : service.getAllAsList()) {
-            assertTrue(service.isAlreadyCreated(timeOff));
+            assertTrue(service.isAlreadyCreated(timeOff, timeOff.getId()));
         }
     }
 }

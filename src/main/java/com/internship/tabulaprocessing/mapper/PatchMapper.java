@@ -16,10 +16,12 @@ public interface PatchMapper {
 
     PatchMapper INSTANCE =  Mappers.getMapper(PatchMapper.class);
 
-    TimeOffType mapObjectsToTimeOffType(
-            TimeOffTypeRequestDto data, @MappingTarget TimeOffType timeOffType);
+    TimeOffType mapObjectsToTimeOffType(TimeOffTypeRequestDto data,
+                                        @MappingTarget TimeOffType timeOffType);
 
-    TimeOff mapObjectsToTimeOffEntity(TimeOffPatchRequest data, @MappingTarget TimeOff timeOff);
+    TimeOff mapObjectsToTimeOffEntity(TimeOffPatchRequest data,
+                                      @MappingTarget TimeOff timeOff);
 
-    TimeOff mapObjectsToTimeOffEntity(TimeOffPatchStatusRequest data, @MappingTarget TimeOff timeOff);
+    TimeOff mapObjectsToTimeOffEntity(TimeOffPatchStatusRequest data,
+                                      @MappingTarget TimeOff timeOff);
 }

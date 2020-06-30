@@ -24,7 +24,7 @@ public class TimeOffServiceImpl implements TimeOffService {
     @Override
     public TimeOff create(TimeOff timeOff) {
 
-        if(isAlreadyCreated(timeOff)) {
+        if(isAlreadyCreated(timeOff, 0)) {
             throw new EntityAlreadyPresentException("TimeOff is already created!");
         }
 
@@ -43,7 +43,7 @@ public class TimeOffServiceImpl implements TimeOffService {
     @Override
     public TimeOff update(TimeOff timeOff, int id) {
 
-        if(isAlreadyCreated(timeOff)) {
+        if(isAlreadyCreated(timeOff, id)) {
             throw new EntityAlreadyPresentException("TimeOff is already created!");
         }
 
@@ -144,12 +144,13 @@ public class TimeOffServiceImpl implements TimeOffService {
         throw new NotAllowedException(String.format("You cannot delete time off request with id = %s", id));
     }
 
-    public boolean isAlreadyCreated (TimeOff timeOff) {
+    public boolean isAlreadyCreated (TimeOff timeOff, int timeOffId) {
         if(timeOffRepository.duplicatesCount(
                 timeOff.getStartDateTime(),
                 timeOff.getEndDateTime(),
                 timeOff.getEmployee().getId(),
-                timeOff.getTimeOffType().getId())>=1) {
+                timeOff.getTimeOffType().getId(),
+                timeOffId)>=1) {
             return true;
         }
        return false;
