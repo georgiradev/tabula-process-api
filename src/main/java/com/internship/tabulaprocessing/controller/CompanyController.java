@@ -19,7 +19,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Validated
 @RestController
@@ -60,6 +63,21 @@ public class CompanyController {
     return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
   }
 
+  @GetMapping("/name/{name}")
+  public ResponseEntity<List<CompanyResponseDto>> getCompanyByName(
+      @PathVariable(value = "name") String name) {
+    List<Company> companies = companyService.findByName(name);
+
+    if (!companies.isEmpty()) {
+      List<CompanyResponseDto> allToDto =
+          companies.stream().map(this::convertToDto).collect(Collectors.toList());
+
+      return ResponseEntity.ok(allToDto);
+    } else {
+      return ResponseEntity.status(HttpStatus.NO_CONTENT).body(Collections.emptyList());
+    }
+  }
+
   @GetMapping
   public ResponseEntity<PagedResult<CompanyResponseDto>> getAllCompanies(
       @Valid QueryParameter queryParameter) {
@@ -69,8 +87,10 @@ public class CompanyController {
 
     PagedResult<CompanyResponseDto> allToDto =
         new PagedResult<>(
-            pagedResultDto.toList(), queryParameter.getPage(),
-                pagedResultDto.getTotalPages(), pagedResult.getTotalElements());
+            pagedResultDto.toList(),
+            queryParameter.getPage(),
+            pagedResultDto.getTotalPages(),
+            pagedResult.getTotalElements());
 
     return ResponseEntity.ok(allToDto);
   }
