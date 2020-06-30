@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TimeOffRequest {
-    @Min(value = 1, message = "Тype of time off ID cannot be less than 1")
+    @Min(value = 1, message = "ТypeOfTimeOffID cannot be less than 1")
     private int typeOfTimeOffId;
 
     @NotNull(message = "You should provide startDateTime of timeOff")
@@ -23,10 +23,10 @@ public class TimeOffRequest {
     @NotNull(message = "You should provide endDateTime of timeOff")
     private LocalDateTime endDateTime;
 
-    @Min(value = 1, message = "Employee ID cannot be less than 1")
+    @Min(value = 1, message = "EmployeeID cannot be less than 1")
     private int employeeId;
 
-    @Min(value = 1, message = "Approver ID cannot be less than 1")
+    @Min(value = 1, message = "ApproverID cannot be less than 1")
     private int approverId;
 
     private String comment;

@@ -14,4 +14,6 @@ public interface CompanyRepository extends JpaRepository<Company, Integer> {
       nativeQuery = true)
   Optional<Company> findByNameAndAddress(
       @Param("name") String name, @Param("address") String address);
+
+  Company findDistinctByNameIs (String name);
 }

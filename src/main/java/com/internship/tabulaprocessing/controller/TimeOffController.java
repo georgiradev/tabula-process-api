@@ -26,15 +26,13 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TimeOffController {
 
-  private final TimeOffTypeService timeOffTypeService;
   private final TimeOffServiceImpl timeOffService;
-  private final EmployeeService employeeService;
   private final PatchMapper patchMapper;
   private final Mapper mapper;
 
   @PostMapping
   public ResponseEntity<TimeOffResponse> create(@Valid @RequestBody TimeOffRequest timeOffRequest) {
-    TimeOff savedTimeOff = timeOffService.create(fetchAndSetEmployeeAndApprover(timeOffRequest));
+    TimeOff savedTimeOff = timeOffService.create(mapper.convertToTimeOffEntity(timeOffRequest));
     return ResponseEntity.ok(mapper.convertToTimeOffResponse(savedTimeOff));
   }
 
@@ -55,7 +53,7 @@ public class TimeOffController {
   public ResponseEntity<TimeOffResponse> update(@PathVariable("id") @Min(1) int id,
                                                 @Valid @RequestBody TimeOffRequest timeOffRequest) {
 
-    TimeOff updatedTimeOff = timeOffService.update(fetchAndSetEmployeeAndApprover(timeOffRequest), id);
+    TimeOff updatedTimeOff = timeOffService.update(mapper.convertToTimeOffEntity(timeOffRequest), id);
     return ResponseEntity.ok(mapper.convertToTimeOffResponse(updatedTimeOff));
   }
 
@@ -98,19 +96,29 @@ public class TimeOffController {
     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
   }
 
-  private TimeOff fetchAndSetEmployeeAndApprover(@RequestBody @Valid TimeOffRequest timeOffRequest) {
-
-    EmployeeResponseDto employeeResponseDto = employeeService.getOne(timeOffRequest.getEmployeeId()).getBody();
-    Employee employee = mapper.convertToEmployeeEntity(employeeResponseDto);
-
-    EmployeeResponseDto approverResponseDto = employeeService.getOne(timeOffRequest.getApproverId()).getBody();
-    Employee approver = mapper.convertToEmployeeEntity(approverResponseDto);
+  /*private TimeOff fetchAndSetEmployeeAndApprover(@RequestBody @Valid TimeOffRequest timeOffRequest) {
 
     TimeOff timeOff = mapper.convertToTimeOffEntity(timeOffRequest);
-    timeOff.setTimeOffType(timeOffTypeService.getOneById(timeOffRequest.getTypeOfTimeOffId()));
-    timeOff.setEmployee(employee);
-    timeOff.setApprover(approver);
+
+    if(timeOffRequest.getTypeOfTimeOffId()!=0) {
+      timeOff.setTimeOffType(timeOffTypeService.getOneById(timeOffRequest.getTypeOfTimeOffId()));
+    }
+
+    Employee employee;
+    Employee approver;
+
+    if(timeOffRequest.getEmployeeId()!=0) {
+       EmployeeResponseDto employeeResponseDto = employeeService.getOne(timeOffRequest.getEmployeeId()).getBody();
+       employee = mapper.convertToEmployeeEntity(employeeResponseDto);
+       timeOff.setEmployee(employee);
+    }
+
+    if(timeOffRequest.getApproverId()!=0) {
+       EmployeeResponseDto approverResponseDto = employeeService.getOne(timeOffRequest.getApproverId()).getBody();
+       approver = mapper.convertToEmployeeEntity(approverResponseDto);
+       timeOff.setApprover(approver);
+    }
 
     return timeOff;
-  }
+  }*/
 }
