@@ -28,7 +28,8 @@ public class MediaExtraService {
     return new PagedResult<>(
         mapper.convertToMediaExtraDtoList(medias.toList()),
         pageable.getPageNumber() + 1,
-        medias.getTotalPages());
+        medias.getTotalPages(),
+        medias.getTotalElements());
   }
 
   public MediaExtraDto getOne(int id) {

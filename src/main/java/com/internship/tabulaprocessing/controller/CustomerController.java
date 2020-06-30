@@ -72,7 +72,8 @@ public class CustomerController {
 
     PagedResult<CustomerResponseDto> customerResponseDtoPagedResult =
         new PagedResult<>(
-            pagedResultDto.toList(), queryParameter.getPage(), pagedResultDto.getTotalPages());
+            pagedResultDto.toList(), queryParameter.getPage(),
+                pagedResultDto.getTotalPages(), pagedResult.getTotalElements());
 
     for (CustomerResponseDto customerDto : customerResponseDtoPagedResult.getElements()) {
       customerDto.setAccount(

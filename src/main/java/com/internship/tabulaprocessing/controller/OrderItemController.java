@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
-import java.util.List;
 import java.util.Optional;
 
 @Validated
@@ -69,7 +68,8 @@ public class OrderItemController {
 
     PagedResult<OrderItemResponseDto> allToDto =
         new PagedResult<>(
-            pagedResultDto.toList(), queryParameter.getPage(), pagedResultDto.getTotalPages());
+            pagedResultDto.toList(), queryParameter.getPage(),
+                pagedResultDto.getTotalPages(), pagedResult.getTotalElements());
 
     return ResponseEntity.ok(allToDto);
   }
