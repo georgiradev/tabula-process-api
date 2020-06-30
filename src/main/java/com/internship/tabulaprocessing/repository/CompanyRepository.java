@@ -16,8 +16,5 @@ public interface CompanyRepository extends JpaRepository<Company, Integer> {
   Optional<Company> findByNameAndAddress(
       @Param("name") String name, @Param("address") String address);
 
-  @Query(
-          value = "SELECT DISTINCT * FROM company AS c WHERE c.name LIKE :namePattern",
-          nativeQuery = true)
-  List<Company> findCompaniesByName(@Param("namePattern") String namePattern);
+  List<Company> findByNameContains(String namePattern);
 }

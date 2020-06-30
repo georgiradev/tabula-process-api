@@ -65,6 +65,6 @@ public class CompanyService {
   }
 
   public List<Company> findByName(String name) {
-    return companyRepository.findCompaniesByName(name);
+    return companyRepository.findByNameContains(name);
   }
 }
