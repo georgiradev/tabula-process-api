@@ -13,10 +13,12 @@ public interface TimeOffRepository extends JpaRepository<TimeOff, Integer> {
             value = "SELECT Count(DISTINCT(t.id)) FROM timeOffs AS t " +
                     "WHERE t.startDateTime = :startDateTime " +
                     "AND t.endDateTime = :endDateTime " +
-                    "AND t.employee_id = :employeeId ; ",
+                    "AND t.employee_id = :employeeId " +
+                    "AND t.timeOffType_id = :typeId ;",
             nativeQuery = true)
     int duplicatesCount(
             @Param("startDateTime") LocalDateTime startDateTime,
             @Param("endDateTime") LocalDateTime endDateTime,
-            @Param("employeeId") int employeeId);
+            @Param("employeeId") int employeeId,
+            @Param("typeId") int typeId);
 }

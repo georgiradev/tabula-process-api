@@ -93,6 +93,7 @@ public class TimeOffServiceImplTest {
         expected.setEndDateTime(LocalDateTime.of(2020,7,30, 18,30));
         expected.setApprover(new Employee(1, BigDecimal.valueOf(1), 1, null, null));
         expected.setEmployee(new Employee(2, BigDecimal.valueOf(2), 2, null, null));
+        expected.setTimeOffType(new TimeOffType(1, TypeName.PARENTAL_LEAVE, true));
 
         when(timeOffRepository.save(expected)).thenReturn(expected);
         TimeOff actual = service.create(expected);
@@ -101,7 +102,7 @@ public class TimeOffServiceImplTest {
     }
 
     @Test
-    void createTestWithInvalidDate() {
+    void createTestWithInvalidEndDateTime() {
         TimeOff expected = new TimeOff();
         expected.setId(1);
         expected.setStatus(TimeOffStatus.PENDING);
@@ -109,6 +110,21 @@ public class TimeOffServiceImplTest {
         expected.setStartDateTime(LocalDateTime.of(2020,7,30, 18,30));
         expected.setApprover(new Employee(1, BigDecimal.valueOf(1), 1, null, null));
         expected.setEmployee(new Employee(2, BigDecimal.valueOf(2), 2, null, null));
+        expected.setTimeOffType(new TimeOffType(1, TypeName.PARENTAL_LEAVE, true));
+
+        assertThrows(NotAllowedException.class, () -> service.create(expected));
+    }
+
+    @Test
+    void createTestWithInvalidStartDateTime() {
+        TimeOff expected = new TimeOff();
+        expected.setId(1);
+        expected.setStatus(TimeOffStatus.PENDING);
+        expected.setEndDateTime(LocalDateTime.of(2020,7,30, 9,30));
+        expected.setStartDateTime(LocalDateTime.of(2000,7,30, 18,30));
+        expected.setApprover(new Employee(1, BigDecimal.valueOf(1), 1, null, null));
+        expected.setEmployee(new Employee(2, BigDecimal.valueOf(2), 2, null, null));
+        expected.setTimeOffType(new TimeOffType(1, TypeName.PARENTAL_LEAVE, true));
 
         assertThrows(NotAllowedException.class, () -> service.create(expected));
     }
@@ -122,6 +138,7 @@ public class TimeOffServiceImplTest {
         timeOff.setStartDateTime(LocalDateTime.of(2020,7,30, 9,30));
         timeOff.setApprover(new Employee(1, BigDecimal.valueOf(1), 1, null, null));
         timeOff.setEmployee(new Employee(2, BigDecimal.valueOf(2), 2, null, null));
+        timeOff.setTimeOffType(new TimeOffType(1, TypeName.PARENTAL_LEAVE, true));
 
         for (TimeOff foundTimeOff : service.getAllAsList()) {
             service.isAlreadyCreated(timeOff);
@@ -138,6 +155,7 @@ public class TimeOffServiceImplTest {
         expected.setStartDateTime(LocalDateTime.of(2020,06,30, 18,30));
         expected.setApprover(new Employee(1, BigDecimal.valueOf(1), 1, null, null));
         expected.setEmployee(new Employee(2, BigDecimal.valueOf(2), 2, null, null));
+        expected.setTimeOffType(new TimeOffType(1, TypeName.PARENTAL_LEAVE, true));
 
         doReturn(Optional.of(expected)).when(timeOffRepository).findById(expected.getId());
         Optional<TimeOff> actual = service.findById(expected.getId());
@@ -159,6 +177,7 @@ public class TimeOffServiceImplTest {
         expected.setStartDateTime(LocalDateTime.of(2020,06,30, 18,30));
         expected.setApprover(new Employee(1, BigDecimal.valueOf(1), 1, null, null));
         expected.setEmployee(new Employee(2, BigDecimal.valueOf(2), 2, null, null));
+        expected.setTimeOffType(new TimeOffType(1, TypeName.PARENTAL_LEAVE, true));
 
         doReturn(Optional.of(expected)).when(timeOffRepository).findById(expected.getId());
         Optional<TimeOff> actual = service.findById(expected.getId());
@@ -237,6 +256,7 @@ public class TimeOffServiceImplTest {
         timeOff.setStartDateTime(LocalDateTime.of(2020,7,30, 9,30));
         timeOff.setApprover(new Employee(1, BigDecimal.valueOf(1), 1, null, null));
         timeOff.setEmployee(new Employee(2, BigDecimal.valueOf(2), 2, null, null));
+        timeOff.setTimeOffType(new TimeOffType(1, TypeName.PARENTAL_LEAVE, true));
 
         for (TimeOff foundTimeOff : service.getAllAsList()) {
             assertTrue(service.isAlreadyCreated(timeOff));

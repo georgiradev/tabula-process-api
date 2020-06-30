@@ -107,7 +107,7 @@ public class TimeOffController {
     Employee approver = mapper.convertToEmployeeEntity(approverResponseDto);
 
     TimeOff timeOff = mapper.convertToTimeOffEntity(timeOffRequest);
-    timeOff.setTimeOffType(timeOffTypeService.getOneByName(timeOffRequest.getTypeOfTimeOff()));
+    timeOff.setTimeOffType(timeOffTypeService.getOneById(timeOffRequest.getTypeOfTimeOffId()));
     timeOff.setEmployee(employee);
     timeOff.setApprover(approver);
 

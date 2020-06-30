@@ -95,7 +95,7 @@ public interface Mapper {
 
   List<TimeOffResponse> convertToTimeOffResponse (List<TimeOff> timeOffs);
 
-  @Mapping(target = "typeOfTimeOff", source = "timeOffType.name")
+  @Mapping(target = "typeOfTimeOffId", source = "timeOffType.id")
   @Mapping(target = "employeeId", expression = "java(timeOff.getEmployee().getId())")
   @Mapping(target = "approverId", expression = "java(timeOff.getApprover().getId())")
   TimeOffResponse convertToTimeOffResponse(TimeOff timeOff);

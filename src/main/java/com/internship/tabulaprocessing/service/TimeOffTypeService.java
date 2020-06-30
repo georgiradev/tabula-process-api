@@ -74,14 +74,4 @@ public class TimeOffTypeService {
   public Page<TimeOffType> findAll(Pageable pageable) {
     return repository.findAll(pageable);
   }
-
-  public TimeOffType getOneByName(TypeName name) {
-    Optional<TimeOffType> timeOffType = repository.findByName(name);
-
-    if (timeOffType.isEmpty()) {
-      throw new EntityNotFoundException("Invalid time off type name : " + name);
-    }
-
-    return timeOffType.get();
-  }
 }

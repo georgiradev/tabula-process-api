@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 public class TimeOffResponse {
     private int id;
 
-    private TypeName typeOfTimeOff;
+    private int typeOfTimeOffId;
 
     private LocalDateTime startDateTime;
 

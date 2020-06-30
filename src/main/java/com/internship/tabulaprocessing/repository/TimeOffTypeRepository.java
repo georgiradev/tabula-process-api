@@ -18,6 +18,4 @@ public interface TimeOffTypeRepository extends JpaRepository<TimeOffType, Intege
       nativeQuery = true)
   Optional<TimeOffType> findByNameAndPayment(
       @Param("name") String name, @Param("isPaid") Boolean isPaid);
-
-  Optional<TimeOffType> findByName(TypeName name);
 }

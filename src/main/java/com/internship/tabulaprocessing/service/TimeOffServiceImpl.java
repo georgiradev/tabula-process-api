@@ -148,7 +148,8 @@ public class TimeOffServiceImpl implements TimeOffService {
         if(timeOffRepository.duplicatesCount(
                 timeOff.getStartDateTime(),
                 timeOff.getEndDateTime(),
-                timeOff.getEmployee().getId())>=1) {
+                timeOff.getEmployee().getId(),
+                timeOff.getTimeOffType().getId())>=1) {
             return true;
         }
        return false;

@@ -2,7 +2,6 @@ package com.internship.tabulaprocessing.service;
 
 import com.internship.tabulaprocessing.controller.QueryParameter;
 import com.internship.tabulaprocessing.entity.TimeOffType;
-import com.internship.tabulaprocessing.entity.TypeName;
 import com.internship.tabulaprocessing.exception.EntityAlreadyPresentException;
 import com.internship.tabulaprocessing.provider.TimeOffTypeProvider;
 import com.internship.tabulaprocessing.repository.TimeOffTypeRepository;
@@ -126,16 +125,5 @@ public class TimeOffTypeServiceTest {
     when(repository.findAll(any(Pageable.class))).thenReturn(paging);
 
     assertEquals(paging, service.findAll(queryParameter.getPageable()));
-  }
-
-  @Test
-  void testGetOneByName() {
-
-    TimeOffType timeOffType = TimeOffTypeProvider.getTimeOffTypeInstance();
-
-    when(repository.findByName(any(TypeName.class))).thenReturn(Optional.of(timeOffType));
-    TimeOffType foundTimeOffType = service.getOneByName(TypeName.PARENTAL_LEAVE);
-
-    assertEquals(timeOffType.getName(), foundTimeOffType.getName());
   }
 }

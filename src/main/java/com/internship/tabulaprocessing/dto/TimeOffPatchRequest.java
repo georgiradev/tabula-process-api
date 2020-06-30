@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TimeOffPatchRequest {
-    private TypeName typeOfTimeOff;
+    private int typeOfTimeOffId;
 
     private LocalDateTime startDateTime;
 
