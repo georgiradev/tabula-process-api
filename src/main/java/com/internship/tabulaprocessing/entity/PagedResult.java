@@ -12,4 +12,5 @@ public class PagedResult<T> {
   private List<T> elements;
   private int currentPage;
   private int numOfTotalPages;
+  private long entitiesCount;
 }
