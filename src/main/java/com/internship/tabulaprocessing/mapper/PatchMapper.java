@@ -1,18 +1,18 @@
 package com.internship.tabulaprocessing.mapper;
 
-import com.internship.tabulaprocessing.dto.TimeOffPatchRequest;
-import com.internship.tabulaprocessing.dto.TimeOffPatchStatusRequest;
-import com.internship.tabulaprocessing.entity.TimeOff;
+import com.internship.tabulaprocessing.dto.TimeOffTypeRequestDto;
+import com.internship.tabulaprocessing.entity.TimeOffType;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
 
-@org.mapstruct.Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+@org.mapstruct.Mapper
+        (componentModel = "spring",
+                nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface PatchMapper {
 
-    PatchMapper mapper = Mappers.getMapper(PatchMapper.class);
+    PatchMapper INSTANCE =  Mappers.getMapper(PatchMapper.class);
 
-    TimeOff mapObjectsToTimeOffEntity(TimeOffPatchRequest data, @MappingTarget TimeOff timeOff);
-
-    TimeOff mapObjectsToTimeOffEntity(TimeOffPatchStatusRequest data, @MappingTarget TimeOff timeOff);
+    TimeOffType mapObjectsToTimeOffType(
+            TimeOffTypeRequestDto data, @MappingTarget TimeOffType timeOffType);
 }

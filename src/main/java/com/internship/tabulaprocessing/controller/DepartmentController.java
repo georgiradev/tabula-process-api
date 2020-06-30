@@ -33,8 +33,8 @@ public class DepartmentController {
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(new PagedResult<>(
-                responseList, queryParameter.getPage(), departmentPage.getTotalPages(),
-                departmentPage.getTotalElements()));
+                responseList, queryParameter.getPage(),
+                departmentPage.getTotalPages(), departmentPage.getTotalElements()));
     }
 
     @PostMapping

@@ -5,6 +5,7 @@ import com.internship.tabulaprocessing.dto.TimeOffTypeResponseDto;
 import com.internship.tabulaprocessing.entity.PagedResult;
 import com.internship.tabulaprocessing.entity.TimeOffType;
 import com.internship.tabulaprocessing.mapper.Mapper;
+import com.internship.tabulaprocessing.mapper.PatchMapper;
 import com.internship.tabulaprocessing.service.TimeOffTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,10 +22,14 @@ public class TimeOffTypeController {
 
   private Mapper mapper;
 
+  private PatchMapper patchMapper;
+
   @Autowired
-  public TimeOffTypeController(TimeOffTypeService timeOffTypeService, Mapper mapper) {
+  public TimeOffTypeController(
+      TimeOffTypeService timeOffTypeService, Mapper mapper, PatchMapper patchMapper) {
     this.timeOffTypeService = timeOffTypeService;
     this.mapper = mapper;
+    this.patchMapper = patchMapper;
   }
 
   @GetMapping("/{id}")
@@ -43,8 +48,8 @@ public class TimeOffTypeController {
 
     return ResponseEntity.ok(
         new PagedResult<>(
-            responseDtos.toList(), queryParameter.getPage(), responseDtos.getTotalPages(),
-                pagedTypes.getTotalElements()));
+            responseDtos.toList(), queryParameter.getPage(),
+                responseDtos.getTotalPages(), pagedTypes.getTotalElements()));
   }
 
   @PostMapping
@@ -70,5 +75,16 @@ public class TimeOffTypeController {
 
     timeOffTypeService.delete(id);
     return ResponseEntity.ok("Deleted successfully");
+  }
+
+  @PatchMapping(
+      path = "/{id}",
+      consumes = {"application/merge-patch+json"})
+  public ResponseEntity patch(
+      @PathVariable int id, @RequestBody TimeOffTypeRequestDto timeOffTypeRequestDto) {
+
+    TimeOffType timeOffType = timeOffTypeService.getOneById(id);
+    TimeOffType patched = patchMapper.mapObjectsToTimeOffType(timeOffTypeRequestDto, timeOffType);
+    return ResponseEntity.ok(timeOffTypeService.update(patched, id));
   }
 }

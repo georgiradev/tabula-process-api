@@ -69,8 +69,8 @@ public class CompanyController {
 
     PagedResult<CompanyResponseDto> allToDto =
         new PagedResult<>(
-            pagedResultDto.toList(), queryParameter.getPage(), pagedResultDto.getTotalPages(),
-                pagedResult.getTotalElements());
+            pagedResultDto.toList(), queryParameter.getPage(),
+                pagedResultDto.getTotalPages(), pagedResult.getTotalElements());
 
     return ResponseEntity.ok(allToDto);
   }

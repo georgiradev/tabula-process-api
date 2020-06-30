@@ -1,10 +1,8 @@
 package com.internship.tabulaprocessing.service;
 
-
 import com.internship.tabulaprocessing.entity.ProcessStage;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
 
 public interface ProcessStageService {
 
@@ -19,5 +17,4 @@ public interface ProcessStageService {
   ProcessStage findByName(String name);
 
   void delete(int id);
-
 }
