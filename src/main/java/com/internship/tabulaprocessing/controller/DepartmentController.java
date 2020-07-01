@@ -25,7 +25,7 @@ public class DepartmentController {
     private Mapper mapper;
 
     @GetMapping
-    public ResponseEntity<PagedResult<DepartmentDTO>> getAllDepartments(QueryParameter queryParameter) {
+    public ResponseEntity<PagedResult<DepartmentDTO>> getAllDepartments(@Valid  QueryParameter queryParameter) {
 
         Page<Department> departmentPage = departmentService.findAll(queryParameter.getPageable());
         List<DepartmentDTO> responseList = departmentPage.stream()

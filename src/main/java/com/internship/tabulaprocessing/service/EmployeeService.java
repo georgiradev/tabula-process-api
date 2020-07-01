@@ -45,7 +45,7 @@ public class EmployeeService {
     Page<Employee> employees = employeeRepository.findAll(pageable);
     return new PagedResult<>(
         getEmployeeResponseDtoList(employees),
-        pageable.getPageNumber() + 1,
+        pageable.getPageNumber(),
         employees.getTotalPages(),
         employees.getTotalElements());
   }

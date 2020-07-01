@@ -31,7 +31,7 @@ public class MediaService {
   public PagedResult<MediaDto> getAll(Pageable pageable) {
     Page<Media> medias = mediaRepository.findAll(pageable);
     return new PagedResult<>(
-        getMediaDtoList(medias), pageable.getPageNumber() + 1,
+        getMediaDtoList(medias), pageable.getPageNumber(),
             medias.getTotalPages(), medias.getTotalElements());
   }
 
