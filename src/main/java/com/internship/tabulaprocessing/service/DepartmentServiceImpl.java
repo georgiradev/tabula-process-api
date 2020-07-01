@@ -51,7 +51,8 @@ public class DepartmentServiceImpl implements DepartmentService {
     department.setId(0);
     Optional<Department> optional = departmentRepository.findByName(department.getName());
     if (optional.isPresent()) {
-      throw new EntityAlreadyPresentException(String.format("Departmеnt with name %s, already exists", department.getName()));
+      throw new EntityAlreadyPresentException(
+          String.format("Departmеnt with name %s, already exists", department.getName()));
     }
     return departmentRepository.save(department);
   }
@@ -60,6 +61,11 @@ public class DepartmentServiceImpl implements DepartmentService {
   public Department update(Department department, int id) {
 
     findById(id);
+    Optional<Department> optionalDepartment = departmentRepository.findByName(department.getName());
+    if (optionalDepartment.isPresent()) {
+      throw new EntityAlreadyPresentException(
+          "Department with name " + department.getName() + " already exists.");
+    }
     department.setId(id);
 
     return departmentRepository.save(department);
@@ -70,7 +76,5 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     findById(id);
     departmentRepository.deleteById(id);
-
   }
-
 }

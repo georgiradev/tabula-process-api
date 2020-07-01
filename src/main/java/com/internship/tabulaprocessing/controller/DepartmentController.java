@@ -63,6 +63,18 @@ public class DepartmentController {
         return ResponseEntity.ok(mapper.convertToDepartmentDTO(updatedDepartment));
     }
 
+    @PatchMapping(
+            path = "/{id}",
+            consumes = {"application/merge-patch+json"})
+    public ResponseEntity<DepartmentDTO> patchDepartment(
+            @PathVariable @Min(1) int id, @Valid @RequestBody DepartmentDTO departmentDTO) {
+
+        Department updatedDepartment = mapper.convertToDepartmentEntity(departmentDTO);
+        departmentService.update(updatedDepartment, id);
+
+        return ResponseEntity.ok(mapper.convertToDepartmentDTO(updatedDepartment));
+    }
+
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<String> deleteDepartment(@PathVariable @Min(1) int id) {
 

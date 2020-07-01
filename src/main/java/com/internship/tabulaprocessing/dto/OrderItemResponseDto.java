@@ -23,5 +23,5 @@ public class OrderItemResponseDto {
 
   private int mediaId;
 
-  private int orderId;
+  private Integer orderId;
 }

@@ -7,6 +7,7 @@ import com.internship.tabulaprocessing.dto.EmployeeResponseDto;
 import com.internship.tabulaprocessing.entity.Department;
 import com.internship.tabulaprocessing.entity.Employee;
 import com.internship.tabulaprocessing.entity.PagedResult;
+import com.internship.tabulaprocessing.exception.EntityAlreadyPresentException;
 import com.internship.tabulaprocessing.mapper.Mapper;
 import com.internship.tabulaprocessing.repository.DepartmentRepository;
 import com.internship.tabulaprocessing.repository.EmployeeRepository;
@@ -84,6 +85,12 @@ public class EmployeeService {
         departmentRepository.findById(employeeRequestDto.getDepartmentId());
     if (!department.isPresent()) {
       throw new EntityNotFoundException("Department was not found.");
+    }
+
+    if (employeeRepository.findByAccountId(employeeRequestDto.getAccountId()).isPresent()) {
+      throw new EntityAlreadyPresentException(
+          String.format(
+              "Customer with account id %s, already present.", employeeRequestDto.getAccountId()));
     }
 
     Employee employee = mapper.convertToEmployeeEntity(employeeRequestDto);

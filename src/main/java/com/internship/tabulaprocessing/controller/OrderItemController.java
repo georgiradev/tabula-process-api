@@ -1,5 +1,6 @@
 package com.internship.tabulaprocessing.controller;
 
+import com.internship.tabulaprocessing.dto.OrderItemPersistRequestDto;
 import com.internship.tabulaprocessing.dto.OrderItemRequestDto;
 import com.internship.tabulaprocessing.dto.OrderItemResponseDto;
 import com.internship.tabulaprocessing.entity.OrderItem;
@@ -29,7 +30,7 @@ public class OrderItemController {
 
   @PostMapping
   public ResponseEntity<OrderItemResponseDto> createOrderItem(
-      @Valid @RequestBody OrderItemRequestDto orderItemRequestDto) {
+      @Valid @RequestBody OrderItemPersistRequestDto orderItemRequestDto) {
 
     OrderItem orderItem = mapper.orderItemRequestDtoToEntity(orderItemRequestDto);
     Optional<OrderItem> createdOrderItem = orderItemService.save(orderItem);
