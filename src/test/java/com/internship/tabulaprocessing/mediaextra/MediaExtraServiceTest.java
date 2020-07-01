@@ -1,8 +1,11 @@
 package com.internship.tabulaprocessing.mediaextra;
 
 import com.internship.tabulaprocessing.dto.MediaExtraDto;
+import com.internship.tabulaprocessing.dto.MediaExtraRequestDto;
+import com.internship.tabulaprocessing.entity.Department;
 import com.internship.tabulaprocessing.entity.MediaExtra;
 import com.internship.tabulaprocessing.entity.PagedResult;
+import com.internship.tabulaprocessing.exception.EntityAlreadyPresentException;
 import com.internship.tabulaprocessing.mapper.Mapper;
 import com.internship.tabulaprocessing.provider.MediaExtraProvider;
 import com.internship.tabulaprocessing.repository.MediaExtraRepository;
@@ -17,6 +20,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import javax.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
@@ -46,12 +51,21 @@ class MediaExtraServiceTest {
 
   @Test
   void getOne() {
-    MediaExtra mediaExtra = MediaExtraProvider.getMediaExtraInstance();
-
+    MediaExtra mediaExtra = new MediaExtra();
+    mediaExtra.setId(1);
     when(mediaExtraRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(mediaExtra));
-    MediaExtraDto actualMediaExtra = mediaExtraService.getOne(1);
+    MediaExtra actualMediaExtra = mediaExtraService.getOne(1);
 
-    assertEquals(mapper.convertToMediaExtraDTO(mediaExtra), actualMediaExtra);
+    assertEquals(mediaExtra, actualMediaExtra);
+  }
+
+  @Test
+  void update() {
+
+    MediaExtra mediaExtra = new MediaExtra();
+    mediaExtra.setId(1);
+    Mockito.when(mediaExtraRepository.findByName(anyString())).thenReturn(Optional.empty());
+    assertThrows(RuntimeException.class, () -> mediaExtraService.update( 1, mediaExtra));
   }
 
   @Test
@@ -61,33 +75,13 @@ class MediaExtraServiceTest {
   }
 
   @Test
-  void update() {
-    MediaExtraDto mediaExtraDto =
-        mapper.convertToMediaExtraDTO(MediaExtraProvider.getMediaExtraInstance());
-    when(mediaExtraRepository.findById(5)).thenReturn(Optional.empty());
-    assertThrows(EntityNotFoundException.class, () -> mediaExtraService.update(5, mediaExtraDto));
-  }
-
-  @Test
   void create() {
     MediaExtra mediaExtra = new MediaExtra();
-    mediaExtra.setId(1);
-    mediaExtra.setName("name1");
-    mediaExtra.setPrice(BigDecimal.valueOf(15));
-
-    MediaExtraDto mediaExtraDto = new MediaExtraDto();
-
-    when(mapper.convertToMediaExtraDTO(any())).thenReturn(mediaExtraDto);
-
-    mediaExtraDto.setId(mediaExtra.getId());
-    mediaExtraDto.setName(mediaExtra.getName());
-    mediaExtra.setPrice(mediaExtra.getPrice());
-
-    when(mediaExtraRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(mediaExtra));
-    MediaExtraDto actualMediaExtra = mediaExtraService.getOne(1);
-
-    assertEquals(mediaExtra.getId(), actualMediaExtra.getId());
-    assertEquals(mediaExtra.getName(), actualMediaExtra.getName());
+    mediaExtra.setName("test");
+    mediaExtra.setId(999);
+    Mockito.when(mediaExtraRepository.findByName(Mockito.any()))
+            .thenReturn(Optional.of(mediaExtra));
+    assertThrows(RuntimeException.class, () -> mediaExtraService.create(new MediaExtra()));
   }
 
   @Test

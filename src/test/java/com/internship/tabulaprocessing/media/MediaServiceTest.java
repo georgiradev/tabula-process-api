@@ -3,6 +3,7 @@ package com.internship.tabulaprocessing.media;
 import com.internship.tabulaprocessing.controller.QueryParameter;
 import com.internship.tabulaprocessing.dto.EmployeeResponseDto;
 import com.internship.tabulaprocessing.dto.MediaDto;
+import com.internship.tabulaprocessing.dto.MediaRequestDto;
 import com.internship.tabulaprocessing.entity.Media;
 import com.internship.tabulaprocessing.entity.MediaExtra;
 import com.internship.tabulaprocessing.entity.PagedResult;
@@ -39,6 +40,7 @@ import static org.mockito.Mockito.*;
 class MediaServiceTest {
 
   @Mock private MediaRepository mediaRepository;
+  @Mock private MediaExtraRepository mediaExtraRepository;
 
   @InjectMocks private MediaService mediaService;
 
@@ -82,10 +84,13 @@ class MediaServiceTest {
     when(mapper.convertToMediaDTO(any())).thenReturn(mediaDto);
     when(mediaRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(media));
 
+
     MediaDto actualMedia = mediaService.getOne(1);
 
     assertEquals(media.getId(), actualMedia.getId());
     assertEquals(media.getName(), actualMedia.getName());
+
+    assertThrows(RuntimeException.class, () -> mediaService.create( new MediaRequestDto()));
   }
 
   @Test
@@ -96,9 +101,45 @@ class MediaServiceTest {
 
   @Test
   void update() {
-    MediaDto mediaDto = new MediaDto();
-    mediaDto.setId(5);
-    when(mediaRepository.findById(5)).thenReturn(Optional.empty());
+    MediaRequestDto mediaDto = new MediaRequestDto();
+    when(mediaRepository.findById(anyInt())).thenReturn(Optional.empty());
     assertThrows(EntityNotFoundException.class, () -> mediaService.update(5, mediaDto));
+
+    assertThrows(RuntimeException.class, () -> mediaService.update( anyInt(), new MediaRequestDto()));
   }
+
+  @Test
+  void updateIfMediaAlreadyPresent() {
+
+    Media media = MediaProvider.getMediaInstance();
+    when(mediaRepository.findById(anyInt())).thenReturn(Optional.of(media));
+
+    Media media1 = new Media();
+    media1.setId(90);
+    media1.setName(media.getName());
+
+    Mockito.when(mediaRepository.findByName(anyString())).thenReturn(Optional.of(media1));
+    assertThrows(RuntimeException.class, () -> mediaService.update( 1,  new MediaRequestDto()));
+  }
+
+  @Test
+  void patch() {
+    MediaRequestDto mediaDto = new MediaRequestDto();
+    when(mediaRepository.findById(anyInt())).thenReturn(Optional.empty());
+    assertThrows(EntityNotFoundException.class, () -> mediaService.patch(5, mediaDto));
+    assertThrows(RuntimeException.class, () -> mediaService.patch( anyInt(), new MediaRequestDto()));
+  }
+
+  @Test
+  void CreateIfExtraNotFound(){
+    MediaRequestDto mediaRequestDto = new MediaRequestDto();
+    mediaRequestDto.setPrice(BigDecimal.valueOf(34));
+    mediaRequestDto.setName("yolo");
+    List<String> ids = new ArrayList<>();
+    ids.add("49");
+    mediaRequestDto.setMediaExtraIds(ids);
+    when(mediaExtraRepository.findById(anyInt())).thenReturn(Optional.empty());
+    assertThrows(EntityNotFoundException.class, ()->mediaService.create(mediaRequestDto));
+  }
+  
 }

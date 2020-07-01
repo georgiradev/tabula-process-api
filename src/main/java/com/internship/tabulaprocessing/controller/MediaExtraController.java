@@ -1,22 +1,31 @@
 package com.internship.tabulaprocessing.controller;
 
 import com.internship.tabulaprocessing.dto.MediaExtraDto;
+import com.internship.tabulaprocessing.dto.MediaExtraRequestDto;
+import com.internship.tabulaprocessing.entity.MediaExtra;
 import com.internship.tabulaprocessing.entity.PagedResult;
+import com.internship.tabulaprocessing.mapper.Mapper;
+import com.internship.tabulaprocessing.mapper.PatchMapper;
 import com.internship.tabulaprocessing.service.MediaExtraService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
-import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/media_extras")
 public class MediaExtraController {
 
-  private MediaExtraService mediaExtraService;
+  private final MediaExtraService mediaExtraService;
+  private final Mapper mapper;
+  private final PatchMapper patchMapper;
 
-  public MediaExtraController(MediaExtraService mediaExtraService) {
+  public MediaExtraController(MediaExtraService mediaExtraService, Mapper mapper, PatchMapper patchMapper) {
     this.mediaExtraService = mediaExtraService;
+    this.mapper = mapper;
+    this.patchMapper = patchMapper;
   }
 
   @GetMapping
@@ -25,15 +34,15 @@ public class MediaExtraController {
   }
 
   @PostMapping
-  public ResponseEntity<MediaExtraDto> create(@Valid @RequestBody MediaExtraDto mediaExtraDto) {
-    return mediaExtraService.create(mediaExtraDto);
+  public ResponseEntity<MediaExtraDto> create(@Valid @RequestBody MediaExtraRequestDto mediaExtraRequestDto) {
+    return mediaExtraService.create(mapper.convertToMediaExtraEntity(mediaExtraRequestDto));
   }
 
   @GetMapping("/{id}")
   public ResponseEntity<MediaExtraDto> getOne(@PathVariable String id) {
 
     int num = Integer.parseInt(id);
-    return ResponseEntity.ok(mediaExtraService.getOne(num));
+    return ResponseEntity.ok(mapper.convertToMediaExtraDTO(mediaExtraService.getOne(num)));
   }
 
   @DeleteMapping("/{id}")
@@ -43,10 +52,26 @@ public class MediaExtraController {
     return mediaExtraService.deleteById(num);
   }
 
+  @PatchMapping(path = "/{id}", consumes = {"application/merge-patch+json"})
+  public ResponseEntity<MediaExtraDto> patch(
+          @PathVariable int id,  @RequestBody MediaExtraRequestDto mediaExtraRequestDto) {
+
+    MediaExtra mediaExtra = mediaExtraService.getOne(id);
+    MediaExtra patched = patchMapper.mapObjectsToMediaExtra(mediaExtraRequestDto, mediaExtra);
+
+    return ResponseEntity.ok(
+            mapper.convertToMediaExtraDTO(mediaExtraService.update(id, patched)));
+  }
+
   @PutMapping("/{id}")
   public ResponseEntity<MediaExtraDto> update(
-      @PathVariable String id, @Valid @RequestBody MediaExtraDto mediaExtraDto) {
-    int num = Integer.parseInt(id);
-    return mediaExtraService.update(num, mediaExtraDto);
+          @PathVariable int id, @Valid @RequestBody MediaExtraRequestDto mediaExtraRequestDto) {
+
+    MediaExtra mediaExtra = mediaExtraService.getOne(id);
+
+    return ResponseEntity.ok(
+            mapper.convertToMediaExtraDTO(mediaExtraService.update(id,
+                    mapper.convertToMediaExtraEntity(mediaExtraRequestDto))));
   }
+
 }
