@@ -10,9 +10,7 @@ import com.internship.tabulaprocessing.service.MediaExtraService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/media_extras")
@@ -29,7 +27,7 @@ public class MediaExtraController {
   }
 
   @GetMapping
-  public PagedResult<MediaExtraDto> getAll(QueryParameter queryParameter) {
+  public PagedResult<MediaExtraDto> getAll(@Valid QueryParameter queryParameter) {
     return mediaExtraService.getAll(queryParameter.getPageable());
   }
 

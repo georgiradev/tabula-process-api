@@ -79,4 +79,9 @@ public abstract class PatchMapper {
 
     public abstract Order patchOrder(OrderPatchRequestDTO dto, @MappingTarget Order order);
 
+    MediaExtra mapObjectsToMediaExtra(MediaExtraRequestDto data, @MappingTarget MediaExtra mediaExtra);
+
+    Process mapObjectsToProcess(
+            ProcessRequestDto data, @MappingTarget Process process);
+
 }

@@ -1,10 +1,11 @@
 package com.internship.tabulaprocessing.controller;
 
-import com.internship.tabulaprocessing.dto.ProcessResponseDto;
 import com.internship.tabulaprocessing.dto.ProcessRequestDto;
+import com.internship.tabulaprocessing.dto.ProcessResponseDto;
 import com.internship.tabulaprocessing.entity.PagedResult;
 import com.internship.tabulaprocessing.entity.Process;
 import com.internship.tabulaprocessing.mapper.Mapper;
+import com.internship.tabulaprocessing.mapper.PatchMapper;
 import com.internship.tabulaprocessing.service.ProcessServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,10 +27,14 @@ public class ProcessController {
 
   private Mapper mapper;
 
+  private PatchMapper patchMapper;
+
   @Autowired
-  public ProcessController(ProcessServiceImpl processService, Mapper mapper) {
+  public ProcessController(
+      ProcessServiceImpl processService, Mapper mapper, PatchMapper patchMapper) {
     this.processService = processService;
     this.mapper = mapper;
+    this.patchMapper = patchMapper;
   }
 
   @GetMapping("/{id}")
@@ -39,16 +44,18 @@ public class ProcessController {
   }
 
   @GetMapping
-  public PagedResult<ProcessResponseDto> getAllByPage(QueryParameter queryParameter) {
+  public PagedResult<ProcessResponseDto> getAllByPage(@Valid QueryParameter queryParameter) {
 
     Page<Process> allProcesses = processService.findAll(queryParameter.getPageable());
     List<ProcessResponseDto> allToDto = new ArrayList<>();
     for (Process process : allProcesses.toList()) {
       allToDto.add(mapper.processToProcessGetDTO(process));
     }
-    return new PagedResult<>(allToDto,
-            queryParameter.getPageable().getPageNumber() + 1,
-            allProcesses.getTotalPages(),allProcesses.getTotalElements());
+    return new PagedResult<>(
+        allToDto,
+        queryParameter.getPageable().getPageNumber(),
+        allProcesses.getTotalPages(),
+        allProcesses.getTotalElements());
   }
 
   @PostMapping
@@ -73,5 +80,16 @@ public class ProcessController {
 
     processService.delete(id);
     return ResponseEntity.ok("Deleted successfully");
+  }
+
+  @PatchMapping(
+      path = "/{id}",
+      consumes = {"application/merge-patch+json"})
+  public ResponseEntity patch(
+      @PathVariable int id,@Valid  @RequestBody ProcessRequestDto processRequestDto) {
+
+    Process process = processService.getOneById(id);
+    Process patched = patchMapper.mapObjectsToProcess(processRequestDto, process);
+    return ResponseEntity.ok(mapper.processToProcessGetDTO(processService.update(patched, id)));
   }
 }

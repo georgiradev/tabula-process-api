@@ -5,12 +5,10 @@ import com.internship.tabulaprocessing.exception.EntityAlreadyPresentException;
 import com.internship.tabulaprocessing.repository.ProcessRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -39,29 +37,21 @@ public class ProcessServiceImpl {
 
   public Process update(Process process, int id) {
 
-    Optional<Process> processOptional = processRepository.findById(id);
+    getOneById(id);
 
-    if (!processOptional.isPresent()) {
-      throw new EntityNotFoundException("A process with this id does not exist");
-    }
     String name = process.getName();
-    Optional<Process> processOptionalByName = processRepository.findByName(name);
+    Optional<Process> processOptionalByName = getByName(name);
 
     if (processOptionalByName.isPresent())
-      if (processOptionalByName.get().getName().equals(process.getName())) {
         throw new EntityAlreadyPresentException("A process with this name already exists");
-      }
+
     process.setId(id);
 
     return processRepository.save(process);
   }
 
   public void delete(int id) {
-    Optional<Process> processOptional = processRepository.findById(id);
-    if (!processOptional.isPresent()) {
-      throw new EntityNotFoundException("A process with this id does not exist");
-    }
-
+    getOneById(id);
     processRepository.deleteById(id);
   }
 
