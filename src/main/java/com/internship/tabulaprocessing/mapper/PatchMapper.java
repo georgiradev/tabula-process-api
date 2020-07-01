@@ -4,6 +4,7 @@ import com.internship.tabulaprocessing.dto.*;
 import com.internship.tabulaprocessing.entity.*;
 import com.internship.tabulaprocessing.dto.OrderPatchRequestDTO;
 import com.internship.tabulaprocessing.entity.Order;
+import com.internship.tabulaprocessing.entity.Process;
 import com.internship.tabulaprocessing.service.EmployeeService;
 import com.internship.tabulaprocessing.service.TimeOffTypeService;
 import lombok.RequiredArgsConstructor;
@@ -79,9 +80,7 @@ public abstract class PatchMapper {
 
     public abstract Order patchOrder(OrderPatchRequestDTO dto, @MappingTarget Order order);
 
-    MediaExtra mapObjectsToMediaExtra(MediaExtraRequestDto data, @MappingTarget MediaExtra mediaExtra);
-
-    Process mapObjectsToProcess(
+    public abstract Process mapObjectsToProcess(
             ProcessRequestDto data, @MappingTarget Process process);
 
 }
