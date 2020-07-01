@@ -29,11 +29,11 @@ public interface Mapper {
 
   MediaDto convertToMediaDTO(Media media);
 
-  Media convertToMediaEntity(MediaDto mediaDTO);
+  Media convertToMediaEntity(MediaRequestDto mediaRequestDTO);
 
   MediaExtraDto convertToMediaExtraDTO(MediaExtra mediaExtra);
 
-  MediaExtra convertToMediaExtraEntity(MediaExtraDto mediaExtraDto);
+  MediaExtra convertToMediaExtraEntity(MediaExtraRequestDto mediaExtraRequestDto);
 
   List<MediaExtraDto> convertToMediaExtraDtoList (List<MediaExtra> medias);
 
