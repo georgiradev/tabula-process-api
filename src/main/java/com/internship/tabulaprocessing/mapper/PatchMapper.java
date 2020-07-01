@@ -77,7 +77,6 @@ public abstract class PatchMapper {
         return timeOff;
     }
 
-    Order patchOrder(OrderPatchRequestDTO dto, @MappingTarget Order order);
-    TimeOffType mapObjectsToTimeOffType(
-            TimeOffTypeRequestDto data, @MappingTarget TimeOffType timeOffType);
+    public abstract Order patchOrder(OrderPatchRequestDTO dto, @MappingTarget Order order);
+
 }
