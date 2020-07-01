@@ -3,14 +3,15 @@ package com.internship.tabulaprocessing.mapper;
 import com.internship.tabulacore.dto.AccountDto;
 import com.internship.tabulacore.entity.Account;
 import com.internship.tabulaprocessing.dto.*;
-
-import com.internship.tabulaprocessing.entity.*;
-
 import com.internship.tabulaprocessing.entity.Process;
 import com.internship.tabulaprocessing.service.EmployeeService;
 import com.internship.tabulaprocessing.service.TimeOffTypeService;
+import com.internship.tabulaprocessing.entity.*;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import org.mapstruct.MappingTarget;
+import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
@@ -18,6 +19,9 @@ import java.util.List;
         unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE,
         componentModel = "spring")
 public abstract class Mapper {
+    unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE,
+    componentModel = "spring")
+public interface Mapper {
 
   @Autowired
   EmployeeService employeeService;
@@ -29,6 +33,7 @@ public abstract class Mapper {
 
   @Mapping(target = "customers", ignore = true)
   public abstract CompanyResponseDto companyToCompanyResponseDto(Company company);
+  CompanyResponseDto companyToCompanyResponseDto(Company company);
 
   public abstract DepartmentDTO convertToDepartmentDTO(Department department);
 
@@ -43,10 +48,16 @@ public abstract class Mapper {
   public abstract MediaExtra convertToMediaExtraEntity(MediaExtraDto mediaExtraDto);
 
   public abstract List<MediaExtraDto> convertToMediaExtraDtoList (List<MediaExtra> medias);
+  List<MediaExtraDto> convertToMediaExtraDtoList(List<MediaExtra> medias);
 
   public abstract List<MediaDto> convertToMediaDtoList (List<Media> medias);
+  List<MediaDto> convertToMediaDtoList(List<Media> medias);
 
   public abstract ProcessStageResponseDTO convertToProcessStageDTO(ProcessStage processStage);
+  @Mapping(source = "processEntity.id",target = "processId")
+  @Mapping(source = "departmentEntity.id",target = "departmentId")
+  @Mapping(source = "nextStageEntity.id",target = "nextStageId")
+  ProcessStageResponseDTO convertToProcessStageDTO(ProcessStage processStage);
 
   public abstract ProcessStage convertToProcessStageEntity(ProcessStagePersistDTO processStagePersistDTO);
 
@@ -62,6 +73,9 @@ public abstract class Mapper {
   @Mapping(target = "order.id", source = "orderId")
   public abstract OrderItem orderItemRequestDtoToEntity(OrderItemRequestDto orderItemRequestDto);
 
+  @Mapping(target = "media.id", source = "mediaId")
+  OrderItem orderItemRequestDtoToEntity(OrderItemPersistRequestDto orderItemRequestDto);
+
   @Mapping(source = "media.id", target = "mediaId")
   @Mapping(source = "order.id", target = "orderId")
   @Mapping(source = "pricePerPiece", target = "totalPrice")
@@ -70,13 +84,27 @@ public abstract class Mapper {
   public abstract Order orderRequestDtoToOrder(OrderRequestDto orderRequestDto);
 
   public abstract OrderResponseDto orderToOrderResponseDto(Order order);
+  @Mapping(source = "dateTimeCreated",target = "dateTimeCreated",dateFormat = "yyyy-MM-dd HH:mm:ss")
+  @Mapping(source = "customer.id",target = "customerId")
+  @Mapping(source = "processStage.id",target = "processStageId")
+  @Mapping(source = "processStage",target = "processStage")
+  OrderResponseDto orderToOrderResponseDto(Order order);
 
   public abstract Employee convertToEmployeeEntity(EmployeeRequestDto employeeRequestDto);
+
+  Order convertToOrderEntity(OrderRequestDto orderRequestDto);
+
+  Order convertToOrderEntity(OrderUpdateRequestDTO orderRequestDto);
+
+  Employee convertToEmployeeEntity(EmployeeRequestDto employeeRequestDto);
 
   @Mapping(target = "account", source = "account")
   public abstract Employee convertToEmployeeEntity(EmployeeResponseDto employeeResponseDto);
 
   public abstract EmployeeResponseDto convertToEmployeeResponseDto(Employee employee);
+  EmployeeResponseDto convertToEmployeeResponseDto(Employee employee);
+
+  List<EmployeeResponseDto> convertToEmployeeResponseDtoList(List<Employee> employees);
 
   public abstract List<EmployeeResponseDto> convertToEmployeeResponseDtoList(List<Employee> employees);
 
@@ -130,6 +158,9 @@ public abstract class Mapper {
 
     return timeOff;
   }
+  TimeOffTypeResponseDto entityToTimeOffTypeResponseDto(TimeOffType timeOffType);
+
+  CustomerDtoNoCompany customerEntityToCustomerDto(Customer currentCustomer);
 }
 
 

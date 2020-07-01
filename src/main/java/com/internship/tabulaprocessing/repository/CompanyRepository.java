@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface CompanyRepository extends JpaRepository<Company, Integer> {
@@ -14,4 +15,6 @@ public interface CompanyRepository extends JpaRepository<Company, Integer> {
       nativeQuery = true)
   Optional<Company> findByNameAndAddress(
       @Param("name") String name, @Param("address") String address);
+
+  List<Company> findByNameContains(String namePattern);
 }

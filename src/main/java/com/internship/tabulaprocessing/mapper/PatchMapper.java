@@ -2,6 +2,8 @@ package com.internship.tabulaprocessing.mapper;
 
 import com.internship.tabulaprocessing.dto.TimeOffPatchRequest;
 import com.internship.tabulaprocessing.dto.TimeOffPatchStatusRequest;
+import com.internship.tabulaprocessing.dto.OrderPatchRequestDTO;
+import com.internship.tabulaprocessing.entity.Order;
 import com.internship.tabulaprocessing.dto.TimeOffTypeRequestDto;
 import com.internship.tabulaprocessing.entity.Employee;
 import com.internship.tabulaprocessing.entity.TimeOff;
@@ -75,4 +77,7 @@ public abstract class PatchMapper {
         return timeOff;
     }
 
+    Order patchOrder(OrderPatchRequestDTO dto, @MappingTarget Order order);
+    TimeOffType mapObjectsToTimeOffType(
+            TimeOffTypeRequestDto data, @MappingTarget TimeOffType timeOffType);
 }
