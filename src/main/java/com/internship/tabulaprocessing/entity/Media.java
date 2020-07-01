@@ -42,4 +42,14 @@ public class Media {
       for (MediaExtra mediaExtra : this.mediaExtras) price = price.add(mediaExtra.getPrice());
     }
   }
+
+  public void removeExtrasPrice(){
+    if (mediaExtras != null) {
+      for (MediaExtra mediaExtra : this.mediaExtras) {
+        price = price.subtract(mediaExtra.getPrice());
+      }
+    }
+  }
+
+
 }

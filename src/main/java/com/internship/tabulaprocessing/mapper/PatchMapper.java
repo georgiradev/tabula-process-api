@@ -1,13 +1,7 @@
 package com.internship.tabulaprocessing.mapper;
 
-import com.internship.tabulaprocessing.dto.TimeOffPatchRequest;
-import com.internship.tabulaprocessing.dto.TimeOffPatchStatusRequest;
-import com.internship.tabulaprocessing.dto.OrderPatchRequestDTO;
-import com.internship.tabulaprocessing.entity.Order;
-import com.internship.tabulaprocessing.dto.TimeOffTypeRequestDto;
-import com.internship.tabulaprocessing.entity.Employee;
-import com.internship.tabulaprocessing.entity.TimeOff;
-import com.internship.tabulaprocessing.entity.TimeOffType;
+import com.internship.tabulaprocessing.dto.*;
+import com.internship.tabulaprocessing.entity.*;
 import com.internship.tabulaprocessing.service.EmployeeService;
 import com.internship.tabulaprocessing.service.TimeOffTypeService;
 import lombok.RequiredArgsConstructor;
@@ -77,6 +71,12 @@ public abstract class PatchMapper {
         return timeOff;
     }
 
+    public abstract Media mapObjectsToMedia(MediaRequestDto data, @MappingTarget Media media);
+
+    public abstract MediaExtra mapObjectsToMediaExtra(MediaExtraRequestDto data, @MappingTarget MediaExtra mediaExtra);
+
     public abstract Order patchOrder(OrderPatchRequestDTO dto, @MappingTarget Order order);
+
+
 
 }

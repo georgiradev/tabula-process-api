@@ -34,15 +34,13 @@ public abstract class Mapper {
 
   public abstract MediaDto convertToMediaDTO(Media media);
 
-  public abstract Media convertToMediaEntity(MediaDto mediaDTO);
+  public abstract Media convertToMediaEntity(MediaRequestDto mediaRequestDTO);
 
   public abstract MediaExtraDto convertToMediaExtraDTO(MediaExtra mediaExtra);
 
-  public abstract MediaExtra convertToMediaExtraEntity(MediaExtraDto mediaExtraDto);
+  public abstract MediaExtra convertToMediaExtraEntity(MediaExtraRequestDto mediaExtraRequestDto);
 
-  public abstract List<MediaExtraDto> convertToMediaExtraDtoList (List<MediaExtra> medias);
-
-  public abstract List<MediaDto> convertToMediaDtoList (List<Media> medias);
+  public abstract List<MediaExtraDto> convertToMediaExtraDtoList(List<MediaExtra> medias);;
 
   @Mapping(source = "processEntity.id",target = "processId")
   @Mapping(source = "departmentEntity.id",target = "departmentId")

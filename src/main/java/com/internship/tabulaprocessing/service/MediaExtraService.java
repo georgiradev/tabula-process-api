@@ -1,9 +1,13 @@
 package com.internship.tabulaprocessing.service;
 
 import com.internship.tabulaprocessing.dto.MediaExtraDto;
+import com.internship.tabulaprocessing.dto.MediaExtraRequestDto;
+import com.internship.tabulaprocessing.entity.Media;
 import com.internship.tabulaprocessing.entity.MediaExtra;
 import com.internship.tabulaprocessing.entity.PagedResult;
+import com.internship.tabulaprocessing.exception.EntityAlreadyPresentException;
 import com.internship.tabulaprocessing.mapper.Mapper;
+import com.internship.tabulaprocessing.mapper.PatchMapper;
 import com.internship.tabulaprocessing.repository.MediaExtraRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -32,20 +36,20 @@ public class MediaExtraService {
         medias.getTotalElements());
   }
 
-  public MediaExtraDto getOne(int id) {
+  public MediaExtra getOne(int id) {
     Optional<MediaExtra> mediaExtra = mediaExtraRepository.findById(id);
 
     if (!mediaExtra.isPresent()) {
       throw new EntityNotFoundException("Media Extra not found.");
     }
-    return mapper.convertToMediaExtraDTO(mediaExtra.get());
+    return mediaExtra.get();
   }
 
-  public ResponseEntity<MediaExtraDto> create(MediaExtraDto mediaExtraDto) {
-    MediaExtra mediaExtra = mapper.convertToMediaExtraEntity(mediaExtraDto);
+  public ResponseEntity<MediaExtraDto> create(MediaExtra mediaExtra) {
+    isAlreadyExisting(0, mediaExtra.getName());
     mediaExtraRepository.save(mediaExtra);
-    mediaExtraDto = mapper.convertToMediaExtraDTO(mediaExtra);
-    return new ResponseEntity<>(mediaExtraDto, HttpStatus.CREATED);
+
+    return new ResponseEntity<>(mapper.convertToMediaExtraDTO(mediaExtra), HttpStatus.CREATED);
   }
 
   public ResponseEntity<?> deleteById(int id) {
@@ -60,18 +64,18 @@ public class MediaExtraService {
         String.format("Media Extra with id of %s was deleted successfully!", id));
   }
 
-  public ResponseEntity<MediaExtraDto> update(int id, MediaExtraDto mediaExtraDto) {
-    Optional<MediaExtra> optional = mediaExtraRepository.findById(id);
+  public MediaExtra update(int id, MediaExtra mediaExtra) {
 
-    if (!optional.isPresent()) {
-      throw new EntityNotFoundException(
-          String.format("Media Extra with id of %s was not found!", id));
+    isAlreadyExisting(id, mediaExtra.getName());
+    mediaExtraRepository.save(mediaExtra);
+    return mediaExtra;
+  }
+
+  private boolean isAlreadyExisting(int id, String name){
+    Optional<MediaExtra> optionalByName = mediaExtraRepository.findByName(name);
+    if (optionalByName.isPresent() && optionalByName.get().getId()!=id) {
+      throw new EntityAlreadyPresentException(String.format("Media Extra with name %s already exists", name));
     }
-    optional.get().setId(id);
-    optional.get().setName(mediaExtraDto.getName());
-    optional.get().setPrice(mediaExtraDto.getPrice());
-    mediaExtraRepository.save(optional.get());
-
-    return ResponseEntity.ok(mapper.convertToMediaExtraDTO(optional.get()));
+    return true;
   }
 }
