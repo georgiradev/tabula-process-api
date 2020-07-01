@@ -1,6 +1,8 @@
 package com.internship.tabulaprocessing.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.*;
@@ -8,7 +10,9 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
-public class OrderItemRequestDto {
+@AllArgsConstructor
+@NoArgsConstructor
+public class OrderItemPersistRequestDto {
 
   @DecimalMin(value = "0.0", inclusive = false)
   private double width;
@@ -27,6 +31,4 @@ public class OrderItemRequestDto {
 
   @Min(value = 1)
   private int mediaId;
-
-  private Integer orderId;
 }

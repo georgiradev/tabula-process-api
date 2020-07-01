@@ -19,117 +19,137 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ProcessStageServiceImpl implements ProcessStageService {
 
-    private final ProcessStageRepository repository;
-    private final DepartmentRepository departmentRepository;
-    private final ProcessRepository processRepository;
+  private final ProcessStageRepository repository;
+  private final DepartmentRepository departmentRepository;
+  private final ProcessRepository processRepository;
 
-    @Override
-    public ProcessStage persist(ProcessStage processStage) {
+  @Override
+  public ProcessStage persist(ProcessStage processStage) {
 
     Optional<ProcessStage> optionalProcessStage = repository.findByName(processStage.getName());
-        if (optionalProcessStage.isPresent()) {
-        throw new EntityAlreadyPresentException(
-                String.format("Process Stage with name %s, already present.", processStage.getName()));
+    if (optionalProcessStage.isPresent()) {
+      throw new EntityAlreadyPresentException(
+          String.format("Process Stage with name %s, already present.", processStage.getName()));
     }
 
-        if (processStage.getNextStage() != null) {
-        processStage.setNextStageEntity(this.getNextStageByName(processStage.getNextStage()));
+    if (processStage.getNextStage() != null) {
+      processStage.setNextStageEntity(this.getNextStageByName(processStage.getNextStage()));
     }
-        processStage.setDepartmentEntity(this.getDepartmentByName(processStage.getDepartment()));
-        processStage.setProcessEntity(this.getProcessByName(processStage.getProcess()));
+    processStage.setDepartmentEntity(this.getDepartmentByName(processStage.getDepartment()));
+    processStage.setProcessEntity(this.getProcessByName(processStage.getProcess()));
 
-        return repository.save(processStage);
-}
+    return repository.save(processStage);
+  }
 
-    @Override
-    public ProcessStage update(ProcessStage processStage, int id) {
+  @Override
+  public ProcessStage update(ProcessStage processStage, int id) {
 
-        ProcessStage oldStage = findById(id);
-        processStage.setId(oldStage.getId());
+    ProcessStage oldStage = findById(id);
+    processStage.setId(oldStage.getId());
 
-        if (processStage.getNextStage() != null) {
-            processStage.setNextStageEntity(this.getNextStageByName(processStage.getNextStage()));
-        }
-        processStage.setProcessEntity(this.getProcessByName(processStage.getProcess()));
-        processStage.setDepartmentEntity(this.getDepartmentByName(processStage.getDepartment()));
-
-        return repository.save(processStage);
+    if (processStage.getNextStage() != null) {
+      processStage.setNextStageEntity(this.getNextStageByName(processStage.getNextStage()));
     }
+    processStage.setProcessEntity(this.getProcessByName(processStage.getProcess()));
+    processStage.setDepartmentEntity(this.getDepartmentByName(processStage.getDepartment()));
 
-    @Override
-    public ProcessStage findById(int id) {
+    return repository.save(processStage);
+  }
 
-        Optional<ProcessStage> optionalProcessStage = repository.findById(id);
-        if (!optionalProcessStage.isPresent()) {
-            throw new EntityNotFoundException(String.format("ProcessStage with id %s, not found.", id));
-        }
-        return populateTransientFields(optionalProcessStage.get());
+  @Override
+  public ProcessStage findById(int id) {
+
+    Optional<ProcessStage> optionalProcessStage = repository.findById(id);
+    if (!optionalProcessStage.isPresent()) {
+      throw new EntityNotFoundException(String.format("ProcessStage with id %s, not found.", id));
     }
+    return populateTransientFields(optionalProcessStage.get());
+  }
 
-    @Override
-    public Page<ProcessStage> findAll(Pageable pageable) {
+  @Override
+  public Page<ProcessStage> findAll(Pageable pageable) {
 
-        Page<ProcessStage> allProcessStages = repository.findAll(pageable);
-        for (ProcessStage stage : allProcessStages) {
-            populateTransientFields(stage);
-        }
-        return allProcessStages;
-
+    Page<ProcessStage> allProcessStages = repository.findAll(pageable);
+    for (ProcessStage stage : allProcessStages) {
+      populateTransientFields(stage);
     }
+    return allProcessStages;
+  }
 
-    @Override
-    public ProcessStage findByName(String name) {
-        Optional<ProcessStage> optional = repository.findByName(name);
-        if (!optional.isPresent()) {
-            throw new EntityNotFoundException(String.format("ProcessStage with name %s, not found", name));
-        }
-        return optional.get();
+  @Override
+  public ProcessStage findByName(String name) {
+    Optional<ProcessStage> optional = repository.findByName(name);
+    if (!optional.isPresent()) {
+      throw new EntityNotFoundException(
+          String.format("ProcessStage with name %s, not found", name));
     }
+    return optional.get();
+  }
 
-    @Override
-    public void delete(int id) {
+  @Override
+  public void delete(int id) {
 
-        ProcessStage processStageToBeDeleted = findById(id);
-        ProcessStage processStage = repository.findByNextStageEntityId(id);
-        processStage.setNextStageEntity(processStageToBeDeleted.getNextStageEntity());
-        repository.save(processStage);
+    ProcessStage processStageToBeDeleted = findById(id);
+    ProcessStage processStage = repository.findByNextStageEntityId(id);
+    processStage.setNextStageEntity(processStageToBeDeleted.getNextStageEntity());
+    repository.save(processStage);
 
-        repository.deleteById(id);
-    }
+    repository.deleteById(id);
+  }
 
-    private Department getDepartmentByName(String name) {
-        Optional<Department> optionalDepartment = departmentRepository.findByName(name);
-        if (!optionalDepartment.isPresent()) {
-            throw new EntityNotFoundException(String.format("Department with name %s, not found", name));
-        }
-        return optionalDepartment.get();
-    }
+  @Override
+  public ProcessStage findFirstStageOfProcess(int processId) {
 
-    private Process getProcessByName(String name) {
-        Optional<Process> optionalProcess = processRepository.findByName(name);
-        if (!optionalProcess.isPresent()) {
-            throw new EntityNotFoundException(String.format("Process with name %s, not found", name));
-        }
-        return optionalProcess.get();
+    Optional<Process> process = processRepository.findById(processId);
+    if (!process.isPresent()) {
+      throw new EntityNotFoundException(String.format("Process with id %s, not found.", processId));
     }
 
-    private ProcessStage getNextStageByName(String name) {
-        Optional<ProcessStage> optionalProcessStage = repository.findByName(name);
-        if (!optionalProcessStage.isPresent()) {
-            throw new EntityNotFoundException(
-                    String.format("Next Process Stage with name %s, not found", name));
-        }
-        return optionalProcessStage.get();
+    Optional<ProcessStage> firstProcessStage =
+        repository.findByProcessEntityAndFirstStage(process.get(), true);
+    if (firstProcessStage.isEmpty()) {
+      throw new EntityNotFoundException(
+          String.format(
+              "Process with id %s, doesn't have a processStage which is marked as first, "
+                  + "to set processStage as first, set firstStage=true when creating or updating process stage",
+              process.get().getId()));
     }
 
-    private ProcessStage populateTransientFields(ProcessStage processStage) {
+    return firstProcessStage.get();
+  }
 
-        processStage.setDepartment(processStage.getDepartmentEntity().getName());
-        processStage.setProcess(processStage.getProcessEntity().getName());
-        if (processStage.getNextStageEntity() != null)
-            processStage.setNextStage(processStage.getNextStageEntity().getName());
-
-        return processStage;
+  private Department getDepartmentByName(String name) {
+    Optional<Department> optionalDepartment = departmentRepository.findByName(name);
+    if (!optionalDepartment.isPresent()) {
+      throw new EntityNotFoundException(String.format("Department with name %s, not found", name));
     }
+    return optionalDepartment.get();
+  }
 
+  private Process getProcessByName(String name) {
+    Optional<Process> optionalProcess = processRepository.findByName(name);
+    if (!optionalProcess.isPresent()) {
+      throw new EntityNotFoundException(String.format("Process with name %s, not found", name));
+    }
+    return optionalProcess.get();
+  }
+
+  private ProcessStage getNextStageByName(String name) {
+    Optional<ProcessStage> optionalProcessStage = repository.findByName(name);
+    if (!optionalProcessStage.isPresent()) {
+      throw new EntityNotFoundException(
+          String.format("Next Process Stage with name %s, not found", name));
+    }
+    return optionalProcessStage.get();
+  }
+
+  private ProcessStage populateTransientFields(ProcessStage processStage) {
+
+    processStage.setDepartment(processStage.getDepartmentEntity().getName());
+    processStage.setProcess(processStage.getProcessEntity().getName());
+    if (processStage.getNextStageEntity() != null)
+      processStage.setNextStage(processStage.getNextStageEntity().getName());
+
+    return processStage;
+  }
 }
