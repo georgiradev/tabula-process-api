@@ -20,9 +20,6 @@ import java.util.List;
 public abstract class Mapper {
 
   @Autowired
-  Mapper mapper;
-
-  @Autowired
   EmployeeService employeeService;
 
   @Autowired
@@ -117,10 +114,10 @@ public abstract class Mapper {
     Employee approver;
 
     EmployeeResponseDto employeeResponseDto = employeeService.getOne(dto.getEmployeeId()).getBody();
-    employee = mapper.convertToEmployeeEntity(employeeResponseDto);
+    employee = convertToEmployeeEntity(employeeResponseDto);
 
     EmployeeResponseDto approverResponseDto = employeeService.getOne(dto.getApproverId()).getBody();
-    approver = mapper.convertToEmployeeEntity(approverResponseDto);
+    approver = convertToEmployeeEntity(approverResponseDto);
 
     TimeOff timeOff = new TimeOff();
 
