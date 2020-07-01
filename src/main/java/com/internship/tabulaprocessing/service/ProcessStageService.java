@@ -16,5 +16,7 @@ public interface ProcessStageService {
 
   ProcessStage findByName(String name);
 
+  ProcessStage findFirstStageOfProcess(int processId);
+
   void delete(int id);
 }

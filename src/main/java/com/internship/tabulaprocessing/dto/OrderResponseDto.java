@@ -1,6 +1,5 @@
 package com.internship.tabulaprocessing.dto;
 
-import com.internship.tabulaprocessing.entity.Customer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,6 +7,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -15,15 +15,13 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class OrderResponseDto {
 
-  private int id;
+    private int id;
 
-  private LocalDateTime dateTimeCreated;
-
-  private BigDecimal price;
-
-  private String note;
-
-  private Customer customer;
-
-  private String[] orderItemsIds;
+    private LocalDateTime dateTimeCreated;
+    private BigDecimal price;
+    private String note;
+    private int customerId;
+    private int processStageId;
+    private ProcessStageResponseDTO processStage;
+    private List<OrderItemResponseDto> orderItems;
 }

@@ -15,21 +15,10 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 public class ProcessStageResponseDTO {
 
-  @Min(value = 0, message = "Id cannot be less than zero")
   int id;
-
-  @NotBlank
-  @Size(
-      min = 4,
-      max = 30,
-      message = "Process Stage name cannot be less than 4 or greater than 30 characters.")
   private String name;
-
-  private String nextStage;
-
-  @NotBlank(message = "Process cannot be blank.")
-  private String process;
-
-  @NotBlank(message = "Department cannot be blank.")
-  private String department;
+  private Integer nextStageId;
+  private boolean firstStage;
+  private int processId;
+  private int departmentId;
 }

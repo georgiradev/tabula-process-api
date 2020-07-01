@@ -1,11 +1,16 @@
 package com.internship.tabulaprocessing.controller;
 
+import com.internship.tabulaprocessing.dto.OrderPatchRequestDTO;
 import com.internship.tabulaprocessing.dto.OrderRequestDto;
 import com.internship.tabulaprocessing.dto.OrderResponseDto;
+import com.internship.tabulaprocessing.dto.OrderUpdateRequestDTO;
 import com.internship.tabulaprocessing.entity.Order;
+import com.internship.tabulaprocessing.entity.PagedResult;
 import com.internship.tabulaprocessing.mapper.Mapper;
+import com.internship.tabulaprocessing.mapper.PatchMapper;
 import com.internship.tabulaprocessing.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -15,6 +20,7 @@ import javax.transaction.NotSupportedException;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Validated
 @RestController
@@ -24,6 +30,8 @@ public class OrderController {
   private OrderService orderService;
 
   private Mapper mapper;
+
+  @Autowired private PatchMapper patchMapper;
 
   @Autowired
   public OrderController(OrderService orderService, Mapper mapper) {
@@ -38,33 +46,35 @@ public class OrderController {
   }
 
   @GetMapping
-  public ResponseEntity<List<OrderResponseDto>> getAllByPage(
-      @RequestParam(defaultValue = "0") int pageNo) {
+  public ResponseEntity<PagedResult<OrderResponseDto>> getAllByPage(QueryParameter queryParameter) {
 
-    List<Order> allOrders = orderService.findAll(pageNo);
-    List<OrderResponseDto> allToDto = new ArrayList<>();
-    for (Order orders : allOrders) {
-      allToDto.add(mapper.orderToOrderResponseDto(orders));
-    }
-    return ResponseEntity.ok(allToDto);
+    Page<Order> page = orderService.findAll(queryParameter.getPageable());
+    List<OrderResponseDto> allToDto =
+        page.stream()
+            .map(order -> mapper.orderToOrderResponseDto(order))
+            .collect(Collectors.toList());
+
+    return ResponseEntity.ok(
+        new PagedResult<>(allToDto, queryParameter.getPage(), page.getTotalPages(),page.getTotalElements()));
   }
 
   @PostMapping
-  public HttpEntity create(@RequestBody @Valid OrderRequestDto orderRequestDto)
-      throws NotSupportedException {
+  public HttpEntity create(@RequestBody @Valid OrderRequestDto orderRequestDto) {
 
-    Order order = mapper.orderRequestDtoToOrder(orderRequestDto);
-    Order createdOrder = orderService.create(order, order.getCustomer().getId());
-    return ResponseEntity.ok(mapper.orderToOrderResponseDto(createdOrder));
+    Order order = mapper.convertToOrderEntity(orderRequestDto);
+
+    return ResponseEntity.ok(mapper.orderToOrderResponseDto(orderService.create(order)));
   }
 
   @PutMapping("/{id}")
   public HttpEntity update(
-      @PathVariable("id") Integer id, @RequestBody @Valid OrderRequestDto orderRequestDto) {
+      @PathVariable("id") Integer id, @RequestBody @Valid OrderUpdateRequestDTO orderRequestDto) {
 
-    Order order = mapper.orderRequestDtoToOrder(orderRequestDto);
-    Order updatedOrder = orderService.update(order, id);
-    return ResponseEntity.ok(mapper.orderToOrderResponseDto(updatedOrder));
+    Order order = mapper.convertToOrderEntity(orderRequestDto);
+
+    orderService.update(order, id);
+
+    return ResponseEntity.ok(mapper.orderToOrderResponseDto(order));
   }
 
   @DeleteMapping("/{id}")
@@ -72,5 +82,18 @@ public class OrderController {
 
     orderService.delete(id);
     return ResponseEntity.ok("Deleted successfully");
+  }
+
+  @PatchMapping(
+      path = "/{id}",
+      consumes = {"application/merge-patch+json"})
+  public ResponseEntity<OrderResponseDto> patch(
+      @PathVariable int id, @RequestBody OrderPatchRequestDTO orderRequestDto) {
+
+    Order order = orderService.getOneById(id);
+    Order patchedOrder = patchMapper.patchOrder(orderRequestDto, order);
+    orderService.patch(patchedOrder);
+
+    return ResponseEntity.ok(mapper.orderToOrderResponseDto(patchedOrder));
   }
 }

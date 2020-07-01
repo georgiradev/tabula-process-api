@@ -22,6 +22,7 @@ public class ProcessStagePersistDTO {
   private String name;
 
   private String nextStage;
+  private boolean firstStage;
 
   @NotBlank private String process;
 
