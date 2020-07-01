@@ -10,9 +10,6 @@ import com.internship.tabulaprocessing.entity.*;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.mapstruct.MappingTarget;
-import org.mapstruct.factory.Mappers;
-
 import java.util.List;
 
 @org.mapstruct.Mapper(

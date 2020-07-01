@@ -69,10 +69,9 @@ public class EmployeeService {
       throw new EntityNotFoundException("The employee was not found.");
     }
 
-    //TODO:!!!
     EmployeeResponseDto employeeResponseDto = mapper.convertToEmployeeResponseDto(employee.get());
-    //Optional<Account> account = accountRepository.findById(employee.get().getAccountId());
-    //employeeResponseDto.setAccount(mapper.convertToAccountDto(account.get()));
+    Optional<Account> account = accountRepository.findById(employee.get().getAccountId());
+    employeeResponseDto.setAccount(mapper.convertToAccountDto(account.get()));
     return ResponseEntity.ok(employeeResponseDto);
   }
 

@@ -52,6 +52,15 @@ public class TimeOffServiceImpl implements TimeOffService {
         }
 
         if(timeOff.getStatus().equals(TimeOffStatus.PENDING)) {
+
+            if(timeOff.getStartDateTime()!=null && timeOff.getStartDateTime().isBefore(LocalDateTime.now())) {
+                throw new NotAllowedException("The startDateTime field is invalid!");
+            }
+
+            if(timeOff.getEndDateTime()!=null && timeOff.getEndDateTime().isBefore(timeOff.getStartDateTime())) {
+                throw new NotAllowedException("The endDateTime field is invalid!");
+            }
+
             timeOff.setId(id);
             timeOff.setStatus(TimeOffStatus.PENDING);
             return timeOffRepository.save(timeOff);
