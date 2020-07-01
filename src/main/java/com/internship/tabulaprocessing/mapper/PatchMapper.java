@@ -20,7 +20,7 @@ public interface PatchMapper {
     PatchMapper INSTANCE =  Mappers.getMapper(PatchMapper.class);
 
     Order patchOrder(OrderPatchRequestDTO dto, @MappingTarget Order order);
-    
+
     TimeOffType mapObjectsToTimeOffType(
             TimeOffTypeRequestDto data, @MappingTarget TimeOffType timeOffType);
 
