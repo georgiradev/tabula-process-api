@@ -1,13 +1,10 @@
 package com.internship.tabulaprocessing.service;
 
 import com.internship.tabulaprocessing.dto.MediaExtraDto;
-import com.internship.tabulaprocessing.dto.MediaExtraRequestDto;
-import com.internship.tabulaprocessing.entity.Media;
 import com.internship.tabulaprocessing.entity.MediaExtra;
 import com.internship.tabulaprocessing.entity.PagedResult;
 import com.internship.tabulaprocessing.exception.EntityAlreadyPresentException;
 import com.internship.tabulaprocessing.mapper.Mapper;
-import com.internship.tabulaprocessing.mapper.PatchMapper;
 import com.internship.tabulaprocessing.repository.MediaExtraRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -31,7 +28,7 @@ public class MediaExtraService {
     Page<MediaExtra> medias = mediaExtraRepository.findAll(pageable);
     return new PagedResult<>(
         mapper.convertToMediaExtraDtoList(medias.toList()),
-        pageable.getPageNumber() + 1,
+        pageable.getPageNumber(),
         medias.getTotalPages(),
         medias.getTotalElements());
   }

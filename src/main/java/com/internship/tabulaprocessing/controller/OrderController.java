@@ -16,9 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.transaction.NotSupportedException;
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,7 +44,7 @@ public class OrderController {
   }
 
   @GetMapping
-  public ResponseEntity<PagedResult<OrderResponseDto>> getAllByPage(QueryParameter queryParameter) {
+  public ResponseEntity<PagedResult<OrderResponseDto>> getAllByPage(@Valid  QueryParameter queryParameter) {
 
     Page<Order> page = orderService.findAll(queryParameter.getPageable());
     List<OrderResponseDto> allToDto =

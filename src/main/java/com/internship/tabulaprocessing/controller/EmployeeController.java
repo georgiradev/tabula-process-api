@@ -20,7 +20,7 @@ public class EmployeeController {
   }
 
   @GetMapping
-  public PagedResult<EmployeeResponseDto> getAll(QueryParameter queryParameter) {
+  public PagedResult<EmployeeResponseDto> getAll(@Valid QueryParameter queryParameter) {
     return employeeService.getAll(queryParameter.getPageable());
   }
 
@@ -43,7 +43,7 @@ public class EmployeeController {
 
   @PutMapping("/{id}")
   public ResponseEntity<EmployeeResponseDto> update(
-      @PathVariable int id, @RequestBody EmployeeRequestDto employeeRequestDto) {
+      @PathVariable int id, @Valid @RequestBody EmployeeRequestDto employeeRequestDto) {
     return employeeService.update(id, employeeRequestDto);
   }
 }

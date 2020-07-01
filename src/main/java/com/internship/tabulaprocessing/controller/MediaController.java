@@ -26,7 +26,7 @@ public class MediaController {
   }
 
   @GetMapping
-  public PagedResult<MediaDto> getAll(QueryParameter queryParameter) {
+  public PagedResult<MediaDto> getAll(@Valid  QueryParameter queryParameter) {
     return mediaService.getAll(queryParameter.getPageable());
   }
 
