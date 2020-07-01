@@ -42,7 +42,7 @@ public class TimeOffController {
   }
 
   @GetMapping
-  public ResponseEntity<PagedResult<TimeOff>> getAll(QueryParameter queryParameter) {
+  public ResponseEntity<PagedResult> getAll(QueryParameter queryParameter) {
     PagedResult pagedResult = timeOffService.findAll(queryParameter.getPageable());
     pagedResult.setElements(mapper.convertToTimeOffResponse(pagedResult.getElements()));
 
@@ -58,7 +58,7 @@ public class TimeOffController {
   }
 
   @DeleteMapping("/manager/{id}")
-  public ResponseEntity<String> deleteRequest(@PathVariable("id") @Min(1) int id) {
+  public ResponseEntity<String> deleteByManager(@PathVariable("id") @Min(1) int id) {
     timeOffService.deleteByManager(id);
     return ResponseEntity.ok(String.format("TimeOff with id = %s is deleted!", id));
   }
@@ -95,30 +95,4 @@ public class TimeOffController {
     }
     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
   }
-
-  /*private TimeOff fetchAndSetEmployeeAndApprover(@RequestBody @Valid TimeOffRequest timeOffRequest) {
-
-    TimeOff timeOff = mapper.convertToTimeOffEntity(timeOffRequest);
-
-    if(timeOffRequest.getTypeOfTimeOffId()!=0) {
-      timeOff.setTimeOffType(timeOffTypeService.getOneById(timeOffRequest.getTypeOfTimeOffId()));
-    }
-
-    Employee employee;
-    Employee approver;
-
-    if(timeOffRequest.getEmployeeId()!=0) {
-       EmployeeResponseDto employeeResponseDto = employeeService.getOne(timeOffRequest.getEmployeeId()).getBody();
-       employee = mapper.convertToEmployeeEntity(employeeResponseDto);
-       timeOff.setEmployee(employee);
-    }
-
-    if(timeOffRequest.getApproverId()!=0) {
-       EmployeeResponseDto approverResponseDto = employeeService.getOne(timeOffRequest.getApproverId()).getBody();
-       approver = mapper.convertToEmployeeEntity(approverResponseDto);
-       timeOff.setApprover(approver);
-    }
-
-    return timeOff;
-  }*/
 }

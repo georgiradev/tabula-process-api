@@ -112,6 +112,7 @@ public abstract class Mapper {
     if ( dto == null ) {
       return null;
     }
+
     Employee employee;
     Employee approver;
 

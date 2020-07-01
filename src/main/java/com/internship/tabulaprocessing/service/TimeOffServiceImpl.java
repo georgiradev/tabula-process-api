@@ -43,14 +43,12 @@ public class TimeOffServiceImpl implements TimeOffService {
     @Override
     public TimeOff update(TimeOff timeOff, int id) {
 
-        if(isAlreadyCreated(timeOff, id)) {
-            throw new EntityAlreadyPresentException("TimeOff is already created!");
-        }
-
         Optional<TimeOff> foundTimeOff = findById(id);
 
-        if(foundTimeOff.isPresent()) {
-            timeOff.setStatus(foundTimeOff.get().getStatus());
+        foundTimeOff.ifPresent(timeOff1 -> timeOff.setStatus(timeOff1.getStatus()));
+
+        if(isAlreadyCreated(timeOff, id)) {
+            throw new EntityAlreadyPresentException("TimeOff is already created!");
         }
 
         if(timeOff.getStatus().equals(TimeOffStatus.PENDING)) {
@@ -86,10 +84,10 @@ public class TimeOffServiceImpl implements TimeOffService {
         Page<TimeOff> timeOffs = timeOffRepository.findAll(pageable);
 
         return new PagedResult<>(
-                timeOffs.toList(),
-                pageable.getPageNumber()+1,
-                timeOffs.getTotalPages(),
-                timeOffs.getTotalElements());
+                   timeOffs.toList(),
+                   pageable.getPageNumber()+1,
+                   timeOffs.getTotalPages(),
+                   timeOffs.getTotalElements());
     }
 
     public List<TimeOff> getAllAsList() {
@@ -145,14 +143,11 @@ public class TimeOffServiceImpl implements TimeOffService {
     }
 
     public boolean isAlreadyCreated (TimeOff timeOff, int timeOffId) {
-        if(timeOffRepository.duplicatesCount(
+        return timeOffRepository.duplicatesCount(
                 timeOff.getStartDateTime(),
                 timeOff.getEndDateTime(),
                 timeOff.getEmployee().getId(),
                 timeOff.getTimeOffType().getId(),
-                timeOffId)>=1) {
-            return true;
-        }
-       return false;
+                timeOffId) >= 1;
     }
 }
