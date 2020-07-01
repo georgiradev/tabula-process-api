@@ -7,9 +7,11 @@ import com.internship.tabulaprocessing.dto.MediaRequestDto;
 import com.internship.tabulaprocessing.entity.Media;
 import com.internship.tabulaprocessing.entity.MediaExtra;
 import com.internship.tabulaprocessing.entity.PagedResult;
+import com.internship.tabulaprocessing.entity.TimeOffType;
 import com.internship.tabulaprocessing.mapper.Mapper;
 import com.internship.tabulaprocessing.provider.MediaExtraProvider;
 import com.internship.tabulaprocessing.provider.MediaProvider;
+import com.internship.tabulaprocessing.provider.TimeOffTypeProvider;
 import com.internship.tabulaprocessing.repository.MediaExtraRepository;
 import com.internship.tabulaprocessing.repository.MediaRepository;
 import com.internship.tabulaprocessing.service.MediaService;
@@ -141,5 +143,5 @@ class MediaServiceTest {
     when(mediaExtraRepository.findById(anyInt())).thenReturn(Optional.empty());
     assertThrows(EntityNotFoundException.class, ()->mediaService.create(mediaRequestDto));
   }
-  
+
 }

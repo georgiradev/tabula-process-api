@@ -122,13 +122,9 @@ public class MediaService {
 
     if (mediaRequestDto.getMediaExtraIds() != null) {
       for (String mediaExtraId : mediaRequestDto.getMediaExtraIds()) {
-        Optional<MediaExtra> mediaExtra =
-            mediaExtraRepository.findById(Integer.parseInt(mediaExtraId));
-        if (!mediaExtra.isPresent()) {
-          throw new EntityNotFoundException("Media Extra not found.");
-        } else {
-          mediaExtraSet.add(mediaExtra.get());
-        }
+        Optional<MediaExtra> mediaExtraOptional = mediaExtraRepository.findById(Integer.parseInt(mediaExtraId));
+        MediaExtra mediaExtra = mediaExtraOptional.orElseThrow(() -> new EntityNotFoundException("Media Extra not found."));
+        mediaExtraSet.add(mediaExtraOptional.get());
       }
     }
 
@@ -143,7 +139,7 @@ public class MediaService {
     return mediaDto;
   }
 
-  public MediaDto patch(int id, MediaRequestDto mediaRequestDto) {
+  public MediaDto patch(int id, MediaRequestDto mediaRequestDto) throws EntityNotFoundException {
     Media media = findById(id);
 
     isAlreadyExisting(id, mediaRequestDto.getName());
@@ -156,15 +152,11 @@ public class MediaService {
     if(mediaRequestDto.getMediaExtraIds() != null) {
       media.removeExtrasPrice();
       for(String mediaExtraId : mediaRequestDto.getMediaExtraIds()) {
-        Optional<MediaExtra> mediaExtra =
-                mediaExtraRepository.findById(Integer.parseInt(mediaExtraId));
-        if(!mediaExtra.isPresent()) {
-          throw new EntityNotFoundException("Media Extra not found.");
-        } else {
-          mediaExtraSet.add(mediaExtra.get());
-          ids.add(String.valueOf(mediaExtra.get().getId()));
+        Optional<MediaExtra> mediaExtraOptional = mediaExtraRepository.findById(Integer.parseInt(mediaExtraId));
+        MediaExtra mediaExtra = mediaExtraOptional.orElseThrow(() -> new EntityNotFoundException("Media Extra not found."));
+        mediaExtraSet.add(mediaExtraOptional.get());
+        ids.add(String.valueOf(mediaExtraOptional.get().getId()));
         }
-      }
       patchedMedia.setMediaExtras(mediaExtraSet);
       patchedMedia.calculatePrice();
     }
