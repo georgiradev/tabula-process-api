@@ -1,11 +1,11 @@
 package com.internship.tabulaprocessing.service;
 
 import com.internship.tabulaprocessing.dto.MediaDto;
-import com.internship.tabulaprocessing.entity.Media;
-import com.internship.tabulaprocessing.entity.MediaExtra;
-import com.internship.tabulaprocessing.entity.OrderItem;
-import com.internship.tabulaprocessing.entity.PagedResult;
+import com.internship.tabulaprocessing.dto.MediaRequestDto;
+import com.internship.tabulaprocessing.entity.*;
+import com.internship.tabulaprocessing.exception.EntityAlreadyPresentException;
 import com.internship.tabulaprocessing.mapper.Mapper;
+import com.internship.tabulaprocessing.mapper.PatchMapper;
 import com.internship.tabulaprocessing.repository.MediaExtraRepository;
 import com.internship.tabulaprocessing.repository.MediaRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +26,7 @@ public class MediaService {
   private final MediaRepository mediaRepository;
   private final MediaExtraRepository mediaExtraRepository;
   private final Mapper mapper;
+  private final PatchMapper patchMapper;
 
   public PagedResult<MediaDto> getAll(Pageable pageable) {
     Page<Media> medias = mediaRepository.findAll(pageable);
@@ -37,8 +38,7 @@ public class MediaService {
   private List<MediaDto> getMediaDtoList(Page<Media> mediaPage) {
     Page<MediaDto> dtoPage =
         mediaPage.map(
-            entity -> {
-              MediaDto mediaDto = mapper.convertToMediaDTO(entity);
+            entity -> { MediaDto mediaDto = mapper.convertToMediaDTO(entity);
 
               if (entity.getMediaExtras() != null) {
                 List<String> extras =
@@ -53,29 +53,26 @@ public class MediaService {
   }
 
   public MediaDto getOne(int id) {
-    Optional<Media> media = mediaRepository.findById(id);
-
-    if (!media.isPresent()) {
-      throw new EntityNotFoundException("Media not found.");
-    }
+    Media media = findById(id);
 
     List<String> extras = new ArrayList<>();
-    for (MediaExtra mediaExtra : media.get().getMediaExtras()) {
+    for (MediaExtra mediaExtra : media.getMediaExtras()) {
       extras.add(String.valueOf(mediaExtra.getId()));
     }
 
-    MediaDto resultMediaDto = mapper.convertToMediaDTO(media.get());
+    MediaDto resultMediaDto = mapper.convertToMediaDTO(media);
     resultMediaDto.setMediaExtraIds(extras);
     return resultMediaDto;
   }
 
-  public MediaDto create(MediaDto mediaDto) {
-    Media media = mapper.convertToMediaEntity(mediaDto);
+  public MediaDto create(MediaRequestDto mediaRequestDto) {
+    isAlreadyExisting(0, mediaRequestDto.getName());
+    Media media = mapper.convertToMediaEntity( mediaRequestDto);
     List<String> existingIds = new ArrayList<>();
 
-    if (mediaDto.getMediaExtraIds() != null) {
+    if (mediaRequestDto.getMediaExtraIds() != null) {
       Set<MediaExtra> mediaExtraSet = new HashSet<>();
-      List<String> ids = mediaDto.getMediaExtraIds();
+      List<String> ids = mediaRequestDto.getMediaExtraIds();
 
       for (String mediaExtraId : ids) {
         Optional<MediaExtra> mediaExtra =
@@ -112,36 +109,83 @@ public class MediaService {
     return ResponseEntity.ok(String.format("Media with id of %s was deleted successfully!", id));
   }
 
-  public ResponseEntity<MediaDto> update(int id, MediaDto mediaDto) {
-    // Find Media
-    Optional<Media> optional = mediaRepository.findById(id);
-    if (!optional.isPresent()) {
-      throw new EntityNotFoundException(String.format("Media with id of %s was not found!", id));
-    }
-    List<String> ids = mediaDto.getMediaExtraIds();
-    List<OrderItem> orderItems = optional.get().getOrderItems();
+  public MediaDto update(int id, MediaRequestDto mediaRequestDto) {
+
+    Media media = findById(id);
+    isAlreadyExisting(id, mediaRequestDto.getName());
+
+    List<String> ids = mediaRequestDto.getMediaExtraIds();
+    List<OrderItem> orderItems = media.getOrderItems();
+
     // Find the MediaExtras
     Set<MediaExtra> mediaExtraSet = new HashSet<>();
 
-    if (mediaDto.getMediaExtraIds() != null) {
-      for (String mediaExtraId : mediaDto.getMediaExtraIds()) {
-        Optional<MediaExtra> mediaExtra =
-            mediaExtraRepository.findById(Integer.parseInt(mediaExtraId));
-        if (!mediaExtra.isPresent()) {
-          throw new EntityNotFoundException("Media Extra not found.");
-        } else {
-          mediaExtraSet.add(mediaExtra.get());
-        }
+    if (mediaRequestDto.getMediaExtraIds() != null) {
+      for (String mediaExtraId : mediaRequestDto.getMediaExtraIds()) {
+        Optional<MediaExtra> mediaExtraOptional = mediaExtraRepository.findById(Integer.parseInt(mediaExtraId));
+        MediaExtra mediaExtra = mediaExtraOptional.orElseThrow(() -> new EntityNotFoundException("Media Extra not found."));
+        mediaExtraSet.add(mediaExtraOptional.get());
       }
     }
-    Media media = mapper.convertToMediaEntity(mediaDto);
+
+    media = mapper.convertToMediaEntity(mediaRequestDto);
     media.setId(id);
     media.setMediaExtras(mediaExtraSet);
     media.setOrderItems(orderItems);
     media.calculatePrice();
     mediaRepository.save(media);
-    mediaDto = mapper.convertToMediaDTO(media);
+    MediaDto mediaDto = mapper.convertToMediaDTO(media);
     mediaDto.setMediaExtraIds(ids);
-    return ResponseEntity.ok(mediaDto);
+    return mediaDto;
+  }
+
+  public MediaDto patch(int id, MediaRequestDto mediaRequestDto) throws EntityNotFoundException {
+    Media media = findById(id);
+
+    isAlreadyExisting(id, mediaRequestDto.getName());
+
+    List<String> ids = new ArrayList<>();
+    Set<MediaExtra> mediaExtraSet = new HashSet<>();
+
+    Media patchedMedia = patchMapper.mapObjectsToMedia(mediaRequestDto, media);
+
+    if(mediaRequestDto.getMediaExtraIds() != null) {
+      media.removeExtrasPrice();
+      for(String mediaExtraId : mediaRequestDto.getMediaExtraIds()) {
+        Optional<MediaExtra> mediaExtraOptional = mediaExtraRepository.findById(Integer.parseInt(mediaExtraId));
+        MediaExtra mediaExtra = mediaExtraOptional.orElseThrow(() -> new EntityNotFoundException("Media Extra not found."));
+        mediaExtraSet.add(mediaExtraOptional.get());
+        ids.add(String.valueOf(mediaExtraOptional.get().getId()));
+        }
+      patchedMedia.setMediaExtras(mediaExtraSet);
+      patchedMedia.calculatePrice();
+    }
+    else {
+      mediaExtraSet.addAll(media.getMediaExtras());
+      for(MediaExtra mediaExtra: mediaExtraSet){
+        ids.add(String.valueOf(mediaExtra.getId()));
+      }
+    }
+
+    mediaRepository.save(patchedMedia);
+    MediaDto mediaDto = mapper.convertToMediaDTO(patchedMedia);
+    mediaDto.setMediaExtraIds(ids);
+    return mediaDto;
+  }
+
+  private Media findById(int id){
+    Optional<Media> optional = mediaRepository.findById(id);
+    if (!optional.isPresent()) {
+      throw new EntityNotFoundException(String.format("Media with id of %s was not found!", id));
+    }
+    return  optional.get();
+  }
+
+  private boolean isAlreadyExisting(int id, String name){
+    Optional<Media> optionalByName = mediaRepository.findByName(name);
+    if (optionalByName.isPresent() && optionalByName.get().getId()!=id) {
+      throw new EntityAlreadyPresentException(String.format("Media with name %s already exists", name));
+    }
+    return true;
   }
 }
