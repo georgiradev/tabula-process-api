@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CustomerRepository extends JpaRepository<Customer, Integer> {
 
@@ -15,4 +16,6 @@ public interface CustomerRepository extends JpaRepository<Customer, Integer> {
       nativeQuery = true)
   List<Customer> findIfPresent(
       @Param("account_id") int accountId, @Param("company_id") int companyId);
+
+  Optional<Customer> findByAccountId(int accountId);
 }
