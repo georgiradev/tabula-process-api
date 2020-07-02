@@ -1,10 +1,14 @@
 package com.internship.tabulaprocessing.service;
 
 import com.internship.tabulaprocessing.dto.MediaExtraDto;
+import com.internship.tabulaprocessing.dto.MediaExtraRequestDto;
+import com.internship.tabulaprocessing.entity.Media;
 import com.internship.tabulaprocessing.entity.MediaExtra;
 import com.internship.tabulaprocessing.entity.PagedResult;
 import com.internship.tabulaprocessing.exception.EntityAlreadyPresentException;
+import com.internship.tabulaprocessing.exception.IncorrectDataInputException;
 import com.internship.tabulaprocessing.mapper.Mapper;
+import com.internship.tabulaprocessing.mapper.PatchMapper;
 import com.internship.tabulaprocessing.repository.MediaExtraRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -15,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import javax.validation.ConstraintViolationException;
 import java.util.Optional;
 
 @Service
@@ -61,10 +66,15 @@ public class MediaExtraService {
         String.format("Media Extra with id of %s was deleted successfully!", id));
   }
 
-  public MediaExtra update(int id, MediaExtra mediaExtra) {
+  public MediaExtra update(int id, MediaExtra mediaExtra) throws ConstraintViolationException {
 
     isAlreadyExisting(id, mediaExtra.getName());
-    mediaExtraRepository.save(mediaExtra);
+    mediaExtra.setId(id);
+    try {
+      mediaExtraRepository.save(mediaExtra);
+    }catch(Exception e){
+      throw new IncorrectDataInputException("Incorrect data for media extra");
+    }
     return mediaExtra;
   }
 

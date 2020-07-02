@@ -4,6 +4,7 @@ import com.internship.tabulaprocessing.dto.*;
 import com.internship.tabulaprocessing.entity.Process;
 import com.internship.tabulaprocessing.entity.*;
 import com.internship.tabulaprocessing.service.CompanyService;
+import com.internship.tabulaprocessing.service.DepartmentService;
 import com.internship.tabulaprocessing.service.MediaService;
 import com.internship.tabulaprocessing.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 @RequiredArgsConstructor
 @org.mapstruct.Mapper(
     componentModel = "spring",
-    uses = {OrderService.class, Mapper.class, MediaService.class, CompanyService.class},
+    uses = {OrderService.class, DepartmentService.class, Mapper.class, MediaService.class, CompanyService.class},
     nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public abstract class PatchMapper {
 
@@ -24,6 +25,8 @@ public abstract class PatchMapper {
   @Autowired private MediaService mediaService;
 
   @Autowired private CompanyService companyService;
+
+  @Autowired private DepartmentService departmentService;
 
   @Autowired private Mapper mapper;
 
@@ -132,4 +135,21 @@ public abstract class PatchMapper {
 
   public abstract TrackingHistory patchTrackingHistory(
       TrackingHistoryRequestDTO requestDTO, @MappingTarget TrackingHistory trackingHistory);
+
+
+  public Employee patchEmployee(EmployeeUpdateRequestDto data, Employee employee) {
+    if (data == null) {
+      return null;
+    }
+
+    if (data.getRatePerHour() != null) {
+      employee.setRatePerHour(data.getRatePerHour());
+    }
+
+    if (data.getDepartmentId() != 0) {
+      Department department = departmentService.findById(data.getDepartmentId());
+      employee.setDepartment(department);
+    }
+    return employee;
+  }
 }
