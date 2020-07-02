@@ -12,12 +12,9 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 
-    @Value("${app.security.cors.origins}")
-    private String[] allowedOrigins;
-
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/tabula-process-api").setAllowedOrigins(allowedOrigins).withSockJS();
+        registry.addEndpoint("/tabula-process-api").setAllowedOrigins("*").withSockJS();
     }
 
     @Override

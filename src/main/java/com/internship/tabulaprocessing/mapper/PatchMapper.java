@@ -1,5 +1,18 @@
 package com.internship.tabulaprocessing.mapper;
 
+
+import com.internship.tabulaprocessing.dto.OrderPatchRequestDTO;
+import com.internship.tabulaprocessing.entity.Order;
+import com.internship.tabulaprocessing.dto.MediaExtraRequestDto;
+import com.internship.tabulaprocessing.dto.MediaRequestDto;
+import com.internship.tabulaprocessing.dto.OrderPatchRequestDTO;
+import com.internship.tabulaprocessing.dto.TrackingHistoryRequestDTO;
+import com.internship.tabulaprocessing.entity.Order;
+import com.internship.tabulaprocessing.dto.TimeOffTypeRequestDto;
+import com.internship.tabulaprocessing.entity.Media;
+import com.internship.tabulaprocessing.entity.MediaExtra;
+import com.internship.tabulaprocessing.entity.TimeOffType;
+import com.internship.tabulaprocessing.entity.TrackingHistory;
 import com.internship.tabulaprocessing.dto.*;
 import com.internship.tabulaprocessing.entity.*;
 import com.internship.tabulaprocessing.dto.OrderPatchRequestDTO;
@@ -77,5 +90,6 @@ public abstract class PatchMapper {
 
     public abstract Process mapObjectsToProcess(
             ProcessRequestDto data, @MappingTarget Process process);
+
 
 }

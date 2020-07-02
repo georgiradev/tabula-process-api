@@ -43,8 +43,25 @@ public class OrderController {
     return ResponseEntity.ok(mapper.orderToOrderResponseDto(order));
   }
 
+  @GetMapping("/customer/{id}")
+  public ResponseEntity<PagedResult<OrderResponseDto>> findAllByCustomerId(
+      @PathVariable int id, @Valid QueryParameter queryParameter) {
+
+    Page<Order> page = orderService.findAllByCustomerId(queryParameter.getPageable(),id);
+    List<OrderResponseDto> allToDto =
+            page.stream()
+                    .map(order -> mapper.orderToOrderResponseDto(order))
+                    .collect(Collectors.toList());
+
+    return ResponseEntity.ok(
+            new PagedResult<>(
+                    allToDto, queryParameter.getPage(), page.getTotalPages(), page.getTotalElements()));
+
+  }
+
   @GetMapping
-  public ResponseEntity<PagedResult<OrderResponseDto>> getAllByPage(@Valid  QueryParameter queryParameter) {
+  public ResponseEntity<PagedResult<OrderResponseDto>> getAllByPage(
+      @Valid QueryParameter queryParameter) {
 
     Page<Order> page = orderService.findAll(queryParameter.getPageable());
     List<OrderResponseDto> allToDto =
@@ -53,7 +70,8 @@ public class OrderController {
             .collect(Collectors.toList());
 
     return ResponseEntity.ok(
-        new PagedResult<>(allToDto, queryParameter.getPage(), page.getTotalPages(),page.getTotalElements()));
+        new PagedResult<>(
+            allToDto, queryParameter.getPage(), page.getTotalPages(), page.getTotalElements()));
   }
 
   @PostMapping

@@ -101,7 +101,7 @@ public abstract class Mapper {
   public abstract CustomerResponseDto customerEntityToDto(Customer customer);
 
   public abstract CustomerDtoNoCompany customerEntityToCustomerDto(Customer customer);
-  
+
   @Mapping(source = "isPaid", target = "isPaid")
   public abstract TimeOffType timeOffTypeRequestDtoToEntity(TimeOffTypeRequestDto timeOffTypeRequestDto);
 
@@ -140,6 +140,15 @@ public abstract class Mapper {
 
     return timeOff;
   }
+  CustomerDtoNoCompany customerEntityToCustomerDto(Customer currentCustomer);
+
+  @Mapping(source = "order.id",target = "orderId")
+  @Mapping(source = "assignee.id",target = "assigneeId")
+  @Mapping(source = "dateTimeUpdated",target = "dateTimeUpdated",dateFormat = "yyyy-MM-dd HH-mm-ss")
+  @Mapping(source = "processStage.id",target = "processStageId")
+  TrackingHistoryResponseDTO convertToTrackingHistoryDTO(TrackingHistory trackingHistory);
+
+  TrackingHistory convertToTrackingHistoryEntity(TrackingHistoryRequestDTO requestDTO);
 }
 
 

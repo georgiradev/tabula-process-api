@@ -1,7 +1,9 @@
 package com.internship.tabulaprocessing.service;
 
+import com.internship.tabulaprocessing.entity.Customer;
 import com.internship.tabulaprocessing.entity.Order;
 import com.internship.tabulaprocessing.entity.OrderItem;
+import com.internship.tabulaprocessing.event.CreateTrackingHistoryEvent;
 import com.internship.tabulaprocessing.event.OrderCreatedEvent;
 import com.internship.tabulaprocessing.event.OrderUpdatedEvent;
 import com.internship.tabulaprocessing.repository.OrderRepository;
@@ -9,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -50,6 +53,7 @@ public class OrderService {
     order.setPrice(this.calculateOrderPrice(order.getOrderItems()));
 
     publisher.publishEvent(new OrderCreatedEvent(this, orderRepository.save(order)));
+    publisher.publishEvent(new CreateTrackingHistoryEvent(this,order));
 
     return order;
   }
@@ -102,6 +106,13 @@ public class OrderService {
     orderRepository.deleteById(id);
   }
 
+  public Page<Order> findAllByCustomerId(Pageable pageable,int id){
+
+    Customer customer = customerService.find(id).get();
+
+    return orderRepository.findAllByCustomer(pageable,customer);
+  }
+
   public Page<Order> findAll(Pageable pageable) {
     return orderRepository.findAll(pageable);
   }
@@ -114,10 +125,14 @@ public class OrderService {
   private void updateProcessStage(Integer processStageId, Order order) {
     order.setProcessStage(processStageService.findById(processStageId));
     publisher.publishEvent(new OrderUpdatedEvent(this,order));
+    publisher.publishEvent(new CreateTrackingHistoryEvent(this,order));
   }
 
   private List<OrderItem> setOrderItems(List<Integer> orderItems, Order order) {
 
+    if(orderItems == null || orderItems.isEmpty()){
+      throw new EntityNotFoundException("OrderItems cannot be empty when creating an order");
+    }
 
     List<OrderItem> orderItemList = new ArrayList<>();
     for (var id : orderItems) {
