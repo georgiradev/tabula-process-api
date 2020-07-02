@@ -20,7 +20,7 @@ public class CompanyService {
 
   public Optional<Company> save(Company company) {
     Optional<Company> foundCompany =
-            companyRepository.findByNameAndAddress(company.getName(), company.getAddress());
+        companyRepository.findByNameAndAddress(company.getName(), company.getAddress());
 
     if (foundCompany.isPresent()) {
       throw new EntityAlreadyPresentException("Company already in database");
@@ -29,11 +29,10 @@ public class CompanyService {
     return Optional.of(companyRepository.save(company));
   }
 
-  public Optional<Company> find(int id) {
-    return Optional.of(
-            companyRepository
-                    .findById(id)
-                    .orElseThrow(() -> new EntityNotFoundException("Company not found with id " + id)));
+  public Company find(int id) {
+    return companyRepository
+        .findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("Company not found with id " + id));
   }
 
   public void delete(int id) {
@@ -49,16 +48,9 @@ public class CompanyService {
     Optional<Company> foundCompany = companyRepository.findById(id);
 
     if (foundCompany.isPresent()) {
-      Company company = foundCompany.get();
+      theCompany.setId(foundCompany.get().getId());
 
-      company.setName(theCompany.getName());
-      company.setAddress(theCompany.getAddress());
-      company.setCity(theCompany.getCity());
-      company.setCountry(theCompany.getCountry());
-      company.setDiscountRate(theCompany.getDiscountRate());
-      company.setVatNumber(theCompany.getVatNumber());
-
-      return Optional.of(companyRepository.saveAndFlush(company));
+      return Optional.of(companyRepository.saveAndFlush(theCompany));
     }
 
     throw new EntityNotFoundException("Company not found with id " + id);

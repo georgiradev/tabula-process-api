@@ -21,7 +21,7 @@ public class Customer {
   private String phone;
 
   @ManyToOne(
-      cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+      cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
   @JoinColumn(name = "company_id")
   private Company company;
 

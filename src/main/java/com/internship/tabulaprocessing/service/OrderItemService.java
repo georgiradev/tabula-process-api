@@ -2,19 +2,17 @@ package com.internship.tabulaprocessing.service;
 
 import com.internship.tabulaprocessing.controller.QueryParameter;
 import com.internship.tabulaprocessing.entity.Media;
-import com.internship.tabulaprocessing.entity.Order;
+import com.internship.tabulaprocessing.entity.MediaExtra;
 import com.internship.tabulaprocessing.entity.OrderItem;
-import com.internship.tabulaprocessing.exception.EntityAlreadyPresentException;
+import com.internship.tabulaprocessing.repository.MediaExtraRepository;
 import com.internship.tabulaprocessing.repository.MediaRepository;
 import com.internship.tabulaprocessing.repository.OrderItemRepository;
-import com.internship.tabulaprocessing.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -22,13 +20,13 @@ import java.util.Optional;
 public class OrderItemService {
 
   private final MediaRepository mediaRepository;
-  private final OrderRepository orderRepository;
+  private final MediaExtraRepository mediaExtraRepository;
   private final OrderItemRepository orderItemRepository;
 
   public Optional<OrderItem> save(OrderItem orderItem) {
 
     validateOrderItem(orderItem);
-    calculatePrice(orderItem, orderItem.getPricePerPiece());
+    orderItem.setPricePerPiece(calculatePrice(orderItem));
 
     return Optional.of(orderItemRepository.save(orderItem));
   }
@@ -43,20 +41,27 @@ public class OrderItemService {
     orderItem.setMedia(foundMedia.get());
   }
 
-  private void calculatePrice(OrderItem orderItem, BigDecimal pricePerPiece) {
-    // Price formula = width x height x price per piece
+  private BigDecimal calculatePrice(OrderItem orderItem) {
+    // Price formula = width x height x (media.price + mediaExtra.price)
 
-    orderItem.setPricePerPiece(
-        pricePerPiece.multiply(
-            BigDecimal.valueOf(orderItem.getHeight())
-                .multiply(BigDecimal.valueOf(orderItem.getWidth()))));
+    Optional<Media> foundMedia = mediaRepository.findById(orderItem.getMedia().getId());
+    BigDecimal mediaExtraPrice = BigDecimal.valueOf(0);
+
+    for (MediaExtra mediaExtra : foundMedia.get().getMediaExtras()) {
+      mediaExtraPrice = mediaExtraPrice.add(mediaExtra.getPrice());
+    }
+
+    BigDecimal width = BigDecimal.valueOf(orderItem.getWidth());
+    BigDecimal height = BigDecimal.valueOf(orderItem.getHeight());
+    BigDecimal pricePerPiece = foundMedia.get().getPrice().add(mediaExtraPrice);
+
+    return width.multiply(height.multiply(pricePerPiece));
   }
 
-  public Optional<OrderItem> findById(int id) {
-    return Optional.of(
-        orderItemRepository
-            .findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Order item not found with id " + id)));
+  public OrderItem findById(int id) {
+    return orderItemRepository
+        .findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("Order item not found with id " + id));
   }
 
   public Page<OrderItem> findAll(QueryParameter queryParameter) {
@@ -70,16 +75,16 @@ public class OrderItemService {
     if (foundOrderItem.isEmpty()) {
       throw new EntityNotFoundException("Order item not found with id " + id);
     }
-    OrderItem orderItemToUpdate = foundOrderItem.get();
-    orderItemToUpdate.setOrder(orderItem.getOrder());
-    orderItemToUpdate.setMedia(orderItem.getMedia());
-    orderItemToUpdate.setCount(orderItem.getCount());
-    orderItemToUpdate.setHeight(orderItem.getHeight());
-    orderItemToUpdate.setWidth(orderItem.getWidth());
-    orderItemToUpdate.setNote(orderItem.getNote());
-    calculatePrice(orderItemToUpdate, orderItem.getPricePerPiece());
+    orderItem.setId(foundOrderItem.get().getId());
+    OrderItem currentOrderItem = foundOrderItem.get();
 
-    return Optional.of(orderItemRepository.saveAndFlush(orderItemToUpdate));
+    if (orderItem.getHeight() != currentOrderItem.getHeight()
+        || orderItem.getWidth() != currentOrderItem.getWidth()) {
+
+      orderItem.setPricePerPiece(calculatePrice(orderItem));
+    }
+
+    return Optional.of(orderItemRepository.saveAndFlush(orderItem));
   }
 
   public void delete(int id) {
