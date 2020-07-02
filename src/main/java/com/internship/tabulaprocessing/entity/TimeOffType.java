@@ -23,20 +23,5 @@ public class TimeOffType {
   @Enumerated(EnumType.STRING)
   private TypeName name;
 
-  private boolean isPaid;
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    TimeOffType that = (TimeOffType) o;
-    return id == that.id &&
-            isPaid == that.isPaid &&
-            name == that.name;
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(id, name, isPaid);
-  }
+  private Boolean isPaid;
 }

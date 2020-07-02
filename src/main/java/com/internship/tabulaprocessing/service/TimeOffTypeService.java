@@ -33,7 +33,7 @@ public class TimeOffTypeService {
     // is not
 
     String name = timeOffType.getName().toString();
-    Boolean paymentSuggested = timeOffType.isPaid();
+    Boolean paymentSuggested = timeOffType.getIsPaid();
 
     Optional<TimeOffType> timeOffTypeOptional =
         repository.findByNameAndPayment(name, paymentSuggested);
@@ -51,7 +51,7 @@ public class TimeOffTypeService {
     TimeOffType type = getOneById(id);
 
     String name = timeOffType.getName().toString();
-    Boolean paymentSuggested = timeOffType.isPaid();
+    Boolean paymentSuggested = timeOffType.getIsPaid();
 
     Optional<TimeOffType> optionalByNameAndPayment =
         repository.findByNameAndPayment(name, paymentSuggested);
@@ -62,7 +62,7 @@ public class TimeOffTypeService {
     }
 
     type.setName(timeOffType.getName());
-    type.setPaid(timeOffType.isPaid());
+    type.setIsPaid(timeOffType.getIsPaid());
     return repository.saveAndFlush(type);
   }
 
