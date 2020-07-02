@@ -144,10 +144,10 @@ public class TimeOffServiceImpl implements TimeOffService {
     }
 
     public boolean isAlreadyCreated (TimeOff timeOff, int timeOffId) {
-        return timeOffRepository.duplicatesCount(
+        return  (timeOffRepository.numberOfOverlappingTimeOffs(
                 timeOff.getStartDateTime(),
                 timeOff.getEndDateTime(),
                 timeOff.getEmployee().getId(),
-                timeOffId) >= 1;
+                timeOffId)>=1);
     }
 }

@@ -20,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
+import java.sql.Time;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.ArrayList;
@@ -42,8 +43,8 @@ public class TimeOffServiceImplTest {
         timeOff.setId(1);
         timeOff.setStatus(TimeOffStatus.PENDING);
 
-        doReturn(Optional.of(timeOff)).when(timeOffRepository).findById(1);
-        TimeOff actual = service.findById(1);
+        doReturn(Optional.of(timeOff)).when(timeOffRepository).findById(timeOff.getId());
+        TimeOff actual = service.findById(timeOff.getId());
 
         assertEquals(actual, timeOff);
     }
@@ -95,7 +96,13 @@ public class TimeOffServiceImplTest {
         expected.setEmployee(new Employee(2, BigDecimal.valueOf(2), 2, null, null));
         expected.setTimeOffType(new TimeOffType(1, TypeName.PARENTAL_LEAVE, true));
 
+        doReturn(0).when(timeOffRepository).numberOfOverlappingTimeOffs(expected.getStartDateTime(),
+                expected.getEndDateTime(), expected.getEmployee().getId(), expected.getId());
+
+        assertFalse(service.isAlreadyCreated(expected, expected.getId()));
+
         when(timeOffRepository.save(expected)).thenReturn(expected);
+
         TimeOff actual = service.create(expected);
 
         assertEquals(actual, expected);
@@ -106,7 +113,7 @@ public class TimeOffServiceImplTest {
         TimeOff expected = new TimeOff();
         expected.setId(1);
         expected.setStatus(TimeOffStatus.PENDING);
-        expected.setEndDateTime(LocalDateTime.of(2020,5,30, 9,30));
+        expected.setEndDateTime(LocalDateTime.of(2000,5,30, 9,30));
         expected.setStartDateTime(LocalDateTime.of(2020,8,30, 18,30));
         expected.setApprover(new Employee(1, BigDecimal.valueOf(1), 1, null, null));
         expected.setEmployee(new Employee(2, BigDecimal.valueOf(2), 2, null, null));
@@ -140,10 +147,13 @@ public class TimeOffServiceImplTest {
         timeOff.setEmployee(new Employee(2, BigDecimal.valueOf(2), 2, null, null));
         timeOff.setTimeOffType(new TimeOffType(1, TypeName.PARENTAL_LEAVE, true));
 
-        for (TimeOff foundTimeOff : service.getAllAsList()) {
-            assertTrue(service.isAlreadyCreated(timeOff, timeOff.getId()));
-            assertThrows(EntityAlreadyPresentException.class, () -> service.create(timeOff));
-        }
+        when(timeOffRepository.findById(timeOff.getId())).thenReturn(Optional.of(timeOff));
+
+        doReturn(1).when(timeOffRepository).numberOfOverlappingTimeOffs(timeOff.getStartDateTime(),
+                timeOff.getEndDateTime(), timeOff.getEmployee().getId(), timeOff.getId());
+
+        assertTrue(service.isAlreadyCreated(timeOff, timeOff.getId()));
+        assertThrows(EntityAlreadyPresentException.class, () -> service.update(timeOff, timeOff.getId()));
     }
 
     @Test
@@ -161,6 +171,11 @@ public class TimeOffServiceImplTest {
         TimeOff actual = service.findById(expected.getId());
 
         assertEquals(actual, expected);
+
+        doReturn(0).when(timeOffRepository).numberOfOverlappingTimeOffs(expected.getStartDateTime(),
+                expected.getEndDateTime(), expected.getEmployee().getId(), expected.getId());
+
+        assertFalse(service.isAlreadyCreated(expected, expected.getId()));
 
         when(timeOffRepository.save(expected)).thenReturn(expected);
         TimeOff updatedTimeOff = service.update(expected, expected.getId());
@@ -193,11 +208,15 @@ public class TimeOffServiceImplTest {
         expected.setStatus(TimeOffStatus.APPROVED);
         expected.setEndDateTime(LocalDateTime.of(2020, 8, 30, 18, 30));
         expected.setStartDateTime(LocalDateTime.of(2020, 8, 30, 9, 30));
+        expected.setEmployee(new Employee(2, BigDecimal.valueOf(2), 2, null, null));
 
-        for (TimeOff foundTimeOff : service.getAllAsList()) {
-            assertTrue(service.isAlreadyCreated(expected, expected.getId()));
-            assertThrows(EntityAlreadyPresentException.class, () -> service.update(expected, expected.getId()));
-        }
+        when(timeOffRepository.findById(expected.getId())).thenReturn(Optional.of(expected));
+
+        doReturn(1).when(timeOffRepository).numberOfOverlappingTimeOffs(expected.getStartDateTime(),
+                      expected.getEndDateTime(), expected.getEmployee().getId(), expected.getId());
+
+        assertTrue(service.isAlreadyCreated(expected, expected.getId()));
+        assertThrows(EntityAlreadyPresentException.class, () -> service.update(expected, expected.getId()));
     }
 
     @Test
@@ -288,8 +307,9 @@ public class TimeOffServiceImplTest {
         timeOff.setEmployee(new Employee(2, BigDecimal.valueOf(2), 2, null, null));
         timeOff.setTimeOffType(new TimeOffType(1, TypeName.PARENTAL_LEAVE, true));
 
-        for (TimeOff foundTimeOff : service.getAllAsList()) {
-            assertTrue(service.isAlreadyCreated(timeOff, timeOff.getId()));
-        }
+        doReturn(1).when(timeOffRepository).numberOfOverlappingTimeOffs(timeOff.getStartDateTime(),
+                timeOff.getEndDateTime(), timeOff.getEmployee().getId(), timeOff.getId());
+
+        assertTrue(service.isAlreadyCreated(timeOff, timeOff.getId()));
     }
 }
