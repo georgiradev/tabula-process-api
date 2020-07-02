@@ -71,8 +71,10 @@ public class CustomerController {
 
     PagedResult<CustomerResponseDto> customerResponseDtoPagedResult =
         new PagedResult<>(
-            pagedResultDto.toList(), queryParameter.getPage(),
-                pagedResultDto.getTotalPages(), pagedResult.getTotalElements());
+            pagedResultDto.toList(),
+            queryParameter.getPage(),
+            pagedResultDto.getTotalPages(),
+            pagedResult.getTotalElements());
 
     for (CustomerResponseDto customerDto : customerResponseDtoPagedResult.getElements()) {
       Account account = customerService.getAccount(customerDto.getAccountId());
@@ -108,5 +110,18 @@ public class CustomerController {
     customerService.delete(id);
 
     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+  }
+
+  @GetMapping("account/{id}")
+  public ResponseEntity<CustomerResponseDto> getCustomerByAccountId(
+      @PathVariable("id") @Min(1) int id) {
+    Customer foundCustomer = customerService.findByAccountId(id);
+
+    CustomerResponseDto customerResponseDto = mapper.customerEntityToDto(foundCustomer);
+    Account account = customerService.getAccount(foundCustomer.getAccountId());
+    customerResponseDto.setAccount(mapper.convertToAccountDto(account));
+    customerResponseDto.setOrdersIds(customerService.getOrdersIds(foundCustomer.getId()));
+
+    return ResponseEntity.ok(customerResponseDto);
   }
 }

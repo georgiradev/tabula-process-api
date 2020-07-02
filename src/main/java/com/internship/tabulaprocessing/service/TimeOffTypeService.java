@@ -1,7 +1,6 @@
 package com.internship.tabulaprocessing.service;
 
 import com.internship.tabulaprocessing.entity.TimeOffType;
-import com.internship.tabulaprocessing.entity.TypeName;
 import com.internship.tabulaprocessing.exception.EntityAlreadyPresentException;
 import com.internship.tabulaprocessing.repository.TimeOffTypeRepository;
 import lombok.RequiredArgsConstructor;

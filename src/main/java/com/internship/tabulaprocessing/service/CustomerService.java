@@ -29,8 +29,17 @@ public class CustomerService {
 
   public Optional<Customer> save(Customer customer) {
     validateCustomer(customer);
+    checkAccount(customer.getAccountId());
 
     return Optional.of(customerRepository.save(customer));
+  }
+
+  private void checkAccount(int accountId) {
+    Optional<Customer> userUsingAccount = customerRepository.findByAccountId(accountId);
+
+    if(userUsingAccount.isPresent()) {
+      throw new EntityAlreadyPresentException("Account is taken by another user");
+    }
   }
 
   public Account getAccount(int accountId) {
@@ -85,6 +94,7 @@ public class CustomerService {
       throw new EntityNotFoundException(
           "Company not found with id " + customer.getCompany().getId());
     }
+    checkAccount(customer.getAccountId());
 
     Customer customerToUpdate = oldCustomerDetails.get();
     customerToUpdate.setAccountId(customer.getAccountId());
@@ -101,5 +111,11 @@ public class CustomerService {
   public void delete(int id) {
     find(id);
     customerRepository.deleteById(id);
+  }
+
+  public Customer findByAccountId(int id) {
+    return customerRepository
+        .findByAccountId(id)
+        .orElseThrow(() -> new EntityNotFoundException("Customer not found with account id " + id));
   }
 }
