@@ -85,4 +85,11 @@ public class ApiExceptionHandler {
 
     return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
   }
+
+  @ExceptionHandler(IncorrectDataInputException.class)
+  public ResponseEntity<ApiExceptionResponse> handleException(IncorrectDataInputException ex) {
+    ApiExceptionResponse exception =
+            new ApiExceptionResponse(ex.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
+    return new ResponseEntity<>(exception, HttpStatus.BAD_REQUEST);
+  }
 }
