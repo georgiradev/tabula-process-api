@@ -2,10 +2,14 @@ package com.internship.tabulaprocessing.service;
 
 import com.internship.tabulaprocessing.controller.QueryParameter;
 import com.internship.tabulaprocessing.entity.Department;
+import com.internship.tabulaprocessing.entity.Order;
 import com.internship.tabulaprocessing.entity.Process;
 import com.internship.tabulaprocessing.entity.ProcessStage;
+import com.internship.tabulaprocessing.exception.DeletionNotAllowedException;
+import com.internship.tabulaprocessing.provider.ProcessProvider;
 import com.internship.tabulaprocessing.provider.ProcessStageEntityProvider;
 import com.internship.tabulaprocessing.repository.DepartmentRepository;
+import com.internship.tabulaprocessing.repository.OrderRepository;
 import com.internship.tabulaprocessing.repository.ProcessRepository;
 import com.internship.tabulaprocessing.repository.ProcessStageRepository;
 import org.junit.jupiter.api.Test;
@@ -17,10 +21,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 
+import javax.persistence.EntityNotFoundException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ProcessStageServiceTest {
@@ -28,6 +37,7 @@ class ProcessStageServiceTest {
   @Mock private DepartmentRepository departmentRepository;
   @Mock private ProcessRepository processRepository;
   @Mock private ProcessStageRepository repository;
+  @Mock private OrderRepository orderRepository;
 
   @InjectMocks private ProcessStageServiceImpl service;
 
@@ -43,7 +53,7 @@ class ProcessStageServiceTest {
             queryParameter.getPageable(),
             queryParameter.getSize());
 
-    Mockito.when(repository.findAll(queryParameter.getPageable())).thenReturn(stages);
+    when(repository.findAll(queryParameter.getPageable())).thenReturn(stages);
 
     Page<ProcessStage> allProcessStages = service.findAll(queryParameter.getPageable());
 
@@ -65,19 +75,17 @@ class ProcessStageServiceTest {
     processStage.setId(4);
     processStage.setNextStage(null);
 
-    Mockito.when(repository.save(Mockito.any())).thenReturn(setId(prePersist, 1));
-    Mockito.when(processRepository.findByName(Mockito.anyString()))
-        .thenReturn(Optional.of(process));
-    Mockito.when(departmentRepository.findByName(Mockito.anyString()))
-        .thenReturn(Optional.of(department));
-    Mockito.when(repository.findByName(Mockito.anyString())).thenReturn(Optional.empty());
+    when(repository.save(any())).thenReturn(setId(prePersist, 1));
+    when(processRepository.findByName(Mockito.anyString())).thenReturn(Optional.of(process));
+    when(departmentRepository.findByName(Mockito.anyString())).thenReturn(Optional.of(department));
+    when(repository.findByName(Mockito.anyString())).thenReturn(Optional.empty());
 
     service.persist(prePersist);
     assertNotNull(prePersist.getDepartmentEntity());
     assertNotNull(prePersist.getProcessEntity());
     assertNotNull(prePersist.getDepartmentEntity());
 
-    Mockito.when(processRepository.findByName(Mockito.anyString())).thenReturn(Optional.empty());
+    when(processRepository.findByName(Mockito.anyString())).thenReturn(Optional.empty());
     assertThrows(RuntimeException.class, () -> service.persist(processStage));
   }
 
@@ -97,30 +105,40 @@ class ProcessStageServiceTest {
 
     processStage.setId(4);
 
-    Mockito.when(repository.save(Mockito.any())).thenReturn(setId(prePersist, 1));
-    Mockito.when(repository.findById(Mockito.any())).thenReturn(Optional.of(prePersist));
-    Mockito.when(processRepository.findByName(Mockito.anyString()))
-        .thenReturn(Optional.of(process));
-    Mockito.when(departmentRepository.findByName(Mockito.anyString()))
-        .thenReturn(Optional.of(department));
-    Mockito.when(repository.findByName(Mockito.anyString())).thenReturn(Optional.of(processStage));
+    when(repository.save(any())).thenReturn(setId(prePersist, 1));
+    when(repository.findById(any())).thenReturn(Optional.of(prePersist));
+    when(processRepository.findByName(Mockito.anyString())).thenReturn(Optional.of(process));
+    when(departmentRepository.findByName(Mockito.anyString())).thenReturn(Optional.of(department));
+    when(repository.findByName(Mockito.anyString())).thenReturn(Optional.of(processStage));
 
     assertDoesNotThrow(() -> service.update(prePersist, 1));
   }
 
   @Test
+  void findByName() {
+    when(repository.findByName(anyString())).thenReturn(Optional.of(new ProcessStage()));
+    assertDoesNotThrow(() -> service.findByName("test"));
+    when(repository.findByName(anyString())).thenReturn(Optional.empty());
+    assertThrows(EntityNotFoundException.class, () -> service.findByName("test"));
+  }
+
+  @Test
+  void findFirstStageOfProcess() {
+
+    Process process = ProcessProvider.getProcessInstance();
+    when(processRepository.findById(anyInt())).thenReturn(Optional.of(process));
+    ProcessStage processStage = ProcessStageEntityProvider.getProcessStage("test");
+
+    assertThrows(EntityNotFoundException.class, () -> service.findFirstStageOfProcess(1));
+  }
+
+  @Test
   void delete() {
 
-    ProcessStage stage = ProcessStageEntityProvider.getPersistedStage("testStage");
-    stage.setName("test");
-    stage.setDepartment("test");
-    stage.setNextStage("test");
-
-    Mockito.when(repository.findById(Mockito.anyInt()))
-        .thenReturn(Optional.of(ProcessStageEntityProvider.getPersistedStage("test")));
-    Mockito.when(repository.findByNextStageEntityId(Mockito.anyInt()))
-        .thenReturn(ProcessStageEntityProvider.getPersistedStage("test"));
-    repository.deleteById(stage.getId());
-    assertDoesNotThrow(() -> service.delete(1));
+    ProcessStage processStage = ProcessStageEntityProvider.getPersistedStage("test");
+    when(repository.findById(anyInt())).thenReturn(Optional.of(processStage));
+    when(orderRepository.findAllByProcessStage(any()))
+        .thenReturn(Arrays.asList(new Order(), new Order()));
+    assertThrows(DeletionNotAllowedException.class, () -> service.delete(1));
   }
 }

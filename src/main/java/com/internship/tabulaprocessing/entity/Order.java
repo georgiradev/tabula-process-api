@@ -45,6 +45,9 @@ public class Order {
   @OneToMany(mappedBy = "order", cascade = CascadeType.REMOVE)
   private List<OrderItem> orderItems;
 
+  @OneToMany(mappedBy = "order",cascade = CascadeType.REMOVE)
+  private List<TrackingHistory> trackingHistories;
+
   @Transient private Integer customerId;
   @Transient private Integer processStageId;
   @Transient private List<Integer> orderItemIds;
