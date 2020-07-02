@@ -25,8 +25,9 @@ public class TimeOffServiceImpl implements TimeOffService {
     public TimeOff create(TimeOff timeOff) {
 
         if(isAlreadyCreated(timeOff, 0)) {
-            throw new EntityAlreadyPresentException("Cannot create the timeOff" +
-                    " since it the employee already has one with overlapping period!");
+            throw new EntityAlreadyPresentException(String.format("Cannot create the " +
+                    "timeOff since employee with id = %s already " +
+                    "has one with overlapping period!", timeOff.getEmployee().getId()));
         }
 
         if(timeOff.getStartDateTime().isBefore(LocalDateTime.now())) {
@@ -46,8 +47,9 @@ public class TimeOffServiceImpl implements TimeOffService {
         TimeOff foundTimeOff = findById(id);
 
         if(isAlreadyCreated(timeOff, id)) {
-            throw new EntityAlreadyPresentException("Cannot update the timeOff" +
-                    " since it the employee already has one with overlapping period!");
+            throw new EntityAlreadyPresentException(String.format("Cannot update the " +
+                    "timeOff since employee with id = %s already " +
+                    "has one with overlapping period!", timeOff.getEmployee().getId()));
         }
 
         timeOff.setStatus(foundTimeOff.getStatus());
