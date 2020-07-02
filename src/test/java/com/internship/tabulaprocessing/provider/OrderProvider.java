@@ -26,6 +26,9 @@ public class OrderProvider {
     order.setProcessId(1);
     order.setOrderItemIds(Arrays.asList(1, 2, 3));
     order.setNote("test");
+    ProcessStage processStage = new ProcessStage();
+    processStage.setId(1);
+    order.setProcessStage(processStage);
 
     return order;
   }

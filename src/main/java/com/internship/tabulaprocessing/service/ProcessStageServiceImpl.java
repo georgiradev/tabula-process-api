@@ -1,18 +1,19 @@
 package com.internship.tabulaprocessing.service;
 
 import com.internship.tabulaprocessing.entity.Department;
+import com.internship.tabulaprocessing.entity.Order;
 import com.internship.tabulaprocessing.entity.Process;
 import com.internship.tabulaprocessing.entity.ProcessStage;
+import com.internship.tabulaprocessing.exception.DeletionNotAllowedException;
 import com.internship.tabulaprocessing.exception.EntityAlreadyPresentException;
-import com.internship.tabulaprocessing.repository.DepartmentRepository;
-import com.internship.tabulaprocessing.repository.ProcessRepository;
-import com.internship.tabulaprocessing.repository.ProcessStageRepository;
+import com.internship.tabulaprocessing.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -22,6 +23,8 @@ public class ProcessStageServiceImpl implements ProcessStageService {
   private final ProcessStageRepository repository;
   private final DepartmentRepository departmentRepository;
   private final ProcessRepository processRepository;
+  private final TrackingHistoryRepository trackingHistoryRepository;
+  private final OrderRepository orderRepository;
 
   @Override
   public ProcessStage persist(ProcessStage processStage) {
@@ -90,10 +93,12 @@ public class ProcessStageServiceImpl implements ProcessStageService {
   public void delete(int id) {
 
     ProcessStage processStageToBeDeleted = findById(id);
-    ProcessStage processStage = repository.findByNextStageEntityId(id);
-    processStage.setNextStageEntity(processStageToBeDeleted.getNextStageEntity());
-    repository.save(processStage);
-
+    List<Order> orders = orderRepository.findAllByProcessStage(processStageToBeDeleted);
+    if (!orders.isEmpty()) {
+      throw new DeletionNotAllowedException(
+              String.format(
+                      "ProcessStage with id %s, cannot be deleted because it has Order entities associated with it.",id));
+    }
     repository.deleteById(id);
   }
 

@@ -1,5 +1,6 @@
 package com.internship.tabulaprocessing.notification;
 
+import com.internship.tabulaprocessing.dto.ProcessStageResponseDTO;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,7 +11,7 @@ public class NotificationModel {
     private Integer customerId;
     private Integer orderId;
     private NotificationType type;
-    private int currentProcessStageId;
+    private ProcessStageResponseDTO processStage;
     private String message;
 
     public enum NotificationType{
