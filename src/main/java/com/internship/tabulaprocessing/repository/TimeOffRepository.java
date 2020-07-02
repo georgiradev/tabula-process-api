@@ -11,16 +11,14 @@ import java.time.LocalDateTime;
 public interface TimeOffRepository extends JpaRepository<TimeOff, Integer> {
     @Query(
             value = "SELECT COUNT(t.id) FROM timeOffs AS t " +
-                    "WHERE t.startDateTime = :startDateTime " +
-                    "AND t.endDateTime = :endDateTime " +
+                    "WHERE t.startDateTime < :endDateTime " +
+                    "AND t.endDateTime > :startDateTime " +
                     "AND t.employee_id = :employeeId " +
-                    "AND t.timeOffType_id = :typeId " +
                     "AND t.id <> :timeOffId ;",
             nativeQuery = true)
     int duplicatesCount(
             @Param("startDateTime") LocalDateTime startDateTime,
             @Param("endDateTime") LocalDateTime endDateTime,
             @Param("employeeId") int employeeId,
-            @Param("typeId") int typeId,
             @Param("timeOffId") int timeOffId);
 }

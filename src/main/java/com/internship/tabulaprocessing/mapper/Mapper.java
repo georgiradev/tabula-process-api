@@ -102,10 +102,10 @@ public abstract class Mapper {
 
   public abstract CustomerDtoNoCompany customerEntityToCustomerDto(Customer customer);
   
-  @Mapping(source = "paid", target = "paid")
+  @Mapping(source = "isPaid", target = "isPaid")
   public abstract TimeOffType timeOffTypeRequestDtoToEntity(TimeOffTypeRequestDto timeOffTypeRequestDto);
 
-  @Mapping(source = "paid", target = "paid")
+  @Mapping(source = "isPaid", target = "isPaid")
   public abstract TimeOffTypeResponseDto entityToTimeOffTypeResponseDto(TimeOffType timeOffType);
 
   public abstract List<TimeOffResponse> convertToTimeOffResponse (List<TimeOff> timeOffs);

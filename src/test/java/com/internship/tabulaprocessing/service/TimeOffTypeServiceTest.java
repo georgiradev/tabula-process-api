@@ -54,7 +54,7 @@ public class TimeOffTypeServiceTest {
     TimeOffType timeOffType = TimeOffTypeProvider.getTimeOffTypeInstance();
 
     String name = timeOffType.getName().toString();
-    boolean payment = timeOffType.isPaid();
+    Boolean payment = timeOffType.getIsPaid();
 
     when(repository.findByNameAndPayment(name, payment)).thenReturn(Optional.empty());
     when(repository.save(any(TimeOffType.class))).thenReturn(timeOffType);
@@ -67,7 +67,7 @@ public class TimeOffTypeServiceTest {
     TimeOffType timeOffType = TimeOffTypeProvider.getTimeOffTypeInstance();
 
     String name = timeOffType.getName().toString();
-    boolean payment = timeOffType.isPaid();
+    Boolean payment = timeOffType.getIsPaid();
 
     when(repository.findByNameAndPayment(name, payment)).thenReturn(Optional.of(timeOffType));
 
@@ -95,7 +95,7 @@ public class TimeOffTypeServiceTest {
     TimeOffType timeOffType = TimeOffTypeProvider.getTimeOffTypeInstance();
 
     String name = timeOffType.getName().toString();
-    boolean payment = timeOffType.isPaid();
+    Boolean payment = timeOffType.getIsPaid();
 
     when(repository.findById(timeOffType.getId())).thenReturn(Optional.of(timeOffType));
     when(repository.findByNameAndPayment(name, payment)).thenReturn(Optional.empty());
@@ -109,9 +109,7 @@ public class TimeOffTypeServiceTest {
   @Test
   void testUpdateTimeOffTypeShouldFailBecauseOfWrongId() {
     TimeOffType timeOffType = TimeOffTypeProvider.getTimeOffTypeInstance();
-
     Mockito.when(repository.findById(1)).thenReturn(Optional.empty());
-
     assertThrows(RuntimeException.class, () -> service.update(timeOffType, 1));
   }
 

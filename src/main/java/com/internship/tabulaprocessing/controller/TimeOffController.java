@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
-import java.util.Optional;
 
 @Validated
 @RestController
@@ -35,21 +34,19 @@ public class TimeOffController {
 
   @GetMapping("/{id}")
   public ResponseEntity<TimeOffResponse> getOne (@PathVariable @Min(1) int id) {
-    return ResponseEntity.ok(mapper.convertToTimeOffResponse(timeOffService.findById(id).get()));
+    return ResponseEntity.ok(mapper.convertToTimeOffResponse(timeOffService.findById(id)));
   }
 
   @GetMapping
   public ResponseEntity<PagedResult> getAll(QueryParameter queryParameter) {
     PagedResult pagedResult = timeOffService.findAll(queryParameter.getPageable());
     pagedResult.setElements(mapper.convertToTimeOffResponse(pagedResult.getElements()));
-
     return ResponseEntity.ok(pagedResult);
   }
 
   @PutMapping("/{id}")
   public ResponseEntity<TimeOffResponse> update(@PathVariable("id") @Min(1) int id,
                                                 @Valid @RequestBody TimeOffRequest timeOffRequest) {
-
     TimeOff updatedTimeOff = timeOffService.update(mapper.convertToTimeOffEntity(timeOffRequest), id);
     return ResponseEntity.ok(mapper.convertToTimeOffResponse(updatedTimeOff));
   }
@@ -66,28 +63,26 @@ public class TimeOffController {
     return ResponseEntity.ok(String.format("TimeOff with id = %s is deleted!", id));
   }
 
+  //PatchMapping for updating only status
+  //ONLY MANAGER CAN UPDATE STATUS
   @PatchMapping(path = "manager/{id}", consumes = {"application/merge-patch+json"})
   public ResponseEntity<TimeOffResponse> patch(@PathVariable int id, @RequestBody TimeOffPatchStatusRequest data) {
-    //PatchMapping for updating only status
-    //ONLY MANAGER CAN UPDATE STATUS
+   TimeOff timeOff = timeOffService.findById(id);
 
-    Optional<TimeOff> timeOff = timeOffService.findById(id);
-
-    if(timeOff.isPresent() && data!=null) {
-      TimeOff patchedTimeOff = patchMapper.mapObjectsToTimeOffEntity(data, timeOff.get());
+    if(data!=null) {
+      TimeOff patchedTimeOff = patchMapper.mapObjectsToTimeOffEntity(data, timeOff);
       return ResponseEntity.ok(mapper.convertToTimeOffResponse(timeOffService.statusUpdate(patchedTimeOff, id)));
     }
     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
   }
 
+  //ordinary patch mapping, cannot update status
   @PatchMapping(path = "/{id}", consumes = {"application/merge-patch+json"})
   public ResponseEntity<TimeOffResponse> patch(@PathVariable int id, @RequestBody TimeOffPatchRequest data) {
-    //ordinary patch mapping, cannot update status
+    TimeOff timeOff = timeOffService.findById(id);
 
-    Optional<TimeOff> timeOff = timeOffService.findById(id);
-
-    if(timeOff.isPresent() && data!=null) {
-      TimeOff patchedTimeOff = patchMapper.mapObjectsToTimeOffEntity(data, timeOff.get());
+    if(data!=null) {
+      TimeOff patchedTimeOff = patchMapper.mapObjectsToTimeOffEntity(data, timeOff);
       return ResponseEntity.ok(mapper.convertToTimeOffResponse(timeOffService.update(patchedTimeOff, id)));
     }
     return new ResponseEntity<>(HttpStatus.NOT_FOUND);

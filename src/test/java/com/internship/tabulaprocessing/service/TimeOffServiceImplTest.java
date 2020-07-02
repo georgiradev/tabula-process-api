@@ -43,9 +43,9 @@ public class TimeOffServiceImplTest {
         timeOff.setStatus(TimeOffStatus.PENDING);
 
         doReturn(Optional.of(timeOff)).when(timeOffRepository).findById(1);
-        Optional<TimeOff> actual = service.findById(1);
+        TimeOff actual = service.findById(1);
 
-        assertEquals(actual.get(), timeOff);
+        assertEquals(actual, timeOff);
     }
 
     @Test
@@ -158,9 +158,9 @@ public class TimeOffServiceImplTest {
         expected.setTimeOffType(new TimeOffType(1, TypeName.PARENTAL_LEAVE, true));
 
         doReturn(Optional.of(expected)).when(timeOffRepository).findById(expected.getId());
-        Optional<TimeOff> actual = service.findById(expected.getId());
+        TimeOff actual = service.findById(expected.getId());
 
-        assertEquals(actual.get(), expected);
+        assertEquals(actual, expected);
 
         when(timeOffRepository.save(expected)).thenReturn(expected);
         TimeOff updatedTimeOff = service.update(expected, expected.getId());
@@ -180,9 +180,9 @@ public class TimeOffServiceImplTest {
         expected.setTimeOffType(new TimeOffType(1, TypeName.PARENTAL_LEAVE, true));
 
         doReturn(Optional.of(expected)).when(timeOffRepository).findById(expected.getId());
-        Optional<TimeOff> actual = service.findById(expected.getId());
+        TimeOff actual = service.findById(expected.getId());
 
-        assertEquals(actual.get(), expected);
+        assertEquals(actual, expected);
         assertThrows(NotAllowedException.class, () -> service.update(expected, expected.getId()));
     }
 
@@ -204,17 +204,17 @@ public class TimeOffServiceImplTest {
     void deleteTest() {
         TimeOff timeOff = new TimeOff();
         timeOff.setId(1);
-        timeOff.setStatus(TimeOffStatus.PENDING);
+        timeOff.setStatus(TimeOffStatus.PENDING_DELETION);
 
         when(timeOffRepository.findById(timeOff.getId())).thenReturn(Optional.of(timeOff));
         service.delete(timeOff.getId());
-        when(service.findById(timeOff.getId())).thenReturn(Optional.empty());
+        when(timeOffRepository.findById(timeOff.getId())).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> service.delete(timeOff.getId()));
+        assertThrows(EntityNotFoundException.class, () -> service.deleteByManager(timeOff.getId()));
     }
 
     @Test
-    void deleteNotFoundEntity() {
+    void deleteWithNotFoundEntityTest() {
         TimeOff timeOff = new TimeOff();
         timeOff.setId(1);
         timeOff.setStatus(TimeOffStatus.PENDING);

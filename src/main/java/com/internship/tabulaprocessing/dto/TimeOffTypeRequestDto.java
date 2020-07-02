@@ -17,5 +17,5 @@ public class TimeOffTypeRequestDto {
   @NotNull(message = "Time off type must be valid")
   private TypeName name;
 
-  private boolean isPaid;
+  private Boolean  isPaid;
 }

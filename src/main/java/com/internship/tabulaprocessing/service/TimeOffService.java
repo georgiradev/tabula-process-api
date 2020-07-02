@@ -11,7 +11,7 @@ public interface TimeOffService {
 
     TimeOff update (TimeOff timeOff, int id);
 
-    Optional<TimeOff> findById(int id);
+    TimeOff findById(int id);
 
     PagedResult<TimeOff> findAll(Pageable pageable);
 

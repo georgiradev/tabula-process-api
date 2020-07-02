@@ -16,5 +16,5 @@ public class TimeOffTypeResponseDto {
 
   private TypeName name;
 
-  private boolean isPaid;
+  private Boolean  isPaid;
 }

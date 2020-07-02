@@ -23,7 +23,7 @@ public class TimeOffType {
   @Enumerated(EnumType.STRING)
   private TypeName name;
 
-  private boolean isPaid;
+  private Boolean isPaid;
 
   @Override
   public boolean equals(Object o) {

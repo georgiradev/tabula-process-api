@@ -34,8 +34,7 @@ public abstract class PatchMapper {
     public abstract TimeOff mapObjectsToTimeOffEntity(TimeOffPatchStatusRequest data,
                                                       @MappingTarget TimeOff timeOff);
 
-    public TimeOff mapObjectsToTimeOffEntity(TimeOffPatchRequest data,
-                                             @MappingTarget TimeOff timeOff) {
+    public TimeOff mapObjectsToTimeOffEntity(TimeOffPatchRequest data, TimeOff timeOff) {
         if ( data == null ) {
             return null;
         }
@@ -52,22 +51,18 @@ public abstract class PatchMapper {
             timeOff.setComment( data.getComment() );
         }
 
-        Employee employee;
-        Employee approver;
-        TimeOffType timeOffType;
-
-        if(data.getApproverId()!=0) {
-            approver = mapper.convertToEmployeeEntity(employeeService.getOne(data.getApproverId()).getBody());
+        if( data.getApproverId()!=0 ) {
+            Employee approver = mapper.convertToEmployeeEntity(employeeService.getOne(data.getApproverId()).getBody());
             timeOff.setApprover(approver);
         }
 
-        if(data.getEmployeeId()!=0) {
-            employee = mapper.convertToEmployeeEntity(employeeService.getOne(data.getEmployeeId()).getBody());
+        if( data.getEmployeeId()!=0 ) {
+            Employee employee = mapper.convertToEmployeeEntity(employeeService.getOne(data.getEmployeeId()).getBody());
             timeOff.setEmployee(employee);
         }
 
-        if(data.getTypeOfTimeOffId()!=0) {
-            timeOffType = timeOffTypeService.getOneById(data.getTypeOfTimeOffId());
+        if( data.getTypeOfTimeOffId()!=0 ) {
+            TimeOffType timeOffType = timeOffTypeService.getOneById(data.getTypeOfTimeOffId());
             timeOff.setTimeOffType(timeOffType);
         }
 
