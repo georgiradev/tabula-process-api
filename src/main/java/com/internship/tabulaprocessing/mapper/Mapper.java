@@ -4,31 +4,25 @@ import com.internship.tabulacore.dto.AccountDto;
 import com.internship.tabulacore.entity.Account;
 import com.internship.tabulaprocessing.dto.*;
 import com.internship.tabulaprocessing.entity.Process;
-import com.internship.tabulaprocessing.service.EmployeeService;
-import com.internship.tabulaprocessing.service.TimeOffTypeService;
 import com.internship.tabulaprocessing.entity.*;
 import com.internship.tabulaprocessing.service.CustomerService;
 import com.internship.tabulaprocessing.service.EmployeeService;
 import com.internship.tabulaprocessing.service.TimeOffTypeService;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
 @org.mapstruct.Mapper(
-        unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE,
-        componentModel = "spring")
+    unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE,
+    componentModel = "spring")
 public abstract class Mapper {
 
-  @Autowired
-  EmployeeService employeeService;
+  @Autowired private EmployeeService employeeService;
 
-  @Autowired
-  private CustomerService customerService;
+  @Autowired private CustomerService customerService;
 
-  @Autowired
-  TimeOffTypeService timeOffTypeService;
+  @Autowired private TimeOffTypeService timeOffTypeService;
 
   public abstract Company companyRequestDtoToCompany(CompanyRequestDto companyRequestDto);
 
@@ -90,6 +84,7 @@ public abstract class Mapper {
   public abstract Employee convertToEmployeeEntity(EmployeeRequestDto employeeRequestDto);
 
   public abstract EmployeeResponseDto convertToEmployeeResponseDto(Employee employee);
+
   @Mapping(target = "account", source = "account")
   public abstract Employee convertToEmployeeEntity(EmployeeResponseDto employeeResponseDto);
 
@@ -165,37 +160,36 @@ public abstract class Mapper {
   @Mapping(source = "isPaid", target = "isPaid")
   public abstract TimeOffTypeResponseDto entityToTimeOffTypeResponseDto(TimeOffType timeOffType);
 
-  public abstract List<TimeOffResponse> convertToTimeOffResponse (List<TimeOff> timeOffs);
+  public abstract List<TimeOffResponse> convertToTimeOffResponse(List<TimeOff> timeOffs);
 
   @Mapping(target = "typeOfTimeOffId", source = "timeOffType.id")
   @Mapping(target = "employeeId", expression = "java(timeOff.getEmployee().getId())")
   @Mapping(target = "approverId", expression = "java(timeOff.getApprover().getId())")
-  public abstract TimeOffResponse convertToTimeOffResponse(TimeOff timeOff) ;
+  public abstract TimeOffResponse convertToTimeOffResponse(TimeOff timeOff);
 
-  public TimeOff convertToTimeOffEntity (TimeOffRequest dto) {
-    if ( dto == null ) {
+  public TimeOff convertToTimeOffEntity(TimeOffRequest dto) {
+    if (dto == null) {
       return null;
     }
 
     Employee employee;
     Employee approver;
 
-    EmployeeResponseDto employeeResponseDto = employeeService.getOne(dto.getEmployeeId()).getBody();
+    EmployeeResponseDto employeeResponseDto = employeeService.getOne(dto.getEmployeeId());
     employee = convertToEmployeeEntity(employeeResponseDto);
 
-    EmployeeResponseDto approverResponseDto = employeeService.getOne(dto.getApproverId()).getBody();
+    EmployeeResponseDto approverResponseDto = employeeService.getOne(dto.getApproverId());
     approver = convertToEmployeeEntity(approverResponseDto);
 
     TimeOff timeOff = new TimeOff();
 
-    timeOff.setStartDateTime( dto.getStartDateTime() );
-    timeOff.setEndDateTime( dto.getEndDateTime() );
-    timeOff.setComment( dto.getComment() );
+    timeOff.setStartDateTime(dto.getStartDateTime());
+    timeOff.setEndDateTime(dto.getEndDateTime());
+    timeOff.setComment(dto.getComment());
     timeOff.setTimeOffType(timeOffTypeService.getOneById(dto.getTypeOfTimeOffId()));
     timeOff.setEmployee(employee);
     timeOff.setApprover(approver);
 
     return timeOff;
   }
-
 }
