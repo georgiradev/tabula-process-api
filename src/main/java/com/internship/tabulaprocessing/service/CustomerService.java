@@ -29,15 +29,15 @@ public class CustomerService {
 
   public Optional<Customer> save(Customer customer) {
     validateCustomer(customer);
-    checkAccount(customer.getAccountId());
+    checkAccount(customer);
 
     return Optional.of(customerRepository.save(customer));
   }
 
-  private void checkAccount(int accountId) {
-    Optional<Customer> userUsingAccount = customerRepository.findByAccountId(accountId);
+  private void checkAccount(Customer customer) {
+    Optional<Customer> userUsingAccount = customerRepository.findByAccountId(customer.getAccountId());
 
-    if(userUsingAccount.isPresent()) {
+    if(userUsingAccount.isPresent() && customer.getId() != userUsingAccount.get().getId()) {
       throw new EntityAlreadyPresentException("Account is taken by another user");
     }
   }
@@ -75,11 +75,10 @@ public class CustomerService {
     }
   }
 
-  public Optional<Customer> find(int id) {
-    return Optional.of(
-        customerRepository
-            .findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Customer not found with id " + id)));
+  public Customer find(int id) {
+    return customerRepository
+        .findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("Customer not found with id " + id));
   }
 
   public Optional<Customer> update(int id, Customer customer) {
@@ -94,14 +93,12 @@ public class CustomerService {
       throw new EntityNotFoundException(
           "Company not found with id " + customer.getCompany().getId());
     }
-    checkAccount(customer.getAccountId());
+    customer.setCompany(foundCompany.get());
+    customer.setOrders(oldCustomerDetails.get().getOrders());
+    customer.setId(oldCustomerDetails.get().getId());
+    checkAccount(customer);
 
-    Customer customerToUpdate = oldCustomerDetails.get();
-    customerToUpdate.setAccountId(customer.getAccountId());
-    customerToUpdate.setCompany(foundCompany.get());
-    customerToUpdate.setPhone(customer.getPhone());
-
-    return Optional.of(customerRepository.saveAndFlush(customerToUpdate));
+    return Optional.of(customerRepository.saveAndFlush(customer));
   }
 
   public Page<Customer> findAll(QueryParameter queryParameter) {

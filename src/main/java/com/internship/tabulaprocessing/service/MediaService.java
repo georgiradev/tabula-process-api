@@ -4,6 +4,7 @@ import com.internship.tabulaprocessing.dto.MediaDto;
 import com.internship.tabulaprocessing.dto.MediaRequestDto;
 import com.internship.tabulaprocessing.entity.*;
 import com.internship.tabulaprocessing.exception.EntityAlreadyPresentException;
+import com.internship.tabulaprocessing.exception.IncorrectDataInputException;
 import com.internship.tabulaprocessing.mapper.Mapper;
 import com.internship.tabulaprocessing.mapper.PatchMapper;
 import com.internship.tabulaprocessing.repository.MediaExtraRepository;
@@ -31,7 +32,7 @@ public class MediaService {
   public PagedResult<MediaDto> getAll(Pageable pageable) {
     Page<Media> medias = mediaRepository.findAll(pageable);
     return new PagedResult<>(
-        getMediaDtoList(medias), pageable.getPageNumber(),
+        getMediaDtoList(medias), pageable.getPageNumber() + 1,
             medias.getTotalPages(), medias.getTotalElements());
   }
 
@@ -133,7 +134,13 @@ public class MediaService {
     media.setMediaExtras(mediaExtraSet);
     media.setOrderItems(orderItems);
     media.calculatePrice();
-    mediaRepository.save(media);
+
+    try{
+      mediaRepository.save(media);
+    }catch(Exception e){
+      throw new IncorrectDataInputException("Incorrect data for media");
+    }
+
     MediaDto mediaDto = mapper.convertToMediaDTO(media);
     mediaDto.setMediaExtraIds(ids);
     return mediaDto;
@@ -167,7 +174,11 @@ public class MediaService {
       }
     }
 
-    mediaRepository.save(patchedMedia);
+    try{
+      mediaRepository.save(patchedMedia);
+    }catch(Exception e){
+      throw new IncorrectDataInputException("Incorrect data for media");
+    }
     MediaDto mediaDto = mapper.convertToMediaDTO(patchedMedia);
     mediaDto.setMediaExtraIds(ids);
     return mediaDto;

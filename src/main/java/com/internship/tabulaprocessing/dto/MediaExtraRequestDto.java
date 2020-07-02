@@ -8,11 +8,9 @@ import java.math.BigDecimal;
 public class MediaExtraRequestDto {
 
     @Size(min = 2, max = 40)
-    @NotNull
-    @NotBlank
+    @NotBlank(message = "Name can not be null")
     private String name;
 
-    @NotNull(message = "Price must not be null")
     @DecimalMin(value = "0.0", inclusive = false)
     @Digits(integer = 5, fraction = 2)
     private BigDecimal price;

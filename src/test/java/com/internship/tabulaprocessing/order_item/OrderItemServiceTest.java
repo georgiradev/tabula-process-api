@@ -77,7 +77,7 @@ public class OrderItemServiceTest {
     when(orderItemRepository.findById(any(Integer.class)))
             .thenReturn(Optional.of(orderItem));
 
-    assertEquals(Optional.of(orderItem), orderItemService.findById(orderItem.getId()));
+    assertEquals(orderItem, orderItemService.findById(orderItem.getId()));
   }
 
   @Test

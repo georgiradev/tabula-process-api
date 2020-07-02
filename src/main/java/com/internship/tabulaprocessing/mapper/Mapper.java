@@ -7,7 +7,11 @@ import com.internship.tabulaprocessing.entity.Process;
 import com.internship.tabulaprocessing.service.EmployeeService;
 import com.internship.tabulaprocessing.service.TimeOffTypeService;
 import com.internship.tabulaprocessing.entity.*;
+import com.internship.tabulaprocessing.service.CustomerService;
+import com.internship.tabulaprocessing.service.EmployeeService;
+import com.internship.tabulaprocessing.service.TimeOffTypeService;
 import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -21,12 +25,12 @@ public abstract class Mapper {
   EmployeeService employeeService;
 
   @Autowired
+  private CustomerService customerService;
+
+  @Autowired
   TimeOffTypeService timeOffTypeService;
 
   public abstract Company companyRequestDtoToCompany(CompanyRequestDto companyRequestDto);
-
-  @Mapping(target = "customers", ignore = true)
-  public abstract CompanyResponseDto companyToCompanyResponseDto(Company company);
 
   public abstract DepartmentDTO convertToDepartmentDTO(Department department);
 
@@ -40,16 +44,20 @@ public abstract class Mapper {
 
   public abstract MediaExtra convertToMediaExtraEntity(MediaExtraRequestDto mediaExtraRequestDto);
 
-  public abstract List<MediaExtraDto> convertToMediaExtraDtoList(List<MediaExtra> medias);;
+  public abstract List<MediaExtraDto> convertToMediaExtraDtoList(List<MediaExtra> medias);
 
-  @Mapping(source = "processEntity.id",target = "processId")
-  @Mapping(source = "departmentEntity.id",target = "departmentId")
-  @Mapping(source = "nextStageEntity.id",target = "nextStageId")
+  public abstract List<MediaDto> convertToMediaDtoList(List<Media> medias);
+
+  @Mapping(source = "processEntity.id", target = "processId")
+  @Mapping(source = "departmentEntity.id", target = "departmentId")
+  @Mapping(source = "nextStageEntity.id", target = "nextStageId")
   public abstract ProcessStageResponseDTO convertToProcessStageDTO(ProcessStage processStage);
 
-  public abstract ProcessStage convertToProcessStageEntity(ProcessStagePersistDTO processStagePersistDTO);
+  public abstract ProcessStage convertToProcessStageEntity(
+      ProcessStagePersistDTO processStagePersistDTO);
 
-  public abstract ProcessStage convertToProcessStageEntity(ProcessStageResponseDTO processStageResponseDTO);
+  public abstract ProcessStage convertToProcessStageEntity(
+      ProcessStageResponseDTO processStageResponseDTO);
 
   public abstract ProcessResponseDto processToProcessGetDTO(Process process);
 
@@ -58,37 +66,35 @@ public abstract class Mapper {
   public abstract Process processPutDTOtoProcess(ProcessRequestDto processRequestDto);
 
   @Mapping(target = "media.id", source = "mediaId")
-  @Mapping(target = "order.id", source = "orderId")
-  public abstract OrderItem orderItemRequestDtoToEntity(OrderItemRequestDto orderItemRequestDto);
-
-  @Mapping(target = "media.id", source = "mediaId")
-  public abstract OrderItem orderItemRequestDtoToEntity(OrderItemPersistRequestDto orderItemRequestDto);
+  public abstract OrderItem orderItemRequestDtoToEntity(
+      OrderItemPersistRequestDto orderItemRequestDto);
 
   @Mapping(source = "media.id", target = "mediaId")
   @Mapping(source = "order.id", target = "orderId")
   @Mapping(source = "pricePerPiece", target = "totalPrice")
   public abstract OrderItemResponseDto orderItemDtoToEntity(OrderItem orderItem);
 
-  public abstract Order orderRequestDtoToOrder(OrderRequestDto orderRequestDto);
-
-  @Mapping(source = "dateTimeCreated",target = "dateTimeCreated",dateFormat = "yyyy-MM-dd HH:mm:ss")
-  @Mapping(source = "customer.id",target = "customerId")
-  @Mapping(source = "processStage.id",target = "processStageId")
-  @Mapping(source = "processStage",target = "processStage")
+  @Mapping(
+      source = "dateTimeCreated",
+      target = "dateTimeCreated",
+      dateFormat = "yyyy-MM-dd HH:mm:ss")
+  @Mapping(source = "customer.id", target = "customerId")
+  @Mapping(source = "processStage.id", target = "processStageId")
+  @Mapping(source = "processStage", target = "processStage")
   public abstract OrderResponseDto orderToOrderResponseDto(Order order);
-
-  public abstract Employee convertToEmployeeEntity(EmployeeRequestDto employeeRequestDto);
 
   public abstract Order convertToOrderEntity(OrderRequestDto orderRequestDto);
 
   public abstract Order convertToOrderEntity(OrderUpdateRequestDTO orderRequestDto);
 
+  public abstract Employee convertToEmployeeEntity(EmployeeRequestDto employeeRequestDto);
+
+  public abstract EmployeeResponseDto convertToEmployeeResponseDto(Employee employee);
   @Mapping(target = "account", source = "account")
   public abstract Employee convertToEmployeeEntity(EmployeeResponseDto employeeResponseDto);
 
-  public abstract EmployeeResponseDto convertToEmployeeResponseDto(Employee employee);
-
-  public abstract List<EmployeeResponseDto> convertToEmployeeResponseDtoList(List<Employee> employees);
+  public abstract List<EmployeeResponseDto> convertToEmployeeResponseDtoList(
+      List<Employee> employees);
 
   public abstract List<CustomerResponseDto> convertToCustomerDto(List<Customer> customers);
 
@@ -97,13 +103,64 @@ public abstract class Mapper {
   @Mapping(source = "companyId", target = "company.id")
   public abstract Customer customerDtoToEntity(CustomerRequestDto customerRequestDto);
 
-  @Mapping(source = "customer.company.id", target = "companyId")
-  public abstract CustomerResponseDto customerEntityToDto(Customer customer);
+  public CustomerResponseDto customerEntityToDto(Customer customer) {
+    Account account = customerService.getAccount(customer.getAccountId());
+    CustomerResponseDto customerResponseDto = new CustomerResponseDto();
 
-  public abstract CustomerDtoNoCompany customerEntityToCustomerDto(Customer customer);
+    customerResponseDto.setId(customer.getId());
+    customerResponseDto.setCompany(companyToDto(customer.getCompany()));
+    customerResponseDto.setCompanyId(customer.getCompany().getId());
+    customerResponseDto.setAccountId(customer.getAccountId());
+    customerResponseDto.setPhone(customer.getPhone());
+    customerResponseDto.setAccount(convertToAccountDto(account));
+    customerResponseDto.setOrdersIds(customerService.getOrdersIds(customerResponseDto.getId()));
+
+    return customerResponseDto;
+  }
+
+  public abstract CompanyDtoNoCustomers companyToDto(Company company);
 
   @Mapping(source = "isPaid", target = "isPaid")
-  public abstract TimeOffType timeOffTypeRequestDtoToEntity(TimeOffTypeRequestDto timeOffTypeRequestDto);
+  public abstract TimeOffType timeOffTypeRequestDtoToEntity(
+      TimeOffTypeRequestDto timeOffTypeRequestDto);
+
+  public abstract CustomerDtoNoCompany customerEntityToCustomerDto(Customer currentCustomer);
+
+  @Mapping(source = "order.id", target = "orderId")
+  @Mapping(source = "assignee.id", target = "assigneeId")
+  @Mapping(
+      source = "dateTimeUpdated",
+      target = "dateTimeUpdated",
+      dateFormat = "yyyy-MM-dd HH-mm-ss")
+  @Mapping(source = "processStage.id", target = "processStageId")
+  public abstract TrackingHistoryResponseDTO convertToTrackingHistoryDTO(
+      TrackingHistory trackingHistory);
+
+  public abstract TrackingHistory convertToTrackingHistoryEntity(
+      TrackingHistoryRequestDTO requestDTO);
+
+  public abstract Media convertToMediaEntity(MediaDto foundMedia);
+
+  public CompanyResponseDto convertToDto(Company company) {
+    CompanyResponseDto companyResponseDto = new CompanyResponseDto();
+    companyResponseDto.setId(company.getId());
+    companyResponseDto.setVatNumber(company.getVatNumber());
+    companyResponseDto.setName(company.getName());
+    companyResponseDto.setDiscountRate(company.getDiscountRate());
+    companyResponseDto.setCountry(company.getCountry());
+    companyResponseDto.setCity(company.getCity());
+    companyResponseDto.setAddress(company.getAddress());
+
+    for (Customer currentCustomer : company.getCustomers()) {
+      CustomerDtoNoCompany customerDto = customerEntityToCustomerDto(currentCustomer);
+      Account account = customerService.getAccount(currentCustomer.getAccountId());
+      customerDto.setOrdersIds(customerService.getOrdersIds(currentCustomer.getId()));
+      customerDto.setAccount(convertToAccountDto(account));
+      companyResponseDto.getCustomers().add(customerDto);
+    }
+
+    return companyResponseDto;
+  }
 
   @Mapping(source = "isPaid", target = "isPaid")
   public abstract TimeOffTypeResponseDto entityToTimeOffTypeResponseDto(TimeOffType timeOffType);
@@ -140,14 +197,5 @@ public abstract class Mapper {
 
     return timeOff;
   }
-  @Mapping(source = "order.id",target = "orderId")
-  @Mapping(source = "assignee.id",target = "assigneeId")
-  @Mapping(source = "dateTimeUpdated",target = "dateTimeUpdated",dateFormat = "yyyy-MM-dd HH-mm-ss")
-  @Mapping(source = "processStage.id",target = "processStageId")
-  public abstract TrackingHistoryResponseDTO convertToTrackingHistoryDTO(TrackingHistory trackingHistory);
 
-  public abstract TrackingHistory convertToTrackingHistoryEntity(TrackingHistoryRequestDTO requestDTO);
 }
-
-
-

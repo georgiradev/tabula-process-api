@@ -44,9 +44,7 @@ class EmployeeServiceTest {
   @Mock private EmployeeRepository employeeRepository;
   @Mock private AccountRepository accountRepository;
   @Mock private DepartmentRepository departmentRepository;
-
   @Mock private Mapper mapper;
-
   @InjectMocks private EmployeeService employeeService;
 
   @Test
@@ -96,43 +94,9 @@ class EmployeeServiceTest {
   }
 
   @Test
-  void getOne() {
+  void getOneIfNotFound() {
     when(employeeRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
     assertThrows(EntityNotFoundException.class, () -> employeeService.getOne(Mockito.anyInt()));
   }
 
-  @Test
-  void updateIfEmployeeNotFount() {
-    EmployeeRequestDto employeeRequestDto = new EmployeeRequestDto();
-    when(employeeRepository.findById(5)).thenReturn(Optional.empty());
-    assertThrows(
-        EntityNotFoundException.class, () -> employeeService.update(5, employeeRequestDto));
-  }
-
-  @Test
-  void updateIfDepartmentNotFount() {
-    EmployeeRequestDto employeeRequestDto = new EmployeeRequestDto();
-
-    Employee employee = new Employee();
-    when(employeeRepository.findById(anyInt())).thenReturn(Optional.of(employee));
-
-    when(departmentRepository.findById(anyInt())).thenReturn(Optional.empty());
-    assertThrows(
-        EntityNotFoundException.class, () -> employeeService.update(5, employeeRequestDto));
-  }
-
-  @Test
-  void updateIfAccountNotFount() {
-    EmployeeRequestDto employeeRequestDto = new EmployeeRequestDto();
-
-    Employee employee = EmployeeProvider.getEmployeeInstance();
-    when(employeeRepository.findById(anyInt())).thenReturn(Optional.of(employee));
-
-    Department department = new Department();
-    when(departmentRepository.findById(anyInt())).thenReturn(Optional.of(department));
-
-    when(accountRepository.findById(anyInt())).thenReturn(Optional.empty());
-    assertThrows(
-        EntityNotFoundException.class, () -> employeeService.update(1, employeeRequestDto));
-  }
 }

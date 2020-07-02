@@ -28,11 +28,11 @@ public class OrderItem {
   @Column(name = "price_per_piece")
   private BigDecimal pricePerPiece;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "media_id")
   private Media media;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "order_id")
   private Order order;
 }

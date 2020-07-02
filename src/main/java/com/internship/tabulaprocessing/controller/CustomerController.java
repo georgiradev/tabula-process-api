@@ -1,11 +1,12 @@
 package com.internship.tabulaprocessing.controller;
 
-import com.internship.tabulacore.entity.Account;
+import com.internship.tabulaprocessing.dto.CustomerPatchDto;
 import com.internship.tabulaprocessing.dto.CustomerRequestDto;
 import com.internship.tabulaprocessing.dto.CustomerResponseDto;
 import com.internship.tabulaprocessing.entity.Customer;
 import com.internship.tabulaprocessing.entity.PagedResult;
 import com.internship.tabulaprocessing.mapper.Mapper;
+import com.internship.tabulaprocessing.mapper.PatchMapper;
 import com.internship.tabulaprocessing.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,19 +27,17 @@ public class CustomerController {
 
   private final CustomerService customerService;
   private final Mapper mapper;
+  private final PatchMapper patchMapper;
 
   @PostMapping
   public ResponseEntity<CustomerResponseDto> createCustomer(
       @Valid @RequestBody CustomerRequestDto customerRequestDto) {
 
     Customer customer = mapper.customerDtoToEntity(customerRequestDto);
-    Account account = customerService.getAccount(customer.getAccountId());
     Optional<Customer> savedCustomer = customerService.save(customer);
 
     if (savedCustomer.isPresent()) {
       CustomerResponseDto customerResponseDto = mapper.customerEntityToDto(savedCustomer.get());
-      customerResponseDto.setAccount(mapper.convertToAccountDto(account));
-      customerResponseDto.setOrdersIds(customerService.getOrdersIds(savedCustomer.get().getId()));
 
       return ResponseEntity.status(HttpStatus.CREATED).body(customerResponseDto);
     }
@@ -48,18 +47,10 @@ public class CustomerController {
 
   @GetMapping("/{id}")
   public ResponseEntity<CustomerResponseDto> getCustomer(@PathVariable("id") @Min(1) int id) {
-    Optional<Customer> foundCustomer = customerService.find(id);
+    Customer foundCustomer = customerService.find(id);
+    CustomerResponseDto customerResponseDto = mapper.customerEntityToDto(foundCustomer);
 
-    if (foundCustomer.isPresent()) {
-      CustomerResponseDto customerResponseDto = mapper.customerEntityToDto(foundCustomer.get());
-      Account account = customerService.getAccount(foundCustomer.get().getAccountId());
-      customerResponseDto.setAccount(mapper.convertToAccountDto(account));
-      customerResponseDto.setOrdersIds(customerService.getOrdersIds(foundCustomer.get().getId()));
-
-      return ResponseEntity.ok(customerResponseDto);
-    }
-
-    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    return ResponseEntity.ok(customerResponseDto);
   }
 
   @GetMapping
@@ -76,12 +67,6 @@ public class CustomerController {
             pagedResultDto.getTotalPages(),
             pagedResult.getTotalElements());
 
-    for (CustomerResponseDto customerDto : customerResponseDtoPagedResult.getElements()) {
-      Account account = customerService.getAccount(customerDto.getAccountId());
-      customerDto.setAccount(mapper.convertToAccountDto(account));
-      customerDto.setOrdersIds(customerService.getOrdersIds(customerDto.getId()));
-    }
-
     return ResponseEntity.ok(customerResponseDtoPagedResult);
   }
 
@@ -91,13 +76,10 @@ public class CustomerController {
       @Valid @RequestBody CustomerRequestDto customerRequestDto) {
 
     Customer customer = mapper.customerDtoToEntity(customerRequestDto);
-    Account account = customerService.getAccount(customer.getAccountId());
     Optional<Customer> updatedCustomer = customerService.update(id, customer);
 
     if (updatedCustomer.isPresent()) {
       CustomerResponseDto customerResponseDto = mapper.customerEntityToDto(updatedCustomer.get());
-      customerResponseDto.setAccount(mapper.convertToAccountDto(account));
-      customerResponseDto.setOrdersIds(customerService.getOrdersIds(updatedCustomer.get().getId()));
 
       return ResponseEntity.ok(customerResponseDto);
     }
@@ -112,15 +94,30 @@ public class CustomerController {
     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }
 
+  @PatchMapping(
+      path = "/{id}",
+      consumes = {"application/merge-patch+json"})
+  public ResponseEntity<CustomerResponseDto> patchCustomer(
+      @PathVariable int id, @Valid @RequestBody CustomerPatchDto customerPatchDto) {
+
+    Customer foundCustomer = customerService.find(id);
+    Customer patchedCustomer = patchMapper.mapObjectsToCustomer(customerPatchDto, foundCustomer);
+    Optional<Customer> updatedCustomer = customerService.update(id, patchedCustomer);
+
+    if (updatedCustomer.isPresent()) {
+      CustomerResponseDto customerResponseDto = mapper.customerEntityToDto(updatedCustomer.get());
+
+      return ResponseEntity.ok(customerResponseDto);
+    }
+
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+  }
+
   @GetMapping("account/{id}")
   public ResponseEntity<CustomerResponseDto> getCustomerByAccountId(
       @PathVariable("id") @Min(1) int id) {
     Customer foundCustomer = customerService.findByAccountId(id);
-
     CustomerResponseDto customerResponseDto = mapper.customerEntityToDto(foundCustomer);
-    Account account = customerService.getAccount(foundCustomer.getAccountId());
-    customerResponseDto.setAccount(mapper.convertToAccountDto(account));
-    customerResponseDto.setOrdersIds(customerService.getOrdersIds(foundCustomer.getId()));
 
     return ResponseEntity.ok(customerResponseDto);
   }

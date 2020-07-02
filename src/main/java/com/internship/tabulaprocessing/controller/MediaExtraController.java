@@ -8,9 +8,14 @@ import com.internship.tabulaprocessing.mapper.Mapper;
 import com.internship.tabulaprocessing.mapper.PatchMapper;
 import com.internship.tabulaprocessing.service.MediaExtraService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
+import javax.validation.constraintvalidation.SupportedValidationTarget;
+import javax.validation.executable.ValidateOnExecution;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/media_extras")
@@ -27,7 +32,7 @@ public class MediaExtraController {
   }
 
   @GetMapping
-  public PagedResult<MediaExtraDto> getAll(@Valid QueryParameter queryParameter) {
+  public PagedResult<MediaExtraDto> getAll(QueryParameter queryParameter) {
     return mediaExtraService.getAll(queryParameter.getPageable());
   }
 
@@ -52,7 +57,7 @@ public class MediaExtraController {
 
   @PatchMapping(path = "/{id}", consumes = {"application/merge-patch+json"})
   public ResponseEntity<MediaExtraDto> patch(
-          @PathVariable int id,  @RequestBody MediaExtraRequestDto mediaExtraRequestDto) {
+          @PathVariable int id, @RequestBody MediaExtraRequestDto mediaExtraRequestDto) {
 
     MediaExtra mediaExtra = mediaExtraService.getOne(id);
     MediaExtra patched = patchMapper.mapObjectsToMediaExtra(mediaExtraRequestDto, mediaExtra);
