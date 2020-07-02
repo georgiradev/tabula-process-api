@@ -98,6 +98,14 @@ public interface Mapper {
   TimeOffTypeResponseDto entityToTimeOffTypeResponseDto(TimeOffType timeOffType);
 
   CustomerDtoNoCompany customerEntityToCustomerDto(Customer currentCustomer);
+
+  @Mapping(source = "order.id",target = "orderId")
+  @Mapping(source = "assignee.id",target = "assigneeId")
+  @Mapping(source = "dateTimeUpdated",target = "dateTimeUpdated",dateFormat = "yyyy-MM-dd HH-mm-ss")
+  @Mapping(source = "processStage.id",target = "processStageId")
+  TrackingHistoryResponseDTO convertToTrackingHistoryDTO(TrackingHistory trackingHistory);
+
+  TrackingHistory convertToTrackingHistoryEntity(TrackingHistoryRequestDTO requestDTO);
 }
 
 

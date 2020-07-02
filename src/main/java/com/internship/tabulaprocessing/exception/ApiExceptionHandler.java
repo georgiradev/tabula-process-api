@@ -77,4 +77,12 @@ public class ApiExceptionHandler {
 
     return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
   }
+
+  @ExceptionHandler(DeletionNotAllowedException.class)
+  public ResponseEntity<ApiExceptionResponse> handleException(DeletionNotAllowedException ex) {
+    ApiExceptionResponse exceptionResponse =
+            new ApiExceptionResponse(ex.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
+
+    return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
+  }
 }

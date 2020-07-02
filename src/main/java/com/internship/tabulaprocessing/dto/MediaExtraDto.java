@@ -20,4 +20,5 @@ public class MediaExtraDto {
   @DecimalMin(value = "0.0", inclusive = false)
   @Digits(integer = 5, fraction = 2)
   private BigDecimal price;
+
 }
