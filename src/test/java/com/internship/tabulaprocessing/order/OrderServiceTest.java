@@ -47,9 +47,9 @@ class OrderServiceTest {
   public void testSuccessfulOrderPersistence() {
 
     Order preSavedOrder = OrderProvider.getPrePersitedOrder();
-    when(customerService.find(anyInt())).thenReturn(Optional.of(new Customer()));
+    when(customerService.find(anyInt())).thenReturn(new Customer());
     when(orderItemService.findById(anyInt()))
-        .thenReturn(Optional.of(OrderItemProvider.getOrderItemInstance()));
+        .thenReturn(OrderItemProvider.getOrderItemInstance());
     when(processStageService.findFirstStageOfProcess(anyInt())).thenReturn(new ProcessStage());
 
     Order order = orderService.create(preSavedOrder);
@@ -75,8 +75,8 @@ class OrderServiceTest {
     order.setCustomerId(1);
     when(orderRepository.findById(anyInt())).thenReturn(Optional.of(order));
     when(processStageService.findById(anyInt())).thenReturn(new ProcessStage());
-    when(customerService.find(anyInt())).thenReturn(Optional.of(new Customer()));
-    when(orderItemService.findById(anyInt())).thenReturn(Optional.of(orderItem));
+    when(customerService.find(anyInt())).thenReturn(new Customer());
+    when(orderItemService.findById(anyInt())).thenReturn(orderItem);
     order = orderService.update(order,1);
 
 
@@ -91,9 +91,9 @@ class OrderServiceTest {
     Order order = OrderProvider.getPreUpdatedOrder();
 
     when(orderRepository.findById(anyInt())).thenReturn(Optional.of(order));
-    when(customerService.find(anyInt())).thenReturn(Optional.of(new Customer()));
+    when(customerService.find(anyInt())).thenReturn(new Customer());
     when(orderItemService.findById(anyInt()))
-        .thenReturn(Optional.of(OrderItemProvider.getOrderItemInstance()));
+        .thenReturn(OrderItemProvider.getOrderItemInstance());
     when(processStageService.findById(anyInt())).thenReturn(new ProcessStage());
 
     assertDoesNotThrow(() -> orderService.update(order, 1));
@@ -114,9 +114,9 @@ class OrderServiceTest {
   public void patchOrder() {
 
     Order order = OrderProvider.getPreUpdatedOrder();
-    when(customerService.find(anyInt())).thenReturn(Optional.of(new Customer()));
+    when(customerService.find(anyInt())).thenReturn(new Customer());
     when(orderItemService.findById(anyInt()))
-        .thenReturn(Optional.of(OrderItemProvider.getOrderItemInstance()));
+        .thenReturn(OrderItemProvider.getOrderItemInstance());
     when(processStageService.findById(anyInt())).thenReturn(new ProcessStage());
 
     assertDoesNotThrow(() -> orderService.patch(order));

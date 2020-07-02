@@ -83,7 +83,7 @@ public class CustomerServiceTest {
 
     when(customerRepository.findById(any(Integer.class))).thenReturn(Optional.of(customer));
 
-    assertEquals(Optional.of(customer), customerService.find(customer.getId()));
+    assertEquals(customer, customerService.find(customer.getId()));
   }
 
   @Test

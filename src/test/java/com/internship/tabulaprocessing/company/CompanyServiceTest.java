@@ -59,7 +59,7 @@ public class CompanyServiceTest {
 
     when(companyRepository.findById(company.getId())).thenReturn(Optional.of(company));
 
-    assertEquals(Optional.of(company), companyService.find(company.getId()));
+    assertEquals(company, companyService.find(company.getId()));
   }
 
   @Test

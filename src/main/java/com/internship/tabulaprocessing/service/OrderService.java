@@ -47,7 +47,7 @@ public class OrderService {
   public Order create(Order order) {
 
     order.setDateTimeCreated(LocalDateTime.now());
-    order.setCustomer(customerService.find(order.getCustomerId()).get());
+    order.setCustomer(customerService.find(order.getCustomerId()));
     order.setOrderItems(this.setOrderItems(order.getOrderItemIds(), order));
     order.setProcessStage(processStageService.findFirstStageOfProcess(order.getProcessId()));
     order.setPrice(this.calculateOrderPrice(order.getOrderItems()));
@@ -74,7 +74,7 @@ public class OrderService {
 
     order.setId(id);
     order.setDateTimeCreated(oldOrder.getDateTimeCreated());
-    order.setCustomer(customerService.find(order.getCustomerId()).get());
+    order.setCustomer(customerService.find(order.getCustomerId()));
     order.setOrderItems(this.setOrderItems(order.getOrderItemIds(), order));
     this.updateProcessStage(order.getProcessStageId(), order);
     order.setPrice(this.calculateOrderPrice(order.getOrderItems()));
@@ -86,7 +86,7 @@ public class OrderService {
   public Order patch(Order order) {
 
     if (order.getCustomerId() != null) {
-      order.setCustomer(this.customerService.find(order.getCustomerId()).get());
+      order.setCustomer(this.customerService.find(order.getCustomerId()));
     }
     if (order.getProcessStageId() != null) {
       this.updateProcessStage(order.getProcessStageId(), order);
@@ -108,7 +108,7 @@ public class OrderService {
 
   public Page<Order> findAllByCustomerId(Pageable pageable,int id){
 
-    Customer customer = customerService.find(id).get();
+    Customer customer = customerService.find(id);
 
     return orderRepository.findAllByCustomer(pageable,customer);
   }
@@ -136,7 +136,7 @@ public class OrderService {
 
     List<OrderItem> orderItemList = new ArrayList<>();
     for (var id : orderItems) {
-      OrderItem orderItem = orderItemService.findById(id).get();
+      OrderItem orderItem = orderItemService.findById(id);
       orderItem.setOrder(order);
       orderItemList.add(orderItem);
     }

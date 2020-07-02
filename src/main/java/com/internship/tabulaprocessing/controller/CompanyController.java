@@ -1,15 +1,13 @@
 package com.internship.tabulaprocessing.controller;
 
-import com.internship.tabulacore.entity.Account;
+import com.internship.tabulaprocessing.dto.CompanyPatchDto;
 import com.internship.tabulaprocessing.dto.CompanyRequestDto;
 import com.internship.tabulaprocessing.dto.CompanyResponseDto;
-import com.internship.tabulaprocessing.dto.CustomerDtoNoCompany;
 import com.internship.tabulaprocessing.entity.Company;
-import com.internship.tabulaprocessing.entity.Customer;
 import com.internship.tabulaprocessing.entity.PagedResult;
 import com.internship.tabulaprocessing.mapper.Mapper;
+import com.internship.tabulaprocessing.mapper.PatchMapper;
 import com.internship.tabulaprocessing.service.CompanyService;
-import com.internship.tabulaprocessing.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -31,8 +29,8 @@ import java.util.stream.Collectors;
 public class CompanyController {
 
   private final CompanyService companyService;
-  private final CustomerService customerService;
   private final Mapper mapper;
+  private final PatchMapper patchMapper;
 
   @PostMapping
   public ResponseEntity<CompanyResponseDto> createCompany(
@@ -42,7 +40,7 @@ public class CompanyController {
     Optional<Company> savedCompany = companyService.save(company);
 
     if (savedCompany.isPresent()) {
-      CompanyResponseDto companyResponseDto = convertToDto(savedCompany.get());
+      CompanyResponseDto companyResponseDto = mapper.convertToDto(savedCompany.get());
 
       return ResponseEntity.ok(companyResponseDto);
     }
@@ -52,25 +50,20 @@ public class CompanyController {
 
   @GetMapping("/{id}")
   public ResponseEntity<CompanyResponseDto> getCompany(@PathVariable("id") @Min(1) int id) {
-    Optional<Company> foundCompany = companyService.find(id);
+    Company foundCompany = companyService.find(id);
+    CompanyResponseDto companyResponseDto = mapper.convertToDto(foundCompany);
 
-    if (foundCompany.isPresent()) {
-      CompanyResponseDto companyResponseDto = convertToDto(foundCompany.get());
-
-      return ResponseEntity.ok(companyResponseDto);
-    }
-
-    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    return ResponseEntity.ok(companyResponseDto);
   }
 
   @GetMapping("/name/{name}")
-  public ResponseEntity<List<CompanyResponseDto>> getCompanyByName(
+  public ResponseEntity<List<CompanyResponseDto>> getCompaniesByName(
       @PathVariable(value = "name") String name) {
     List<Company> companies = companyService.findByName(name);
 
     if (!companies.isEmpty()) {
       List<CompanyResponseDto> allToDto =
-          companies.stream().map(this::convertToDto).collect(Collectors.toList());
+          companies.stream().map(mapper::convertToDto).collect(Collectors.toList());
 
       return ResponseEntity.ok(allToDto);
     } else {
@@ -83,7 +76,7 @@ public class CompanyController {
       @Valid QueryParameter queryParameter) {
 
     Page<Company> pagedResult = companyService.findAll(queryParameter);
-    Page<CompanyResponseDto> pagedResultDto = pagedResult.map(this::convertToDto);
+    Page<CompanyResponseDto> pagedResultDto = pagedResult.map(mapper::convertToDto);
 
     PagedResult<CompanyResponseDto> allToDto =
         new PagedResult<>(
@@ -103,7 +96,7 @@ public class CompanyController {
     Optional<Company> updatedCompany = companyService.update(id, company);
 
     if (updatedCompany.isPresent()) {
-      CompanyResponseDto companyResponseDto = convertToDto(updatedCompany.get());
+      CompanyResponseDto companyResponseDto = mapper.convertToDto(updatedCompany.get());
 
       return ResponseEntity.ok(companyResponseDto);
     }
@@ -118,17 +111,23 @@ public class CompanyController {
     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }
 
-  private CompanyResponseDto convertToDto(Company company) {
-    CompanyResponseDto companyResponseDto = mapper.companyToCompanyResponseDto(company);
+  @PatchMapping(
+      path = "/{id}",
+      consumes = {"application/merge-patch+json"})
+  public ResponseEntity<CompanyResponseDto> patchCompany(
+      @PathVariable int id, @Valid @RequestBody CompanyPatchDto companyRequestDto) {
 
-    for (Customer currentCustomer : company.getCustomers()) {
-      CustomerDtoNoCompany customerDto = mapper.customerEntityToCustomerDto(currentCustomer);
-      Account account = customerService.getAccount(currentCustomer.getAccountId());
-      customerDto.setOrdersIds(customerService.getOrdersIds(currentCustomer.getId()));
-      customerDto.setAccount(mapper.convertToAccountDto(account));
-      companyResponseDto.getCustomers().add(customerDto);
+    Company foundCompany = companyService.find(id);
+
+    Company company = patchMapper.mapObjectsToCompany(companyRequestDto, foundCompany);
+    Optional<Company> updatedCompany = companyService.update(id, company);
+
+    if (updatedCompany.isPresent()) {
+      CompanyResponseDto companyResponseDto = mapper.convertToDto(updatedCompany.get());
+
+      return ResponseEntity.ok(companyResponseDto);
     }
 
-    return companyResponseDto;
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
   }
 }

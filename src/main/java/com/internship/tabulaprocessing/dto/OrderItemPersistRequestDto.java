@@ -25,10 +25,6 @@ public class OrderItemPersistRequestDto {
 
   @NotBlank private String note;
 
-  @DecimalMin(value = "0.0", inclusive = false)
-  @Digits(integer = 7, fraction = 2)
-  private BigDecimal pricePerPiece;
-
   @Min(value = 1)
   private int mediaId;
 }

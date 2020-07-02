@@ -1,11 +1,12 @@
 package com.internship.tabulaprocessing.controller;
 
+import com.internship.tabulaprocessing.dto.OrderItemPatchDto;
 import com.internship.tabulaprocessing.dto.OrderItemPersistRequestDto;
-import com.internship.tabulaprocessing.dto.OrderItemRequestDto;
 import com.internship.tabulaprocessing.dto.OrderItemResponseDto;
 import com.internship.tabulaprocessing.entity.OrderItem;
 import com.internship.tabulaprocessing.entity.PagedResult;
 import com.internship.tabulaprocessing.mapper.Mapper;
+import com.internship.tabulaprocessing.mapper.PatchMapper;
 import com.internship.tabulaprocessing.service.OrderItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -25,8 +26,8 @@ import java.util.Optional;
 public class OrderItemController {
 
   private final OrderItemService orderItemService;
-
   private final Mapper mapper;
+  private final PatchMapper patchMapper;
 
   @PostMapping
   public ResponseEntity<OrderItemResponseDto> createOrderItem(
@@ -48,15 +49,10 @@ public class OrderItemController {
   @GetMapping("/{id}")
   public ResponseEntity<OrderItemResponseDto> getOrderItem(@PathVariable("id") @Min(1) int id) {
 
-    Optional<OrderItem> foundOrderItem = orderItemService.findById(id);
+    OrderItem foundOrderItem = orderItemService.findById(id);
+    OrderItemResponseDto orderItemResponseDto = mapper.orderItemDtoToEntity(foundOrderItem);
 
-    if (foundOrderItem.isPresent()) {
-      OrderItemResponseDto orderItemResponseDto = mapper.orderItemDtoToEntity(foundOrderItem.get());
-
-      return ResponseEntity.ok(orderItemResponseDto);
-    }
-
-    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    return ResponseEntity.ok(orderItemResponseDto);
   }
 
   @GetMapping
@@ -68,8 +64,10 @@ public class OrderItemController {
 
     PagedResult<OrderItemResponseDto> allToDto =
         new PagedResult<>(
-            pagedResultDto.toList(), queryParameter.getPage(),
-                pagedResultDto.getTotalPages(), pagedResult.getTotalElements());
+            pagedResultDto.toList(),
+            queryParameter.getPage(),
+            pagedResultDto.getTotalPages(),
+            pagedResult.getTotalElements());
 
     return ResponseEntity.ok(allToDto);
   }
@@ -77,7 +75,7 @@ public class OrderItemController {
   @PutMapping("/{id}")
   public ResponseEntity<OrderItemResponseDto> updateOrderItem(
       @PathVariable("id") @Min(1) int id,
-      @Valid @RequestBody OrderItemRequestDto orderItemRequestDto) {
+      @Valid @RequestBody OrderItemPersistRequestDto orderItemRequestDto) {
 
     OrderItem orderItem = mapper.orderItemRequestDtoToEntity(orderItemRequestDto);
     Optional<OrderItem> updatedOrderItem = orderItemService.update(id, orderItem);
@@ -97,5 +95,25 @@ public class OrderItemController {
     orderItemService.delete(id);
 
     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+  }
+
+  @PatchMapping(
+      path = "/{id}",
+      consumes = {"application/merge-patch+json"})
+  public ResponseEntity<OrderItemResponseDto> patchOrderItem(
+      @PathVariable int id,@Valid @RequestBody OrderItemPatchDto orderItemPatchDto) {
+
+    OrderItem foundOrderItem = orderItemService.findById(id);
+    OrderItem patched = patchMapper.mapObjectsToOrderItem(orderItemPatchDto, foundOrderItem);
+    Optional<OrderItem> updatedOrderItem = orderItemService.update(id, patched);
+
+    if (updatedOrderItem.isPresent()) {
+      OrderItemResponseDto orderItemResponseDto =
+          mapper.orderItemDtoToEntity(updatedOrderItem.get());
+
+      return ResponseEntity.ok(orderItemResponseDto);
+    }
+
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
   }
 }
