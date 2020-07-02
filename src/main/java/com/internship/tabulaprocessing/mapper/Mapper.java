@@ -6,7 +6,6 @@ import com.internship.tabulaprocessing.dto.*;
 import com.internship.tabulaprocessing.entity.Process;
 import com.internship.tabulaprocessing.entity.*;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
@@ -92,10 +91,10 @@ public interface Mapper {
   @Mapping(source = "customer.company.id", target = "companyId")
   CustomerResponseDto customerEntityToDto(Customer customer);
 
-  @Mapping(source = "paid", target = "paid")
+  @Mapping(source = "isPaid", target = "isPaid")
   TimeOffType timeOffTypeRequestDtoToEntity(TimeOffTypeRequestDto timeOffTypeRequestDto);
 
-  @Mapping(source = "paid", target = "paid")
+  @Mapping(source = "isPaid", target = "isPaid")
   TimeOffTypeResponseDto entityToTimeOffTypeResponseDto(TimeOffType timeOffType);
 
   CustomerDtoNoCompany customerEntityToCustomerDto(Customer currentCustomer);
