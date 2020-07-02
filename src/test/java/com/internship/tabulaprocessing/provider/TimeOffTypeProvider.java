@@ -12,7 +12,7 @@ public class TimeOffTypeProvider {
 
     timeOffType.setId(1);
     timeOffType.setName(TypeName.PARENTAL_LEAVE);
-    timeOffType.setPaid(true);
+    timeOffType.setIsPaid(true);
 
     return timeOffType;
   }
