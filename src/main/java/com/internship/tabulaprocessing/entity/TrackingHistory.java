@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "tracking_history")
@@ -37,4 +38,21 @@ public class TrackingHistory {
     private Integer processStageId;
     @Transient
     private Integer assigneeId;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TrackingHistory that = (TrackingHistory) o;
+        return id == that.id &&
+                Objects.equals(dateTimeUpdated, that.dateTimeUpdated) &&
+                Objects.equals(order, that.order) &&
+                Objects.equals(processStage, that.processStage) &&
+                Objects.equals(assignee, that.assignee);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, dateTimeUpdated, order, processStage, assignee);
+    }
 }

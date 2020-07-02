@@ -92,4 +92,12 @@ public class ApiExceptionHandler {
             new ApiExceptionResponse(ex.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
     return new ResponseEntity<>(exception, HttpStatus.BAD_REQUEST);
   }
+
+  @ExceptionHandler(NotAllowedException.class)
+  public ResponseEntity<ApiExceptionResponse> handleException(NotAllowedException ex) {
+    ApiExceptionResponse exceptionResponse =
+            new ApiExceptionResponse(ex.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
+
+    return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
+  }
 }
