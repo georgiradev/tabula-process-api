@@ -3,15 +3,14 @@ package com.internship.tabulaprocessing.mapper;
 import com.internship.tabulaprocessing.dto.*;
 import com.internship.tabulaprocessing.entity.Process;
 import com.internship.tabulaprocessing.entity.*;
-import com.internship.tabulaprocessing.service.CompanyService;
-import com.internship.tabulaprocessing.service.DepartmentService;
-import com.internship.tabulaprocessing.service.MediaService;
-import com.internship.tabulaprocessing.service.OrderService;
+import com.internship.tabulaprocessing.service.*;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.time.LocalDateTime;
 
 @RequiredArgsConstructor
 @org.mapstruct.Mapper(
@@ -20,15 +19,26 @@ import org.springframework.beans.factory.annotation.Autowired;
     nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public abstract class PatchMapper {
 
-  @Autowired private OrderService orderService;
+  @Autowired
+  private OrderService orderService;
 
-  @Autowired private MediaService mediaService;
+  @Autowired
+  private MediaService mediaService;
 
-  @Autowired private CompanyService companyService;
+  @Autowired
+  private CompanyService companyService;
 
-  @Autowired private DepartmentService departmentService;
+  @Autowired
+  private DepartmentService departmentService;
 
-  @Autowired private Mapper mapper;
+  @Autowired
+  private Mapper mapper;
+
+  @Autowired
+  EmployeeService employeeService;
+
+  @Autowired
+  TrackingHistoryService trackingHistoryService;
 
   public abstract Order patchOrder(OrderPatchRequestDTO dto, @MappingTarget Order order);
 
@@ -43,10 +53,8 @@ public abstract class PatchMapper {
   public abstract Company mapObjectsToCompany(
       CompanyPatchDto companyPatchDto, @MappingTarget Company company);
 
-  @Mapping(source = "orderId", target = "order.id")
-  @Mapping(source = "mediaId", target = "media.id")
-  public OrderItem mapObjectsToOrderItem(
-      OrderItemPatchDto orderItemPatchDto, @MappingTarget OrderItem currentOrderItem) {
+  public OrderItem mapObjectsToOrderItem(OrderItemPatchDto orderItemPatchDto,
+                                            OrderItem currentOrderItem) {
     OrderItem patchedOrderItem = new OrderItem();
 
     if (orderItemPatchDto == null) {
@@ -96,9 +104,8 @@ public abstract class PatchMapper {
     return patchedOrderItem;
   }
 
-  @Mapping(source = "companyId", target = "company.id")
-  public Customer mapObjectsToCustomer(
-      CustomerPatchDto customerPatchDto, @MappingTarget Customer currentCustomer) {
+  public Customer mapObjectsToCustomer(CustomerPatchDto customerPatchDto,
+                                       Customer currentCustomer) {
 
     if (customerPatchDto == null) {
       return currentCustomer;
@@ -136,7 +143,6 @@ public abstract class PatchMapper {
   public abstract TrackingHistory patchTrackingHistory(
       TrackingHistoryRequestDTO requestDTO, @MappingTarget TrackingHistory trackingHistory);
 
-
   public Employee patchEmployee(EmployeeUpdateRequestDto data, Employee employee) {
     if (data == null) {
       return null;
@@ -151,5 +157,29 @@ public abstract class PatchMapper {
       employee.setDepartment(department);
     }
     return employee;
+  }
+
+  public WorkLog mapObjectsToWorkLog (WorkLogPatchRequest data, WorkLog workLog) {
+    if ( data == null ) {
+      return null;
+    }
+
+    if( data.getHoursSpent() != 0 ) {
+      double totalHoursSpent = data.getHoursSpent() + workLog.getHoursSpent();
+      workLog.setHoursSpent( totalHoursSpent );
+    }
+
+    if( data.getEmployeeId() != 0 ) {
+      workLog.setEmployee(mapper.convertToEmployeeEntity(employeeService
+              .getOne(data.getEmployeeId())));
+    }
+
+    if( data.getTrackingHistoryId() != 0 ) {
+      workLog.setTrackingHistory(trackingHistoryService.findById(data.getTrackingHistoryId()));
+    }
+
+    workLog.setUpdatedDateTime(LocalDateTime.now());
+
+    return workLog;
   }
 }

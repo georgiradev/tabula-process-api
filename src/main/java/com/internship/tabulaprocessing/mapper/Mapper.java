@@ -6,9 +6,12 @@ import com.internship.tabulaprocessing.dto.*;
 import com.internship.tabulaprocessing.entity.Process;
 import com.internship.tabulaprocessing.entity.*;
 import com.internship.tabulaprocessing.service.CustomerService;
+import com.internship.tabulaprocessing.service.EmployeeService;
+import com.internship.tabulaprocessing.service.TrackingHistoryService;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @org.mapstruct.Mapper(
@@ -18,6 +21,12 @@ public abstract class Mapper {
 
   @Autowired
   private CustomerService customerService;
+
+  @Autowired
+  EmployeeService employeeService;
+
+  @Autowired
+  TrackingHistoryService trackingHistoryService;
 
   public abstract Company companyRequestDtoToCompany(CompanyRequestDto companyRequestDto);
 
@@ -34,8 +43,6 @@ public abstract class Mapper {
   public abstract MediaExtra convertToMediaExtraEntity(MediaExtraRequestDto mediaExtraRequestDto);
 
   public abstract List<MediaExtraDto> convertToMediaExtraDtoList(List<MediaExtra> medias);
-
-  public abstract List<MediaDto> convertToMediaDtoList(List<Media> medias);
 
   @Mapping(source = "processEntity.id", target = "processId")
   @Mapping(source = "departmentEntity.id", target = "departmentId")
@@ -78,12 +85,9 @@ public abstract class Mapper {
 
   public abstract Employee convertToEmployeeEntity(EmployeeRequestDto employeeRequestDto);
 
+  public abstract Employee convertToEmployeeEntity(EmployeeResponseDto employeeRequestDto);
+
   public abstract EmployeeResponseDto convertToEmployeeResponseDto(Employee employee);
-
-  public abstract List<EmployeeResponseDto> convertToEmployeeResponseDtoList(
-      List<Employee> employees);
-
-  public abstract List<CustomerResponseDto> convertToCustomerDto(List<Customer> customers);
 
   public abstract AccountDto convertToAccountDto(Account account);
 
@@ -151,4 +155,45 @@ public abstract class Mapper {
 
     return companyResponseDto;
   }
+
+  public WorkLog convertToWorkLogEntity (WorkLogCreateRequest workLogUpdateRequest) {
+    if ( workLogUpdateRequest == null ) {
+      return null;
+    }
+
+    WorkLog workLog = new WorkLog();
+    workLog.setCreatedDateTime(LocalDateTime.now());
+    workLog.setUpdatedDateTime(workLog.getCreatedDateTime());
+
+    workLog.setEmployee(convertToEmployeeEntity(employeeService.getOne(workLogUpdateRequest
+            .getEmployeeId())));
+
+    workLog.setTrackingHistory(trackingHistoryService.findById(workLogUpdateRequest
+            .getTrackingHistoryId()));
+
+    return workLog;
+  }
+
+  public WorkLog convertToWorkLogEntity (WorkLogPutRequest workLogUpdateRequest) {
+    if ( workLogUpdateRequest == null ) {
+      return null;
+    }
+
+    WorkLog workLog = new WorkLog();
+    workLog.setUpdatedDateTime(LocalDateTime.now());
+
+    workLog.setEmployee(convertToEmployeeEntity(employeeService.getOne(workLogUpdateRequest
+            .getEmployeeId())));
+
+    workLog.setTrackingHistory(trackingHistoryService.findById(workLogUpdateRequest
+            .getTrackingHistoryId()));
+
+    return workLog;
+  }
+
+  @Mapping(target = "employeeId", expression = "java(workLog.getEmployee().getId())")
+  @Mapping(target = "trackingHistoryId", expression = "java(workLog.getTrackingHistory().getId())")
+  public abstract WorkLogResponse convertToWorkLogResponse (WorkLog workLog);
+
+  public abstract List<WorkLogResponse> convertToWorkLogResponse (List<WorkLog> workLog);
 }
