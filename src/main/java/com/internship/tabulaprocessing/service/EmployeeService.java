@@ -75,7 +75,10 @@ public class EmployeeService {
 
     EmployeeResponseDto employeeResponseDto = mapper.convertToEmployeeResponseDto(employee.get());
     Optional<Account> account = accountRepository.findById(employee.get().getAccountId());
-    employeeResponseDto.setAccount(mapper.convertToAccountDto(account.get()));
+
+    if (account.isPresent()) {
+      employeeResponseDto.setAccount(mapper.convertToAccountDto(account.get()));
+    }
     return employeeResponseDto;
   }
 

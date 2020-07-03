@@ -9,6 +9,7 @@ import com.internship.tabulaprocessing.entity.WorkLog;
 import com.internship.tabulaprocessing.mapper.Mapper;
 import com.internship.tabulaprocessing.mapper.PatchMapper;
 import com.internship.tabulaprocessing.service.WorkLogService;
+import com.internship.tabulaprocessing.service.WorkLogServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ import javax.validation.Valid;
 @RequestMapping("/worklogs")
 @RequiredArgsConstructor
 public class WorkLogController {
-  private final WorkLogService workLogService;
+  private final WorkLogServiceImpl workLogService;
   private final PatchMapper patchMapper;
   private final Mapper mapper;
 
@@ -43,7 +44,8 @@ public class WorkLogController {
   @PutMapping(value = "/{id}")
   public ResponseEntity<WorkLogResponse> update(@Valid @PathVariable int id,
                                                 @Valid @RequestBody WorkLogPutRequest workLogDto) {
-    WorkLog updatedWorkLog = workLogService.update(mapper.convertToWorkLogEntity(workLogDto),id);
+    WorkLog workLog = mapper.convertToWorkLogEntity(workLogDto);
+    WorkLog updatedWorkLog = workLogService.update(workLog,id);
     return ResponseEntity.ok(mapper.convertToWorkLogResponse(updatedWorkLog));
   }
 
@@ -59,7 +61,6 @@ public class WorkLogController {
                                                @Valid @RequestBody WorkLogPatchRequest dto) {
     WorkLog workLog = workLogService.findById(id);
     WorkLog patchedWorkLog = patchMapper.mapObjectsToWorkLog(dto, workLog);
-    return ResponseEntity.ok(mapper.convertToWorkLogResponse(workLogService
-            .update(patchedWorkLog, id)));
+    return ResponseEntity.ok(mapper.convertToWorkLogResponse(workLogService.updatePatch(patchedWorkLog, id)));
   }
 }

@@ -51,11 +51,29 @@ public class WorkLogServiceImpl implements WorkLogService {
         return workLogRepository.save(worklog);
     }
 
+    public WorkLog updatePatch (WorkLog worklog, int id) {
+        WorkLog foundWorkLog = findById(id);
+        worklog.setId(id);
+        worklog.setCreatedDateTime(foundWorkLog.getCreatedDateTime());
+
+        if(isWorkLogAlreadyCreated(worklog)) {
+            throw new EntityAlreadyPresentException("WorkLog already exists!");
+        }
+
+        if(worklog.getTrackingHistory().getAssignee().getId()!=worklog.getEmployee().getId()) {
+            throw new NotAllowedException("You are not assigned to work on this order's process stage!");
+        }
+        return workLogRepository.save(worklog);
+    }
+
     @Override
     public WorkLog update(WorkLog worklog, int id) {
         WorkLog foundWorkLog = findById(id);
         worklog.setId(id);
         worklog.setCreatedDateTime(foundWorkLog.getCreatedDateTime());
+
+        double totalHoursSpent = worklog.getHoursSpent() + foundWorkLog.getHoursSpent();
+        worklog.setHoursSpent(totalHoursSpent);
 
         if(isWorkLogAlreadyCreated(worklog)) {
             throw new EntityAlreadyPresentException("WorkLog already exists!");

@@ -27,10 +27,7 @@ public abstract class Mapper {
   @Autowired private TimeOffTypeService timeOffTypeService;
 
   @Autowired
-  EmployeeService employeeService;
-
-  @Autowired
-  TrackingHistoryService trackingHistoryService;
+  private TrackingHistoryService trackingHistoryService;
 
   public abstract Company companyRequestDtoToCompany(CompanyRequestDto companyRequestDto);
 
@@ -96,8 +93,6 @@ public abstract class Mapper {
 
   public abstract List<EmployeeResponseDto> convertToEmployeeResponseDtoList(
       List<Employee> employees);
-
-  public abstract EmployeeResponseDto convertToEmployeeResponseDto(Employee employee);
 
   public abstract AccountDto convertToAccountDto(Account account);
 
@@ -224,6 +219,7 @@ public abstract class Mapper {
 
     WorkLog workLog = new WorkLog();
     workLog.setUpdatedDateTime(LocalDateTime.now());
+    workLog.setHoursSpent(workLogUpdateRequest.getHoursSpent());
 
     workLog.setEmployee(convertToEmployeeEntity(employeeService.getOne(workLogUpdateRequest
             .getEmployeeId())));

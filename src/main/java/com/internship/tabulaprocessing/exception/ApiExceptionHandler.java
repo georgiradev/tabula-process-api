@@ -40,15 +40,6 @@ public class ApiExceptionHandler {
     return new ResponseEntity<>(response, HttpStatus.CONFLICT);
   }
 
-  @ExceptionHandler(NotAllowedException.class)
-  public ResponseEntity<ApiExceptionResponse> handleException(NotAllowedException ex) {
-
-    ApiExceptionResponse response =
-            new ApiExceptionResponse(ex.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
-
-    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-  }
-
   @ExceptionHandler(NumberFormatException.class)
   public ResponseEntity<ApiExceptionResponse> handleException(NumberFormatException ex) {
     ApiExceptionResponse exception =

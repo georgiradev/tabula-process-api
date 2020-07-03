@@ -133,6 +133,104 @@ public class WorkLogServiceImplTest {
     }
 
     @Test
+    void updatePatchTest() {
+        Employee assignee = new Employee();
+        assignee.setId(1);
+
+        Employee employee = new Employee();
+        employee.setId(1);
+
+        TrackingHistory trackingHistory = new TrackingHistory();
+        trackingHistory.setId(1);
+        trackingHistory.setAssignee(assignee);
+
+        WorkLog workLogUpdate = new WorkLog();
+        workLogUpdate.setId(1);
+        workLogUpdate.setTrackingHistory(trackingHistory);
+        workLogUpdate.setEmployee(employee);
+
+        doReturn(Optional.of(workLogUpdate)).when(workLogRepository).findById(workLogUpdate.getId());
+        WorkLog found = workLogService.findById(workLogUpdate.getId());
+
+        assertEquals(found, workLogUpdate);
+
+        when(workLogRepository.save(workLogUpdate)).thenReturn(workLogUpdate);
+        WorkLog actual = workLogService.updatePatch(workLogUpdate, workLogUpdate.getId());
+
+        assertEquals(actual, workLogUpdate);
+    }
+
+    @Test
+    void patchUpdateTestIfAlreadyIsCreated() {
+        Employee employee = new Employee();
+        employee.setId(1);
+
+        TrackingHistory trackingHistory = new TrackingHistory();
+        trackingHistory.setId(1);
+
+        WorkLog workLogUpdate = new WorkLog();
+        workLogUpdate.setId(1);
+        workLogUpdate.setTrackingHistory(trackingHistory);
+        workLogUpdate.setEmployee(employee);
+
+        when(workLogRepository.findById(workLogUpdate.getId())).thenReturn(Optional.of(workLogUpdate));
+
+        doReturn(1).when(workLogRepository)
+                .numberOfRepeatingWorkLogs(workLogUpdate.getEmployee().getId(),
+                 workLogUpdate.getTrackingHistory().getId(),
+                 workLogUpdate.getId());
+
+        assertTrue(workLogService.isWorkLogAlreadyCreated(workLogUpdate));
+        assertThrows(EntityAlreadyPresentException.class, () -> workLogService
+                .updatePatch(workLogUpdate, workLogUpdate.getId()));
+    }
+
+    @Test
+    void patchUpdateTestWithNonExistingId() {
+        WorkLog workLogUpdate = new WorkLog();
+        workLogUpdate.setId(1);
+
+        doReturn(Optional.empty()).when(workLogRepository).findById(workLogUpdate.getId());
+        assertThrows(EntityNotFoundException.class, () -> workLogService
+                .updatePatch(workLogUpdate, workLogUpdate.getId()));
+    }
+
+    @Test
+    void updateTestWithNonExistingId() {
+        WorkLog workLogUpdate = new WorkLog();
+        workLogUpdate.setId(1);
+
+        doReturn(Optional.empty()).when(workLogRepository).findById(workLogUpdate.getId());
+        assertThrows(EntityNotFoundException.class, () -> workLogService
+                .update(workLogUpdate, workLogUpdate.getId()));
+    }
+
+    @Test
+    void updateTestIfAlreadyIsCreated() {
+        Employee employee = new Employee();
+        employee.setId(1);
+
+        TrackingHistory trackingHistory = new TrackingHistory();
+        trackingHistory.setId(1);
+
+        WorkLog workLogUpdate = new WorkLog();
+        workLogUpdate.setId(1);
+        workLogUpdate.setTrackingHistory(trackingHistory);
+        workLogUpdate.setEmployee(employee);
+
+        when(workLogRepository.findById(workLogUpdate.getId())).thenReturn(Optional.of(workLogUpdate));
+
+        doReturn(1).when(workLogRepository)
+                .numberOfRepeatingWorkLogs(workLogUpdate.getEmployee().getId(),
+                        workLogUpdate.getTrackingHistory().getId(),
+                        workLogUpdate.getId());
+
+        assertTrue(workLogService.isWorkLogAlreadyCreated(workLogUpdate));
+        assertThrows(EntityAlreadyPresentException.class, () -> workLogService
+                .update(workLogUpdate, workLogUpdate.getId()));
+    }
+
+    @Test
     void updateTest() {
         Employee assignee = new Employee();
         assignee.setId(1);
@@ -158,41 +256,6 @@ public class WorkLogServiceImplTest {
         WorkLog actual = workLogService.update(workLogUpdate, workLogUpdate.getId());
 
         assertEquals(actual, workLogUpdate);
-    }
-
-    @Test
-    void updateTestIfAlreadyIsCreated() {
-        Employee employee = new Employee();
-        employee.setId(1);
-
-        TrackingHistory trackingHistory = new TrackingHistory();
-        trackingHistory.setId(1);
-
-        WorkLog workLogUpdate = new WorkLog();
-        workLogUpdate.setId(1);
-        workLogUpdate.setTrackingHistory(trackingHistory);
-        workLogUpdate.setEmployee(employee);
-
-        when(workLogRepository.findById(workLogUpdate.getId())).thenReturn(Optional.of(workLogUpdate));
-
-        doReturn(1).when(workLogRepository)
-                .numberOfRepeatingWorkLogs(workLogUpdate.getEmployee().getId(),
-                 workLogUpdate.getTrackingHistory().getId(),
-                 workLogUpdate.getId());
-
-        assertTrue(workLogService.isWorkLogAlreadyCreated(workLogUpdate));
-        assertThrows(EntityAlreadyPresentException.class, () -> workLogService
-                .update(workLogUpdate, workLogUpdate.getId()));
-    }
-
-    @Test
-    void updateTestWithNonExistingId() {
-        WorkLog workLogUpdate = new WorkLog();
-        workLogUpdate.setId(1);
-
-        doReturn(Optional.empty()).when(workLogRepository).findById(workLogUpdate.getId());
-        assertThrows(EntityNotFoundException.class, () -> workLogService
-                .update(workLogUpdate, workLogUpdate.getId()));
     }
 
     @Test

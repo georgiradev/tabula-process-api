@@ -42,12 +42,10 @@ public abstract class PatchMapper {
   private Mapper mapper;
 
   @Autowired
-  EmployeeService employeeService;
+  private EmployeeService employeeService;
 
   @Autowired
-  TrackingHistoryService trackingHistoryService;
-
-  @Autowired private EmployeeService employeeService;
+  private TrackingHistoryService trackingHistoryService;
 
   @Autowired private TimeOffTypeService timeOffTypeService;
 
@@ -209,12 +207,6 @@ public abstract class PatchMapper {
       MediaExtraRequestDto data, @MappingTarget MediaExtra mediaExtra);
 
   public abstract Order patchOrder(OrderPatchRequestDTO dto, @MappingTarget Order order);
-
-  public abstract Process mapObjectsToProcess(
-      ProcessRequestDto data, @MappingTarget Process process);
-
-  public abstract TrackingHistory patchTrackingHistory(
-      TrackingHistoryRequestDTO requestDTO, @MappingTarget TrackingHistory trackingHistory);
       
   public WorkLog mapObjectsToWorkLog (WorkLogPatchRequest data, WorkLog workLog) {
     if ( data == null ) {

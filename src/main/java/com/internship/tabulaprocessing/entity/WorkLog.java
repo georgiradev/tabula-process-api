@@ -28,13 +28,13 @@ public class WorkLog {
     private LocalDateTime updatedDateTime;
 
     @ManyToOne(
-            cascade = {CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH},
+            cascade = {CascadeType.DETACH, CascadeType.REFRESH},
             fetch = FetchType.LAZY
     )
     private Employee employee;
 
     @ManyToOne(
-            cascade = {CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH},
+            cascade = {CascadeType.DETACH, CascadeType.REFRESH},
             fetch = FetchType.LAZY
     )
     private TrackingHistory trackingHistory;
