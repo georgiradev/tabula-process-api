@@ -34,9 +34,26 @@ public class Employee {
   @Min(value = 0, message = "id cannot be less than zero")
   private int accountId;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY,
+              cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
   private Department department;
 
   @Transient
   Account account;
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Employee employee = (Employee) o;
+    return id == employee.id &&
+            accountId == employee.accountId &&
+            Objects.equals(ratePerHour, employee.ratePerHour) &&
+            Objects.equals(department, employee.department);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, ratePerHour, accountId, department);
+  }
 }
