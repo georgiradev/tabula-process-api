@@ -4,9 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
-import java.math.BigDecimal;
+import javax.validation.constraints.Size;
 
 @Getter
 @Setter
@@ -21,10 +20,12 @@ public class OrderItemPatchDto {
   @Min(value = 1)
   private Integer count;
 
+  @Size(min = 3, message = "Note must be at least 3 characters long")
   private String note;
 
   @Min(value = 1)
   private Integer mediaId;
 
+  @Min(value = 1)
   private Integer orderId;
 }
